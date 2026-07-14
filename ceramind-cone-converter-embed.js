@@ -79,8 +79,8 @@
   "." + ROOT_CLASS + ", ." + ROOT_CLASS + " *{box-sizing:border-box;}" +
   "." + ROOT_CLASS + " .tool{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(43,36,32,.06),0 10px 28px rgba(43,36,32,.07);}" +
   "." + ROOT_CLASS + " .tool-header{background:var(--clay);color:var(--parchment);padding:18px 22px;display:flex;align-items:center;gap:13px;}" +
-  "." + ROOT_CLASS + " .eyebrow{margin:0;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.68;}" +
-  "." + ROOT_CLASS + " .tool-header h1{margin:3px 0 0;font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.3;}" +
+  "." + ROOT_CLASS + " .eyebrow{margin:0;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--parchment);opacity:.68;}" +
+  "." + ROOT_CLASS + " .tool-header h1{margin:3px 0 0;font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.3;color:var(--parchment);}" +
   "." + ROOT_CLASS + " .tabs{display:flex;border-bottom:1px solid var(--line);}" +
   "." + ROOT_CLASS + " .tab-btn{flex:1;padding:13px 8px;border:none;background:transparent;font:inherit;font-weight:600;font-size:13.5px;color:rgba(43,36,32,.5);cursor:pointer;border-bottom:2.5px solid transparent;transition:color .15s ease,border-color .15s ease;}" +
   "." + ROOT_CLASS + " .tab-btn.active{color:var(--clay);border-color:var(--ember);}" +
@@ -118,7 +118,7 @@
   "." + ROOT_CLASS + " .table-details[open] summary::before{transform:rotate(90deg);}" +
   "." + ROOT_CLASS + " .table-scroll{max-height:280px;overflow:auto;border:1px solid var(--line);border-radius:10px;}" +
   "." + ROOT_CLASS + " table{width:100%;border-collapse:collapse;font-size:12px;}" +
-  "." + ROOT_CLASS + " th, ." + ROOT_CLASS + " td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}" +
+  "." + ROOT_CLASS + " th, ." + ROOT_CLASS + " td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--ink);}" +
   "." + ROOT_CLASS + " th:first-child, ." + ROOT_CLASS + " td:first-child{text-align:left;}" +
   "." + ROOT_CLASS + " thead th{position:sticky;top:0;background:var(--card);font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:rgba(43,36,32,.55);border-bottom:1px solid var(--line-strong);}" +
   "." + ROOT_CLASS + " tbody tr.highlight{background:rgba(168,72,28,.12);}" +
