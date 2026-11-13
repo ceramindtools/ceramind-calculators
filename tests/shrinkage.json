@@ -1,0 +1,124 @@
+{
+ "root": ".ceramind-shrinkage-calculator",
+ "cases": [
+  {
+   "name": "default asks for a size",
+   "expect": [
+    "MAKE IT THIS SIZE NOW:",
+    "Enter at least one size above."
+   ]
+  },
+  {
+   "name": "stoneware 11%, finished height 10 cm",
+   "do": [
+    [
+     "fill",
+     "#cmsc1-d1",
+     "10"
+    ]
+   ],
+   "expect": [
+    "Height: 11.24 cm"
+   ]
+  },
+  {
+   "name": "plus width 8 cm",
+   "do": [
+    [
+     "fill",
+     "#cmsc1-d2",
+     "8"
+    ]
+   ],
+   "expect": [
+    "Height: 11.24 cm",
+    "Width / diameter: 8.99 cm"
+   ]
+  },
+  {
+   "name": "porcelain 13%",
+   "do": [
+    [
+     "select",
+     "[data-role=clay]",
+     "13"
+    ]
+   ],
+   "expect": [
+    "Height: 11.49 cm",
+    "Width / diameter: 9.20 cm"
+   ]
+  },
+  {
+   "name": "current size mode",
+   "do": [
+    [
+     "click",
+     "[data-mode=toFired]"
+    ]
+   ],
+   "expect": [
+    "EXPECT IT TO END UP AROUND:",
+    "Height: 8.70 cm",
+    "Width / diameter: 6.96 cm"
+   ]
+  },
+  {
+   "name": "inches",
+   "do": [
+    [
+     "click",
+     "[data-unit=in]"
+    ]
+   ],
+   "expect": [
+    "Height: 8.70 in"
+   ]
+  },
+  {
+   "name": "own shrinkage 12.5%",
+   "do": [
+    [
+     "fill",
+     "[data-role=pct]",
+     "12.5"
+    ]
+   ],
+   "expect": [
+    "Height: 8.75 in",
+    "Width / diameter: 7.00 in"
+   ]
+  },
+  {
+   "name": "over 30% is capped at 30%",
+   "do": [
+    [
+     "fill",
+     "[data-role=pct]",
+     "40"
+    ]
+   ],
+   "expect": [
+    "Height: 7.00 in"
+   ]
+  },
+  {
+   "name": "cleared sizes ask again",
+   "do": [
+    [
+     "fill",
+     "#cmsc1-d1",
+     ""
+    ],
+    [
+     "fill",
+     "#cmsc1-d2",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter at least one size above."
+   ]
+  }
+ ]
+}

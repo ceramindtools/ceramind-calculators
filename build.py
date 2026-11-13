@@ -4,7 +4,7 @@
     python3 build.py kiln-cost  # build one
 
 Every calculator shares one look (src/base.css) and the shared helpers in src/shared.js (the copy-code box).
-The shrinkage embed itself is the original hand-made file and is not built from here.
+The shrinkage calculator was moved onto the shared look on 13 Nov 2026 (same maths as the July original).
 """
 import json, re, sys
 from pathlib import Path
@@ -12,6 +12,7 @@ from pathlib import Path
 HERE = Path(__file__).parent
 CALCS = {
     "kiln-cost": "ceramind-kiln-cost-calculator-embed.js",
+    "shrinkage": "ceramind-shrinkage-calculator-embed.js",
 }
 MARK = "/*@BASE_CSS@*/''"
 JS_MARK = "/*@SHARED_JS@*/"
