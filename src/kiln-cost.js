@@ -21,6 +21,9 @@
   var BASE_ID = 'ceramind-calc-base-v1';
   var STYLE_ID = 'ceramind-kiln-cost-style';
   var BASE_CSS = /*@BASE_CSS@*/'';
+  var EMBED_FILE = 'ceramind-kiln-cost-calculator-embed.js';
+
+/*@SHARED_JS@*/
 
   var RATES = {
     cap: 26.32,      // UK price cap, 1 Oct – 31 Dec 2026
@@ -36,7 +39,7 @@
 
   var CSS = ''
     + '.cm-calc .cm-ring-track { fill: none; stroke: var(--cm-border); stroke-width: 11; }'
-    + '.cm-calc .cm-ring-used { fill: none; stroke: var(--cm-clay); stroke-width: 11; stroke-linecap: butt;'
+    + '.cm-calc .cm-ring-used { fill: none; stroke: var(--cm-accent); stroke-width: 11; stroke-linecap: butt;'
     + '  transform: rotate(-90deg); transform-origin: 50px 50px; transition: stroke-dasharray 0.25s ease; }'
     + '.cm-calc .cm-ring-text { font-size: 19px; font-weight: 700; fill: var(--cm-brand); text-anchor: middle; dominant-baseline: central; font-family: inherit; }'
     + '.cm-calc .cm-dot-track { background: var(--cm-border); }';
@@ -309,6 +312,7 @@
     injectStyles();
     var containers = document.querySelectorAll('.' + TARGET_CLASS);
     for (var i = 0; i < containers.length; i++) initOne(containers[i]);
+    embedCodeBoxes(TARGET_CLASS, EMBED_FILE);
   }
 
   if (document.readyState === 'loading') {

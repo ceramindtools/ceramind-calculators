@@ -2,14 +2,16 @@
    build.py inlines this into each embed, scoped under .cm-calc. Change the look here, never per calculator. */
 .cm-calc, .cm-calc * { box-sizing: border-box; }
 .cm-calc {
-  --cm-ink: #2e2118;
+  /* The store's own colours (live theme settings): text #171717, buttons umber #473728,
+     highlight tan #a4886e, white pages. Tan is for drawn marks only; text stays umber or near-black. */
+  --cm-ink: #171717;
   --cm-brand: #473728;
-  --cm-brand-soft: #6b5644;
-  --cm-clay: #96502f;
-  --cm-sage: #66765a;
-  --cm-bg: #efe7da;
-  --cm-card: #fffdf9;
-  --cm-border: #ddd0ba;
+  --cm-brand-soft: #6b5d50;
+  --cm-accent: #a4886e;
+  --cm-tint: #f4efea;
+  --cm-bg: #f7f5f2;
+  --cm-card: #ffffff;
+  --cm-border: #e3dcd5;
   font-family: inherit;
   color: var(--cm-ink);
   max-width: 480px;
@@ -67,7 +69,7 @@
 .cm-calc .cm-unit-btn:focus-visible,
 .cm-calc select:focus-visible,
 .cm-calc input:focus-visible {
-  outline: 2px solid var(--cm-sage);
+  outline: 2px solid var(--cm-brand);
   outline-offset: 2px;
 }
 .cm-calc .cm-row {
@@ -111,9 +113,9 @@
   cursor: pointer;
 }
 .cm-calc .cm-unit-btn.is-active {
-  background: var(--cm-sage);
-  border-color: var(--cm-sage);
-  color: #fff;
+  background: var(--cm-tint);
+  border-color: var(--cm-brand);
+  color: var(--cm-brand);
 }
 .cm-calc .cm-dims {
   display: grid;
@@ -143,7 +145,7 @@
   margin: 0;
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--cm-clay);
+  color: var(--cm-brand);
   line-height: 1.3;
 }
 .cm-calc .cm-visual-legend {
@@ -168,7 +170,7 @@
   vertical-align: middle;
 }
 .cm-calc .cm-dot-wet { border: 1.5px dashed var(--cm-brand-soft); }
-.cm-calc .cm-dot-fired { background: var(--cm-clay); }
+.cm-calc .cm-dot-fired { background: var(--cm-accent); }
 .cm-calc .cm-results {
   background: var(--cm-brand);
   color: #fff;
@@ -205,7 +207,7 @@
   color: var(--cm-brand-soft);
 }
 .cm-calc .cm-credit a {
-  color: var(--cm-clay);
+  color: var(--cm-brand);
   font-weight: 600;
   text-decoration: none;
 }
@@ -216,10 +218,52 @@
 @media (prefers-reduced-motion: reduce) {
   .cm-calc * { transition: none !important; }
 }
+/* Copy-the-embed-code box (src/shared.js) */
+.cm-calc.cm-embed { max-width: none; margin: 0.75rem 0 1.5rem; }
+.cm-calc .cm-code-box {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: var(--cm-bg);
+  border: 1px solid var(--cm-border);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+}
+.cm-calc pre.cm-code {
+  margin: 0;
+  padding: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--cm-ink);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.cm-calc .cm-copy-btn {
+  flex: 0 0 auto;
+  padding: 0.55rem 1rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.3;
+  border-radius: 999px;
+  border: 1px solid var(--cm-brand);
+  background: var(--cm-brand);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.cm-calc .cm-copy-btn.is-done { background: var(--cm-tint); color: var(--cm-brand); }
+.cm-calc .cm-copy-btn:focus-visible { outline: 2px solid var(--cm-brand); outline-offset: 2px; }
 .cm-calc .cm-key { white-space: nowrap; margin-right: 0.6rem; }
 /* Phones: each label sits above its control and every control runs full width, so nothing is cut off and the boxes line up. */
 @media (max-width: 480px) {
   .cm-calc .cm-card { padding: 1.4rem 1.25rem; }
+  .cm-calc .cm-code-box { flex-direction: column; align-items: stretch; }
   .cm-calc .cm-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.35rem; margin-bottom: 1rem; }
   .cm-calc .cm-row > select, .cm-calc .cm-row > input { max-width: none; }
   .cm-calc .cm-row > .cm-unit-toggle { justify-self: start; }
