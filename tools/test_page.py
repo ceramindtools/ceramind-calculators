@@ -1,6 +1,8 @@
 """Put a calculator draft on the real store theme behind a private link, for testing before anything goes live.
 
-    python3 tools/test_page.py "<page folder>" "<page title>" [commit]
+    python3 tools/test_page.py "<page folder>" "<page title>" [commit] [suffix]
+
+suffix defaults to calc-draft. Give each calculator its own (calc-draft-<name>) when several are tested at once.
 
 <page folder>/page-body.html is the proposed page text (it becomes the real page body when approved).
 This writes <page folder>/theme/templates/page.calc-draft.json: the theme's own page layout (title + page text)
@@ -16,9 +18,9 @@ REPO = Path(__file__).resolve().parent.parent
 SUFFIX = "calc-draft"
 
 
-def main(folder, title, commit=None):
+def main(folder, title, commit=None, suffix=SUFFIX):
     folder = Path(folder)
-    commit = commit or subprocess.run(["git", "-C", str(REPO), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
+    commit = commit if commit and commit != "HEAD" else subprocess.run(["git", "-C", str(REPO), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
     body = (folder / "page-body.html").read_text()
     body = re.sub(r'(<script src="https://cdn\.jsdelivr\.net/gh/ceramindtools/ceramind-calculators)@main/',
                   rf"\1@{commit}/", body)
@@ -30,14 +32,14 @@ def main(folder, title, commit=None):
     tpl = {"sections": {"main": {"type": "custom-liquid", "settings": {
         "liquid": liquid, "padding_top": 72, "padding_bottom": 120,
         "divider": False, "narrow": True, "rounded": False}}}, "order": ["main"]}
-    out = folder / "theme" / "templates" / f"page.{SUFFIX}.json"
+    out = folder / "theme" / "templates" / f"page.{suffix}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(tpl, indent=2) + "\n")
     r = subprocess.run(["shopify", "theme", "push", "--store", STORE, "--theme", THEME_ID, "--path", str(folder / "theme"),
-                        "--only", f"templates/page.{SUFFIX}.json", "--allow-live", "--nodelete"], capture_output=True, text=True)
+                        "--only", f"templates/page.{suffix}.json", "--allow-live", "--nodelete"], capture_output=True, text=True)
     if r.returncode:
         raise SystemExit(r.stdout[-1500:] + r.stderr[-1500:])
-    print(f"pushed draft {commit[:7]} -> https://ceramindtools.com/pages/partner?view={SUFFIX}")
+    print(f"pushed draft {commit[:7]} -> https://ceramindtools.com/pages/partner?view={suffix}")
 
 
 if __name__ == "__main__":
