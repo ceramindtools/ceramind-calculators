@@ -20,7 +20,7 @@
   var TARGET_CLASS = 'ceramind-kiln-cost-calculator';
   var BASE_ID = 'ceramind-calc-base-v1';
   var STYLE_ID = 'ceramind-kiln-cost-style';
-  var BASE_CSS = ".cm-calc,.cm-calc *{box-sizing: border-box;}.cm-calc{--cm-ink: #171717;--cm-brand: #473728;--cm-brand-soft: #6b5d50;--cm-accent: #a4886e;--cm-tint: #f4efea;--cm-bg: #f7f5f2;--cm-card: #ffffff;--cm-border: #e3dcd5;font-family: inherit;color: var(--cm-ink);max-width: 480px;margin: 2rem auto;text-align: left;}.cm-calc [hidden]{display: none !important;}.cm-calc .cm-card{background: var(--cm-card);border: 1px solid var(--cm-border);border-radius: 14px;padding: 1.75rem;box-shadow: 0 1px 2px rgba(71,55,40,0.06),0 8px 24px rgba(71,55,40,0.06);}.cm-calc .cm-title{margin: 0 0 0.35rem;font-size: 1.35rem;font-weight: 700;color: var(--cm-brand);line-height: 1.2;}.cm-calc .cm-sub{margin: 0 0 1.25rem;font-size: 0.9rem;color: var(--cm-brand-soft);line-height: 1.45;}.cm-calc .cm-mode-toggle{display: flex;gap: 0.4rem;margin-bottom: 1.1rem;flex-wrap: wrap;}.cm-calc .cm-mode-btn{flex: 1 1 auto;min-width: 140px;padding: 0.55rem 0.7rem;font-size: 0.82rem;font-weight: 600;font-family: inherit;line-height: 1.3;border-radius: 999px;border: 1px solid var(--cm-border);background: transparent;color: var(--cm-brand-soft);cursor: pointer;transition: background 0.15s ease,color 0.15s ease,border-color 0.15s ease;}.cm-calc .cm-mode-btn.is-active{background: var(--cm-brand);border-color: var(--cm-brand);color: #fff;}.cm-calc .cm-mode-btn:focus-visible,.cm-calc .cm-unit-btn:focus-visible,.cm-calc select:focus-visible,.cm-calc input:focus-visible{outline: 2px solid var(--cm-brand);outline-offset: 2px;}.cm-calc .cm-row{display: flex;align-items: center;justify-content: space-between;gap: 1rem;margin-bottom: 0.85rem;}.cm-calc .cm-label{font-size: 0.85rem;font-weight: 600;color: var(--cm-brand);flex: 0 0 auto;}.cm-calc select,.cm-calc input[type=\"number\"]{font: inherit;font-size: 0.9rem;padding: 0.5rem 0.65rem;border-radius: 8px;border: 1px solid var(--cm-border);background: #fff;color: var(--cm-ink);max-width: 220px;width: 100%;margin: 0;min-height: 0;height: auto;}.cm-calc .cm-unit-toggle{display: flex;gap: 0.3rem;}.cm-calc .cm-unit-btn{padding: 0.4rem 0.85rem;font-size: 0.82rem;font-weight: 600;font-family: inherit;border-radius: 8px;border: 1px solid var(--cm-border);background: transparent;color: var(--cm-brand-soft);cursor: pointer;}.cm-calc .cm-unit-btn.is-active{background: var(--cm-tint);border-color: var(--cm-brand);color: var(--cm-brand);}.cm-calc .cm-dims{display: grid;grid-template-columns: repeat(auto-fit,minmax(120px,1fr));gap: 0.75rem;margin: 1rem 0 1.25rem;}.cm-calc .cm-dim-label{display: block;font-size: 0.78rem;font-weight: 600;color: var(--cm-brand-soft);margin-bottom: 0.3rem;}.cm-calc .cm-dim-input{width: 100%;max-width: none;}.cm-calc .cm-visual{display: flex;align-items: center;gap: 1rem;background: var(--cm-bg);border-radius: 10px;padding: 0.9rem 1rem;margin-bottom: 1.1rem;}.cm-calc .cm-svg{width: 76px;height: 76px;flex: 0 0 auto;}.cm-calc .cm-visual-pct{margin: 0;font-size: 1.05rem;font-weight: 700;color: var(--cm-brand);line-height: 1.3;}.cm-calc .cm-visual-legend{margin: 0.3rem 0 0;font-size: 0.75rem;color: var(--cm-brand-soft);}.cm-calc .cm-visual-note{margin: 0.25rem 0 0;font-size: 0.68rem;font-style: italic;color: var(--cm-brand-soft);opacity: 0.8;line-height: 1.4;}.cm-calc .cm-dot{display: inline-block;width: 9px;height: 9px;border-radius: 50%;margin-right: 0.3rem;vertical-align: middle;}.cm-calc .cm-dot-wet{border: 1.5px dashed var(--cm-brand-soft);}.cm-calc .cm-dot-fired{background: var(--cm-accent);}.cm-calc .cm-results{background: var(--cm-brand);color: #fff;border-radius: 10px;padding: 1rem 1.1rem;margin-bottom: 1.1rem;}.cm-calc .cm-results-title{margin: 0 0 0.5rem;font-size: 0.78rem;font-weight: 700;text-transform: uppercase;letter-spacing: 0.06em;opacity: 0.85;}.cm-calc .cm-results-list{margin: 0;padding: 0;list-style: none;display: flex;flex-direction: column;gap: 0.35rem;font-size: 1rem;font-weight: 600;}.cm-calc .cm-results-list li{margin: 0;padding: 0;color: #fff;}.cm-calc .cm-results-list li::before,.cm-calc .cm-results-list li::marker{content: none;}.cm-calc .cm-results-empty{font-size: 0.85rem;font-weight: 400;opacity: 0.75;}.cm-calc .cm-results-note{margin: 0.6rem 0 0;font-size: 0.75rem;font-weight: 400;opacity: 0.8;line-height: 1.4;color: #fff;}.cm-calc .cm-credit{margin: 0;text-align: center;font-size: 0.72rem;color: var(--cm-brand-soft);}.cm-calc .cm-credit a{color: var(--cm-brand);font-weight: 600;text-decoration: none;}.cm-calc .cm-credit a:hover,.cm-calc .cm-credit a:focus-visible{text-decoration: underline;}@media (prefers-reduced-motion: reduce){.cm-calc *{transition: none !important;}}.cm-calc.cm-embed{max-width: none;margin: 0.75rem 0 1.5rem;}.cm-calc .cm-code-box{display: flex;align-items: center;gap: 0.9rem;background: var(--cm-bg);border: 1px solid var(--cm-border);border-radius: 10px;padding: 0.9rem 1rem;}.cm-calc pre.cm-code{margin: 0;padding: 0;flex: 1 1 auto;min-width: 0;background: transparent;border: 0;font-family: ui-monospace,\"SF Mono\",Menlo,Consolas,monospace;font-size: 0.78rem;line-height: 1.55;color: var(--cm-ink);white-space: pre-wrap;word-break: normal;overflow-wrap: anywhere;}.cm-calc .cm-copy-btn{flex: 0 0 auto;padding: 0.55rem 1rem;font-family: inherit;font-size: 0.82rem;font-weight: 600;line-height: 1.3;border-radius: 999px;border: 1px solid var(--cm-brand);background: var(--cm-brand);color: #fff;cursor: pointer;transition: background 0.15s ease,color 0.15s ease;}.cm-calc .cm-copy-btn.is-done{background: var(--cm-tint);color: var(--cm-brand);}.cm-calc .cm-copy-btn:focus-visible{outline: 2px solid var(--cm-brand);outline-offset: 2px;}.cm-calc .cm-key{white-space: nowrap;margin-right: 0.6rem;}@media (max-width: 480px){.cm-calc .cm-card{padding: 1.4rem 1.25rem;}.cm-calc .cm-code-box{flex-direction: column;align-items: stretch;}.cm-calc .cm-row{display: grid;grid-template-columns: minmax(0,1fr);gap: 0.35rem;margin-bottom: 1rem;}.cm-calc .cm-row>select,.cm-calc .cm-row>input{max-width: none;}.cm-calc .cm-row>.cm-unit-toggle{justify-self: start;}}";
+  var BASE_CSS = ".cm-calc,.cm-calc *{box-sizing: border-box;}.cm-calc{--cm-ink: #171717;--cm-brand: #473728;--cm-brand-soft: #4a4642;--cm-accent: #a4886e;--cm-sand: #d2c1b4;--cm-tint: #ffffff;--cm-bg: #e3e0df;--cm-card: #efedeb;--cm-border: #d9d4d0;--cm-field: #8f857c;font-family: inherit;color: var(--cm-ink);max-width: 480px;margin: 2rem auto;text-align: left;}.cm-calc [hidden]{display: none !important;}.cm-calc .cm-card{background: var(--cm-card);border: 1px solid var(--cm-border);border-radius: 14px;padding: 1.75rem;box-shadow: 0 1px 2px rgba(71,55,40,0.06),0 8px 24px rgba(71,55,40,0.06);}.cm-calc .cm-title{margin: 0 0 0.35rem;font-size: 1.35rem;font-weight: 700;color: var(--cm-brand);line-height: 1.2;}.cm-calc .cm-sub{margin: 0 0 1.25rem;font-size: 0.9rem;color: var(--cm-brand-soft);line-height: 1.45;}.cm-calc .cm-mode-toggle{display: flex;gap: 0.4rem;margin-bottom: 1.1rem;flex-wrap: wrap;}.cm-calc .cm-mode-btn{flex: 1 1 auto;min-width: 140px;padding: 0.55rem 0.7rem;font-size: 0.82rem;font-weight: 600;font-family: inherit;line-height: 1.3;border-radius: 999px;border: 1px solid var(--cm-field);background: transparent;color: var(--cm-brand-soft);cursor: pointer;transition: background 0.15s ease,color 0.15s ease,border-color 0.15s ease;}.cm-calc .cm-mode-btn.is-active{background: var(--cm-brand);border-color: var(--cm-brand);color: #fff;}.cm-calc a:focus-visible,.cm-calc .cm-mode-btn:focus-visible,.cm-calc .cm-unit-btn:focus-visible,.cm-calc select:focus-visible,.cm-calc input:focus-visible{outline: 2px solid var(--cm-brand);outline-offset: 2px;}.cm-calc .cm-row{display: flex;align-items: center;justify-content: space-between;gap: 1rem;margin-bottom: 0.85rem;}.cm-calc .cm-label{font-size: 0.85rem;font-weight: 600;color: var(--cm-brand);flex: 0 0 auto;}.cm-calc select,.cm-calc input[type=\"number\"]{font: inherit;font-size: 0.9rem;padding: 0.5rem 0.65rem;border-radius: 8px;border: 1px solid var(--cm-field);background: #fff;color: var(--cm-ink);max-width: 220px;width: 100%;margin: 0;min-height: 0;height: auto;}.cm-calc .cm-unit-toggle{display: flex;gap: 0.3rem;}.cm-calc .cm-unit-btn{padding: 0.4rem 0.85rem;font-size: 0.82rem;font-weight: 600;font-family: inherit;line-height: 1.3;border-radius: 8px;border: 1px solid var(--cm-field);background: transparent;color: var(--cm-brand-soft);cursor: pointer;}.cm-calc .cm-unit-btn.is-active{background: var(--cm-tint);border-color: var(--cm-brand);box-shadow: inset 0 0 0 1px var(--cm-brand);color: var(--cm-brand);}.cm-calc .cm-dims{display: grid;grid-template-columns: repeat(auto-fit,minmax(120px,1fr));gap: 0.75rem;margin: 1rem 0 1.25rem;}.cm-calc .cm-dim-label{display: block;font-size: 0.78rem;font-weight: 600;color: var(--cm-brand-soft);margin-bottom: 0.3rem;}.cm-calc .cm-dims input[type=\"number\"],.cm-calc .cm-dim-input{width: 100%;max-width: none;}.cm-calc .cm-visual{display: flex;align-items: center;gap: 1rem;background: var(--cm-bg);border-radius: 10px;padding: 0.9rem 1rem;margin-bottom: 1.1rem;}.cm-calc .cm-svg{width: 76px;height: 76px;flex: 0 0 auto;}.cm-calc .cm-visual-pct{margin: 0;font-size: 1.05rem;font-weight: 700;color: var(--cm-brand);line-height: 1.3;}.cm-calc .cm-visual-legend{margin: 0.3rem 0 0;font-size: 0.75rem;color: var(--cm-brand-soft);}.cm-calc .cm-visual-note{margin: 0.25rem 0 0;font-size: 0.68rem;font-style: italic;color: var(--cm-brand-soft);line-height: 1.4;}.cm-calc .cm-dot{display: inline-block;width: 9px;height: 9px;border-radius: 50%;margin-right: 0.3rem;vertical-align: middle;}.cm-calc .cm-dot-wet{border: 1.5px dashed var(--cm-brand-soft);}.cm-calc .cm-dot-fired{background: var(--cm-brand);}.cm-calc .cm-results{background: var(--cm-brand);color: #fff;border-radius: 10px;padding: 1rem 1.1rem;margin-bottom: 1.1rem;}.cm-calc .cm-results-title{margin: 0 0 0.5rem;font-size: 0.78rem;font-weight: 700;text-transform: uppercase;letter-spacing: 0.06em;opacity: 0.85;}.cm-calc .cm-results-list{margin: 0;padding: 0;list-style: none;display: flex;flex-direction: column;gap: 0.35rem;font-size: 1rem;font-weight: 600;}.cm-calc .cm-results-list li{margin: 0;padding: 0;color: #fff;}.cm-calc .cm-results-list li::before,.cm-calc .cm-results-list li::marker{content: none;}.cm-calc .cm-results-empty{font-size: 0.85rem;font-weight: 400;opacity: 0.75;}.cm-calc .cm-results-note{margin: 0.6rem 0 0;font-size: 0.75rem;font-weight: 400;opacity: 0.8;line-height: 1.4;color: #fff;}.cm-calc .cm-disclaimer{margin: 0 0 0.6rem;text-align: center;font-size: 0.7rem;line-height: 1.45;color: var(--cm-brand-soft);}.cm-calc .cm-credit{margin: 0;text-align: center;font-size: 0.72rem;color: var(--cm-brand-soft);}.cm-calc .cm-credit a{color: var(--cm-brand);font-weight: 600;text-decoration: none;}.cm-calc .cm-credit a:hover,.cm-calc .cm-credit a:focus-visible{text-decoration: underline;}@media (prefers-reduced-motion: reduce){.cm-calc *{transition: none !important;}}.cm-calc.cm-embed{max-width: none;margin: 0.75rem 0 1.5rem;}.cm-calc .cm-code-box{display: flex;align-items: center;gap: 0.9rem;background: var(--cm-card);border: 1px solid var(--cm-border);border-radius: 10px;padding: 0.9rem 1rem;}.cm-calc pre.cm-code{margin: 0;padding: 0;flex: 1 1 auto;min-width: 0;background: transparent;border: 0;font-family: ui-monospace,\"SF Mono\",Menlo,Consolas,monospace;font-size: 0.78rem;line-height: 1.55;color: var(--cm-ink);white-space: pre-wrap;word-break: normal;overflow-wrap: anywhere;}.cm-calc .cm-copy-btn{flex: 0 0 auto;padding: 0.55rem 1rem;font-family: inherit;font-size: 0.82rem;font-weight: 600;line-height: 1.3;border-radius: 999px;border: 1px solid var(--cm-brand);background: var(--cm-brand);color: #fff;cursor: pointer;transition: background 0.15s ease,color 0.15s ease;}.cm-calc .cm-copy-btn.is-done{background: #fff;color: var(--cm-brand);}.cm-calc .cm-copy-btn:focus-visible{outline: 2px solid var(--cm-brand);outline-offset: 2px;}.cm-calc .cm-hint{margin: -0.6rem 0 1.1rem;font-size: 0.75rem;line-height: 1.45;color: var(--cm-brand-soft);}.cm-calc .cm-sr{position: absolute !important;width: 1px;height: 1px;margin: -1px;padding: 0;overflow: hidden;clip: rect(0 0 0 0);white-space: nowrap;border: 0;}.cm-calc .cm-key{white-space: nowrap;margin-right: 0.6rem;}@media (max-width: 480px){.cm-calc .cm-card{padding: 1.4rem 1.25rem;}.cm-calc .cm-code-box{flex-direction: column;align-items: stretch;}.cm-calc .cm-row{display: grid;grid-template-columns: minmax(0,1fr);gap: 0.35rem;margin-bottom: 1rem;}.cm-calc .cm-row>select,.cm-calc .cm-row>input{max-width: none;}.cm-calc .cm-row>.cm-unit-toggle{justify-self: start;}}";
   var EMBED_FILE = 'ceramind-kiln-cost-calculator-embed.js';
 
   // ---- Shared by every calculator (build.py inlines this from src/shared.js) ----
@@ -78,6 +78,8 @@
     night: 14.5      // Economy 7 night rate, about
   };
   var CAP_PERIOD = '1 Oct – 31 Dec 2026';
+  var CAP_ENDS = Date.UTC(2027, 0, 1);   // after this the note stops naming the period as current
+  var PRESET_KW = ['3', '7', '11'];
 
   var FIRINGS = {
     bisque: { hours: 8, load: 50 },
@@ -86,11 +88,11 @@
   };
 
   var CSS = ''
-    + '.cm-calc .cm-ring-track { fill: none; stroke: var(--cm-border); stroke-width: 11; }'
-    + '.cm-calc .cm-ring-used { fill: none; stroke: var(--cm-accent); stroke-width: 11; stroke-linecap: butt;'
+    + '.cm-calc .cm-ring-track { fill: none; stroke: var(--cm-sand); stroke-width: 11; }'
+    + '.cm-calc .cm-ring-used { fill: none; stroke: var(--cm-brand); stroke-width: 11; stroke-linecap: butt;'
     + '  transform: rotate(-90deg); transform-origin: 50px 50px; transition: stroke-dasharray 0.25s ease; }'
     + '.cm-calc .cm-ring-text { font-size: 19px; font-weight: 700; fill: var(--cm-brand); text-anchor: middle; dominant-baseline: central; font-family: inherit; }'
-    + '.cm-calc .cm-dot-track { background: var(--cm-border); }';
+    + '.cm-calc .cm-dot-track { background: var(--cm-sand); }';
 
   var uid = 0;
 
@@ -107,14 +109,15 @@
       + '  <div class="cm-row" data-estimate>'
       + '    <label class="cm-label" for="' + f('kiln') + '">Kiln</label>'
       + '    <select id="' + f('kiln') + '" data-role="kiln">'
-      + '      <option value="3">Plug-in kiln · up to 3 kW</option>'
+      + '      <option value="3">UK plug-in kiln · up to 3 kW</option>'
       + '      <option value="7" selected>Medium kiln · about 7 kW</option>'
       + '      <option value="11">Large kiln · about 11 kW</option>'
+      + '      <option value="own">My own kiln</option>'
       + '    </select>'
       + '  </div>'
       + '  <div class="cm-row" data-estimate>'
       + '    <label class="cm-label" for="' + f('kw') + '">Kiln power (kW)</label>'
-      + '    <input type="number" id="' + f('kw') + '" data-role="kw" min="0" max="60" step="0.1" value="7" inputmode="decimal">'
+      + '    <input type="number" id="' + f('kw') + '" data-role="kw" min="0" step="0.1" value="7" inputmode="decimal">'
       + '  </div>'
       + '  <div class="cm-row" data-estimate>'
       + '    <label class="cm-label" for="' + f('firing') + '">Firing</label>'
@@ -126,7 +129,7 @@
       + '  </div>'
       + '  <div class="cm-row" data-estimate>'
       + '    <label class="cm-label" for="' + f('load') + '">Average power used %</label>'
-      + '    <input type="number" id="' + f('load') + '" data-role="load" min="5" max="100" step="1" value="50" inputmode="decimal">'
+      + '    <input type="number" id="' + f('load') + '" data-role="load" min="1" max="100" step="1" value="50" inputmode="decimal">'
       + '  </div>'
       + '  <div class="cm-row">'
       + '    <span class="cm-label">Currency</span>'
@@ -144,7 +147,7 @@
       + '  </div>'
       + '  <div class="cm-dims">'
       + '    <div class="cm-dim" data-estimate>'
-      + '      <label class="cm-dim-label" for="' + f('hours') + '">Firing time (hours)</label>'
+      + '      <label class="cm-dim-label" for="' + f('hours') + '">Heating time (hours)</label>'
       + '      <input type="number" class="cm-dim-input" id="' + f('hours') + '" data-role="hours" min="0" max="72" step="0.5" value="8" inputmode="decimal">'
       + '    </div>'
       + '    <div class="cm-dim" data-reading hidden>'
@@ -160,6 +163,7 @@
       + '      <input type="number" class="cm-dim-input" id="' + f('pieces') + '" data-role="pieces" min="0" step="1" inputmode="numeric" placeholder="optional">'
       + '    </div>'
       + '  </div>'
+      + '  <p class="cm-hint" data-estimate>Count the heating and any hold, not the cooling. A kiln cooling down on its own uses no power.</p>'
       + '  <div class="cm-visual" data-estimate>'
       + '    <svg viewBox="0 0 100 100" class="cm-svg" aria-hidden="true">'
       + '      <circle class="cm-ring-track" cx="50" cy="50" r="38"></circle>'
@@ -169,14 +173,16 @@
       + '    <div class="cm-visual-caption">'
       + '      <p class="cm-visual-pct" data-role="visual-pct">Uses about half its full power</p>'
       + '      <p class="cm-visual-legend"><span class="cm-key"><span class="cm-dot cm-dot-track"></span>Full power</span> <span class="cm-key"><span class="cm-dot cm-dot-fired"></span>Used on average</span></p>'
-      + '      <p class="cm-visual-note">The elements switch on and off to follow the firing, so a kiln rarely runs flat out for the whole time.</p>'
+      + '      <p class="cm-visual-note">The elements switch on and off to follow the firing, so a kiln rarely runs flat out. Leave this at the preset unless you know your kiln\'s figure.</p>'
       + '    </div>'
       + '  </div>'
-      + '  <div class="cm-results" aria-live="polite">'
+      + '  <div class="cm-results">'
       + '    <p class="cm-results-title">One firing costs about:</p>'
       + '    <ul class="cm-results-list"></ul>'
       + '    <p class="cm-results-note" data-role="note"></p>'
       + '  </div>'
+      + '  <p class="cm-sr" aria-live="polite" aria-atomic="true" data-role="sr"></p>'
+      + '  <p class="cm-disclaimer">This is an estimate to help you plan, not a quote. Your real cost depends on your kiln, how it\'s loaded, your firing schedule and your tariff, so check your meter or bill for exact figures. Ceramind Tools can\'t accept responsibility for decisions based on these results.</p>'
       + '  <p class="cm-credit">Powered by <a href="https://www.ceramindtools.com" target="_blank" rel="noopener">Ceramind® Tools</a></p>'
       + '</div>';
   }
@@ -206,6 +212,8 @@
     var mode = 'estimate';
     var cur = 'gbp';
     var rate = 'cap';
+    var savedPrice = { gbp: String(RATES.cap), usd: '' };
+    var srTimer;
 
     function q(sel) { return root.querySelector(sel); }
     function qa(sel) { return root.querySelectorAll(sel); }
@@ -223,29 +231,39 @@
     var visualPct = q('[data-role="visual-pct"]');
     var list = q('.cm-results-list');
     var note = q('[data-role="note"]');
+    var sr = q('[data-role="sr"]');
     var RING_LEN = 2 * Math.PI * 38;
 
     function num(el) {
       var n = parseFloat(el.value);
-      return isNaN(n) || n < 0 ? NaN : n;
+      return isNaN(n) || n <= 0 ? NaN : n;
+    }
+
+    function fmt(n, dp) {
+      return n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp });
     }
 
     function money(major) {
       // major = amount in pounds or dollars
       var sym = cur === 'gbp' ? '£' : '$';
       var minor = cur === 'gbp' ? 'p' : '¢';
-      if (major < 1) {
-        var m = major * 100;
-        return (m < 10 ? m.toFixed(1) : Math.round(m).toString()) + minor;
-      }
-      return sym + major.toFixed(2);
+      if (Math.round(major * 100) >= 100) return sym + fmt(major, 2);
+      var m = major * 100;
+      if (m < 0.05) return 'under 0.1' + minor;
+      if (m < 9.95) return m.toFixed(1) + minor;
+      return Math.round(m) + minor;
+    }
+
+    function kwhText(n) {
+      return fmt(n, n < 1 ? 2 : 1) + ' kWh';
     }
 
     function describeLoad(pct) {
-      if (pct <= 40) return 'Uses well under half its full power';
+      if (pct < 35) return 'Uses well under half its full power';
       if (pct < 45) return 'Uses a bit under half its full power';
       if (pct <= 55) return 'Uses about half its full power';
-      if (pct <= 70) return 'Uses about two-thirds of its full power';
+      if (pct < 62) return 'Uses a bit over half its full power';
+      if (pct <= 72) return 'Uses about two-thirds of its full power';
       if (pct < 90) return 'Uses most of its full power';
       return 'Runs close to full power';
     }
@@ -265,43 +283,75 @@
       list.appendChild(li);
     }
 
+    function announce(text) {
+      clearTimeout(srTimer);
+      srTimer = setTimeout(function () { sr.textContent = text; }, 700);
+    }
+
     function render() {
       qa('[data-estimate]').forEach(function (el) { el.hidden = mode !== 'estimate'; });
       qa('[data-reading]').forEach(function (el) { el.hidden = mode !== 'reading'; });
       qa('[data-uk]').forEach(function (el) { el.hidden = cur !== 'gbp'; });
       priceLabel.textContent = cur === 'gbp' ? 'Price per kWh (p)' : 'Price per kWh (¢)';
+      price.placeholder = cur === 'gbp' ? 'e.g. 26.32' : 'e.g. 17';
 
+      var notes = [];
       var pct = num(load);
-      var shown = isNaN(pct) ? 0 : Math.min(pct, 100);
+      if (pct > 100) { notes.push('Average power can\'t be over 100%, so 100% is used.'); pct = 100; }
+      var shown = isNaN(pct) ? 0 : pct;
       ring.setAttribute('stroke-dasharray', (RING_LEN * shown / 100).toFixed(1) + ' ' + RING_LEN.toFixed(1));
       ringText.textContent = Math.round(shown) + '%';
       visualPct.textContent = describeLoad(shown);
 
-      var kwh = mode === 'estimate' ? num(kw) * num(hours) * (pct / 100) : num(kwhIn);
+      var power = num(kw);
+      if (power > 60) {
+        notes.push('Read ' + fmt(power, 0) + ' as watts: ' + fmt(power / 1000, power % 1000 ? 2 : 0) + ' kW.');
+        power = power / 1000;
+      }
       var pPerKwh = num(price);
-      list.innerHTML = '';
+      if (pPerKwh < 1) {
+        notes.push('Read ' + price.value + ' as ' + (cur === 'gbp' ? '£' : '$') + price.value + ' per kWh (' + (Math.round(pPerKwh * 10000) / 100) + (cur === 'gbp' ? 'p' : '¢') + ').');
+        pPerKwh = pPerKwh * 100;
+      }
 
-      if (isNaN(kwh) || kwh <= 0 || isNaN(pPerKwh) || pPerKwh <= 0) {
-        line(mode === 'estimate' ? 'Enter your kiln power, firing time and electricity price.' : 'Enter the kWh your kiln used and your electricity price.', 'cm-results-empty');
+      var missing = [];
+      if (mode === 'estimate') {
+        if (isNaN(power)) missing.push('kiln power');
+        if (isNaN(num(hours))) missing.push('heating time');
+        if (isNaN(pct)) missing.push('average power %');
+      } else if (isNaN(num(kwhIn))) {
+        missing.push('kWh reading');
+      }
+      if (isNaN(pPerKwh)) missing.push('electricity price');
+
+      list.innerHTML = '';
+      if (missing.length) {
+        var last = missing.pop();
+        line('Enter your ' + (missing.length ? missing.join(', ') + ' and ' : '') + last + '.', 'cm-results-empty');
         note.textContent = '';
         return;
       }
 
+      var kwh = mode === 'estimate' ? power * num(hours) * (pct / 100) : num(kwhIn);
       var cost = kwh * pPerKwh / 100;
-      line('Electricity: ' + kwh.toFixed(1) + ' kWh');
       line('Cost: ' + money(cost));
-      var n = num(pieces);
-      if (!isNaN(n) && n >= 1) {
-        line('Per piece (' + Math.round(n) + '): ' + money(cost / Math.round(n)));
-      }
+      line('Electricity: ' + kwhText(kwh));
+      var n = Math.round(num(pieces));
+      if (n >= 1) line('Per piece (' + n + '): ' + money(cost / n));
 
-      if (cur === 'gbp' && rate === 'cap' && Math.abs(pPerKwh - RATES.cap) < 0.005) {
-        note.textContent = 'At the UK price cap rate for ' + CAP_PERIOD + '. Your bill shows your own rate.';
-      } else if (cur === 'gbp' && rate === 'night' && Math.abs(pPerKwh - RATES.night) < 0.005) {
-        note.textContent = 'At a typical Economy 7 night rate. Only the hours that fall in your cheap window get this price.';
+      var isCap = cur === 'gbp' && Math.abs(pPerKwh - RATES.cap) < 0.005;
+      var isNight = cur === 'gbp' && Math.abs(pPerKwh - RATES.night) < 0.005;
+      if (isCap) {
+        notes.push(Date.now() < CAP_ENDS
+          ? 'At the UK price cap rate for ' + CAP_PERIOD + '. Your bill shows your own rate.'
+          : 'At the UK price cap rate for ' + CAP_PERIOD + '. Check your bill for today\'s rate.');
+      } else if (isNight) {
+        notes.push('At a typical Economy 7 night rate, as if every hour fell in your cheap window. Most firings run longer than the 7-hour window, so expect a little more.');
       } else {
-        note.textContent = 'At your own electricity price.';
+        notes.push('At your own electricity price.');
       }
+      note.textContent = notes.join(' ');
+      announce('One firing costs about ' + money(cost) + '.');
     }
 
     qa('.cm-mode-btn').forEach(function (btn) {
@@ -314,14 +364,12 @@
 
     qa('[data-cur]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        cur = btn.getAttribute('data-cur');
+        var next = btn.getAttribute('data-cur');
+        if (next === cur) return;
+        savedPrice[cur] = price.value;
+        cur = next;
         setPressed(qa('[data-cur]'), 'data-cur', cur);
-        if (cur === 'gbp') {
-          price.value = RATES[rate];
-        } else {
-          price.value = '';
-          price.placeholder = 'e.g. 17';
-        }
+        price.value = savedPrice[cur];
         render();
       });
     });
@@ -336,8 +384,13 @@
     });
 
     kiln.addEventListener('change', function () {
-      kw.value = kiln.value;
+      if (kiln.value !== 'own') kw.value = kiln.value;
       render();
+    });
+
+    kw.addEventListener('input', function () {
+      var v = String(parseFloat(kw.value));
+      kiln.value = PRESET_KW.indexOf(v) >= 0 ? v : 'own';
     });
 
     firing.addEventListener('change', function () {
