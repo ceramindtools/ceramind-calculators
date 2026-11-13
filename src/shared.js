@@ -18,7 +18,8 @@
   }
 
   function wireCopy(btn, pre, code) {
-    pre.textContent = code;
+    // Show the code with line-break chances after each "/" so long URLs wrap at a slash, not mid-word.
+    pre.innerHTML = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\//g, '/<wbr>');
     var timer;
     function done(ok) {
       btn.textContent = ok ? 'Copied' : 'Selected: press Ctrl/Cmd + C';
