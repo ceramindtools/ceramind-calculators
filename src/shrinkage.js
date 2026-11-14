@@ -49,6 +49,7 @@
       + '    <label class="cm-label" for="' + f('pct') + '">Shrinkage %</label>'
       + '    <input type="number" id="' + f('pct') + '" data-role="pct" min="0" max="30" step="0.1" value="11" inputmode="decimal">'
       + '  </div>'
+      + '  <p class="cm-hint">The presets sit inside the ranges <a href="https://valentineclays.co.uk/pages/shrinkage-rates" target="_blank" rel="noopener">Valentine Clays gives</a>: earthenware about 5–10%, stoneware and porcelain about 10–15%.</p>'
       + '  <div class="cm-row">'
       + '    <span class="cm-label" data-role="units-label">Units (finished size)</span>'
       + '    <div class="cm-unit-toggle" role="group" aria-label="Units">'

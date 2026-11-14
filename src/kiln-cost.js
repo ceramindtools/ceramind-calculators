@@ -30,6 +30,13 @@
     night: 14.5      // Economy 7 night rate, about
   };
   var CAP_PERIOD = '1 Oct – 31 Dec 2026';
+  var SRC = {
+    ofgem: 'https://www.ofgem.gov.uk/your-energy-supply/your-energy-bill/energy-price-cap-unit-rates-and-standing-charges',
+    e7: 'https://www.scottishgas.co.uk/energy/guides/economy-7-meters-explained.html',
+    lakeside: 'https://lakesidepottery.com/HTML%20Text/Tips/estimating-electric-kiln-firing-costs.htm'
+  };
+  function link(key, text) { return '<a href="' + SRC[key] + '" target="_blank" rel="noopener">' + text + '</a>'; }
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   var CAP_ENDS = Date.UTC(2027, 0, 1);   // after this the note stops naming the period as current
   var PRESET_KW = ['3', '7', '11'];
 
@@ -125,7 +132,7 @@
       + '    <div class="cm-visual-caption">'
       + '      <p class="cm-visual-pct" data-role="visual-pct">Uses about half its full power</p>'
       + '      <p class="cm-visual-legend"><span class="cm-key"><span class="cm-dot cm-dot-track"></span>Full power</span> <span class="cm-key"><span class="cm-dot cm-dot-fired"></span>Used on average</span></p>'
-      + '      <p class="cm-visual-note">The elements switch on and off to follow the firing, so a kiln rarely runs flat out. Leave this at the preset unless you know your kiln\'s figure.</p>'
+      + '      <p class="cm-visual-note">The elements switch on and off to follow the firing, so a kiln rarely runs flat out. The presets follow ' + link('lakeside', 'Lakeside Pottery\'s figures') + '. Leave them unless you know your kiln\'s own.</p>'
       + '    </div>'
       + '  </div>'
       + '  <div class="cm-results">'
@@ -262,7 +269,7 @@
       }
       var pPerKwh = num(price);
       if (pPerKwh < 1) {
-        notes.push('Read ' + price.value + ' as ' + (cur === 'gbp' ? '£' : '$') + price.value + ' per kWh (' + (Math.round(pPerKwh * 10000) / 100) + (cur === 'gbp' ? 'p' : '¢') + ').');
+        notes.push('Read ' + esc(price.value) + ' as ' + (cur === 'gbp' ? '£' : '$') + esc(price.value) + ' per kWh (' + (Math.round(pPerKwh * 10000) / 100) + (cur === 'gbp' ? 'p' : '¢') + ').');
         pPerKwh = pPerKwh * 100;
       }
 
@@ -297,14 +304,14 @@
       var isNight = cur === 'gbp' && Math.abs(pPerKwh - RATES.night) < 0.005;
       if (isCap) {
         notes.push(Date.now() < CAP_ENDS
-          ? 'At the UK price cap rate for ' + CAP_PERIOD + '. Your bill shows your own rate.'
-          : 'At the UK price cap rate for ' + CAP_PERIOD + '. Check your bill for today\'s rate.');
+          ? 'At the ' + link('ofgem', 'UK price cap rate') + ' for ' + CAP_PERIOD + '. Your bill shows your own rate.'
+          : 'At the ' + link('ofgem', 'UK price cap rate') + ' for ' + CAP_PERIOD + '. Check your bill for today\'s rate.');
       } else if (isNight) {
-        notes.push('At a typical Economy 7 night rate, as if every hour fell in your cheap window. Most firings run longer than the 7-hour window, so expect a little more.');
+        notes.push('At a ' + link('e7', 'typical Economy 7 night rate') + ', as if every hour fell in your cheap window. Most firings run longer than the 7-hour window, so expect a little more.');
       } else {
         notes.push('At your own electricity price.');
       }
-      note.textContent = notes.join(' ');
+      note.innerHTML = notes.join(' ');   // static text, links and escaped input only
       announce('One firing costs about ' + money(cost) + '.');
     }
 
