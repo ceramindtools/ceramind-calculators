@@ -49,6 +49,40 @@
   var MAX_C = 1350;            // top of the Ceramind cone converter's gauge
   var DEFAULT_HOLD = 10;       // minutes at the top
   var KILN_COST_URL = 'https://www.ceramindtools.com/pages/kiln-cost-calculator';
+  // Source pages linked from the calculator's own text (all opened and checked, see sources.md)
+  var SRC = {
+    bartlett: 'https://www.theceramicshop.com/downloads/Genesis_Manual_3-3-16.pdf',
+    orton: 'https://www.theceramicshop.com/downloads/Ortonconecharttemperatures.pdf',
+    potclays: 'https://www.potclays.co.uk/clay-questions/what-is-the-optimum-firing-rate-to-use/',
+    c04pltp: 'https://digitalfire.com/schedule/c04pltp',
+    plc6ds: 'https://digitalfire.com/schedule/plc6ds',
+    c6dhsc: 'https://digitalfire.com/schedule/c6dhsc',
+    dsdh04: 'https://digitalfire.com/schedule/04dsdh'
+  };
+
+  // Text with source links: parts are strings or { t: text, href: url }. Built from DOM nodes, never innerHTML.
+  function link(t, href) { return { t: t, href: href }; }
+  function rich(el, parts) {
+    el.textContent = '';
+    parts.forEach(function (part) {
+      if (typeof part === 'string') { el.appendChild(document.createTextNode(part)); return; }
+      var a = document.createElement('a');
+      a.href = part.href;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = part.t;
+      el.appendChild(a);
+    });
+  }
+  // Sentences (each a string or an array of parts) joined with spaces
+  function sentences(list) {
+    var out = [];
+    list.forEach(function (snt, i) {
+      if (i) out.push(' ');
+      out = out.concat(typeof snt === 'string' ? [snt] : snt);
+    });
+    return out;
+  }
 
   // Bartlett Genesis cone-fire speeds: [rate °F/hr, target °F]. A target of 0 or less is relative to the top.
   var SPEEDS = {
@@ -493,9 +527,9 @@
       qa('[data-glaze]').forEach(function (el) { el.hidden = !fr.glaze; });
       topLabel.textContent = 'Top temperature (' + sym() + ')';
       bung.textContent = cText(600);
-      wareHint.textContent = fr.glaze
-        ? 'Bartlett has two glaze speeds: Fast for thin ware and Medium for anything thicker. Still damp adds a drying hold first.'
-        : 'Not sure? Pick the thicker or damper option. The slower schedule gives water and burn-off more time.';
+      rich(wareHint, fr.glaze
+        ? [link('Bartlett', SRC.bartlett), ' has two glaze speeds: Fast for thin ware and Medium for anything thicker. Still damp adds a drying hold first.']
+        : ['Not sure? Pick the thicker or damper option. The slower schedule gives water and burn-off more time.']);
       top.placeholder = unit === 'c' ? 'e.g. 1000' : 'e.g. 1832';
 
       var notes = [];
@@ -562,25 +596,34 @@
 
       var use = SPEED_USE[s.speed];
       if (typeof use !== 'string') use = use[fr.glaze ? 'glaze' : 'bisque'];
-      var src = ['Ramps: Bartlett\'s "' + SPEEDS[s.speed].name + '" kiln controller preset, ' + use + '.'];
+      var src = [['Ramps: ', link('Bartlett\'s "' + SPEEDS[s.speed].name + '" kiln controller preset', SRC.bartlett), ', ' + use + '.']];
       if (fr.glaze && thick === 'thick') src.push('Bartlett has no slower glaze speed, so thick ware fires on Medium too.');
       if (s.speed === 'fast') {
         caution.hidden = false;
-        caution.textContent = 'Fast climbs at ' + perHourF(570) + ' from cold. Bartlett gives it only for thin glazed ware, and Potclays advises '
-          + '100 to 130°C an hour for glaze firings, so choose Normal unless your clay or glaze maker allows a fast firing.';
+        rich(caution, ['Fast climbs at ' + perHourF(570) + ' from cold. ', link('Bartlett', SRC.bartlett), ' gives it only for thin glazed ware, and ',
+          link('Potclays', SRC.potclays), ' advises 100 to 130°C an hour for glaze firings, so choose Normal unless your clay or glaze maker allows a fast firing.']);
       }
       if (dry === 'damp') src.push('Drying: Bartlett\'s ' + PREHEAT.hours[thick] + '-hour preheat for damp ware.');
       if (fr.glaze && cool.value !== 'off') {
-        src.push((cool.value === 'slow' ? 'Drop, hold and slow cool' : 'Drop and hold') + ': Plainsman Clays\' schedules on Digitalfire'
-          + (firing.value === 'highfire' ? ', published for cone 04 to 6 and used here at your top temperature.' : '.'));
+        // Earthenware: Plainsman C04PLTP (drop and hold) and Digitalfire 04DSDH (slow cool). Mid and high fire: Plainsman PLC6DS / C6DHSC.
+        var low = firing.value === 'earthenware';
+        var higher = firing.value === 'highfire' ? ', used here at your higher top temperature.' : '.';
+        if (cool.value === 'drop' || low) {
+          src.push(['Drop and hold: Plainsman\'s ', low ? link('C04PLTP schedule', SRC.c04pltp) : link('PLC6DS schedule', SRC.plc6ds), ' on Digitalfire' + higher]);
+        }
+        if (cool.value === 'slow') {
+          src.push(low
+            ? ['Slow cool: Digitalfire\'s ', link('04DSDH schedule', SRC.dsdh04), '.']
+            : ['Drop, hold and slow cool: Plainsman\'s ', link('C6DHSC schedule', SRC.c6dhsc), ' on Digitalfire' + higher]);
+        }
       }
       if (coneName) {
         var col = coneCol(s.speed), colF = CONE_RATES[col] * 9 / 5, rF = lastRateF(s.speed);
-        var cs = 'Cone ' + coneName + ' is ' + cText(topC) + ': Orton\'s self-supporting figure for a ' + perHourF(colF) + ' finish';
+        var cs = ' for a ' + perHourF(colF) + ' finish';
         if (Math.abs(rF - colF) < 1) cs += ', the same as this schedule\'s last ramp.';
         else if (rF < colF && col === 0) cs += '. This schedule ends slower, at ' + perHourF(rF) + ', so the cone may bend a little before this temperature: watch your witness cone.';
         else cs += ', the nearer of the chart\'s two columns to this schedule\'s last ramp of ' + perHourF(rF) + '.';
-        src.push(cs);
+        src.push(['Cone ' + coneName + ' is ' + cText(topC) + ': ', link('Orton\'s self-supporting figure', SRC.orton), cs]);
       } else {
         src.push('At your own top temperature of ' + cText(topC) + '.');
       }
@@ -590,9 +633,9 @@
           + ' (cone ' + fr.cones[0] + ' to ' + fr.cones[fr.cones.length - 1] + ', ' + cText(lo) + ' to ' + cText(hi) + '). Check the firing type.');
       }
       notes = notes.concat(s.notes);
-      if (fr.glaze && cool.value === 'slow') notes.push('Digitalfire warns that slow cools can shorten the life of kiln relays.');
+      if (fr.glaze && cool.value === 'slow') notes.push([link('Digitalfire', SRC.c6dhsc), ' warns that slow cools can shorten the life of kiln relays.']);
       notes.push('Timed from a ' + (unit === 'c' ? '21°C' : '70°F') + ' kiln to the end of the program. The cool-down after that isn\'t counted.');
-      note.textContent = src.concat(notes).join(' ');
+      rich(note, sentences(src.concat(notes)));
 
       graphBox.hidden = false;
       lastSchedule = s;
