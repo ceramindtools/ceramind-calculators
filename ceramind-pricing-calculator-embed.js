@@ -13,7 +13,8 @@
  *
  * Numbers used (checked 13–14 Nov 2026; full quotes in Ceramind Tools/Website/Calculators/Pottery Pricing/sources.md):
  * - Retail = 2 × wholesale ("keystone"). Etsy Seller Handbook, "How to Price Your Products for Wholesale":
- *   "Retail price = Wholesale price x 2 or more". Crafts Council guide (NCAD copy, Cornelia McCarthy):
+ *   "Retail price = Wholesale price x 2 or more". Cornelia McCarthy, "Pricing your work" (PDF hosted by NCAD,
+ *   https://www.ncad.ie/files/download/23_-_Pricing_your_work_by_Cornelia_McCarthy.pdf):
  *   "Established retail mark-ups are normally double plus VAT."
  * - Etsy, UK bank account: listing fee 0.20 USD (about 15p: ECB rate 13 Nov 2026, 1 USD = 0.75605 GBP),
  *   transaction fee 6.5% of the order, payment processing 4% + 0.20 GBP, regulatory operating fee 0.48%
@@ -153,6 +154,7 @@
     + '.cm-calc.cm-pricing .cm-split-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.25rem; }'
     + '.cm-calc.cm-pricing .cm-split-list li { display: flex; align-items: center; gap: 0.5rem; margin: 0; padding: 0; font-size: 0.82rem; line-height: 1.4; color: var(--cm-ink); }'
     + '.cm-calc.cm-pricing .cm-split-list li::before, .cm-calc.cm-pricing .cm-split-list li::marker { content: none; }'
+    + '.cm-calc.cm-pricing .cm-split-empty { color: var(--cm-brand-soft); font-style: italic; }'
     + '.cm-calc.cm-pricing .cm-sw { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }'
     + '.cm-calc.cm-pricing .cm-sl-name { flex: 1 1 auto; color: var(--cm-brand-soft); }'
     + '.cm-calc.cm-pricing .cm-sl-amt { font-weight: 600; font-variant-numeric: tabular-nums; }'
@@ -194,7 +196,7 @@
       +        dim('glaze', 'Glaze', EXAMPLE.glaze, { money: true, placeholder: '0' })
       +        dim('other', 'Other', EXAMPLE.other, { money: true, placeholder: '0' })
       + '    </div>'
-      + '    <p class="cm-hint">Weigh the clay you use, trimmings included. Other covers stains, decals, lustre and packaging. Our example: 500 g of clay at 90p a kg, and 100 g of glaze powder at £11.30 a kg.</p>'
+      + '    <p class="cm-hint">Weigh the clay you use, trimmings included. Other covers stains, decals, lustre and packaging.<span data-uk> Our example: 500 g of clay at 90p a kg, and 100 g of glaze powder at £11.30 a kg.</span><span data-us hidden> The example figures are UK prices, so change them to yours.</span></p>'
       + '  </div>'
 
       + '  <div class="cm-group" role="group" aria-labelledby="' + f('g2') + '">'
@@ -204,7 +206,7 @@
       +        dim('glazefire', 'Glaze firing', EXAMPLE.glazefire, { money: true, placeholder: '0' })
       +        dim('extra', 'Extra firings', EXAMPLE.extra, { money: true, placeholder: '0' })
       + '    </div>'
-      + '    <p class="cm-hint">Your share of each firing. Work it out with our <a href="' + KILN_URL + '" target="_blank" rel="noopener">Kiln Firing Cost Calculator</a>: a 7 kW kiln holding 20 mugs comes to about 37p a mug for a bisque firing and 60p for a stoneware glaze firing.</p>'
+      + '    <p class="cm-hint">Your share of each firing. Work it out with our <a href="' + KILN_URL + '" target="_blank" rel="noopener">Kiln Firing Cost Calculator</a><span data-uk>: a 7 kW kiln holding 20 mugs comes to about 37p a mug for a bisque firing and 60p for a stoneware glaze firing.</span><span data-us hidden>, then divide one firing\'s cost by the number of pieces in the kiln.</span></p>'
       + '  </div>'
 
       + '  <div class="cm-group" role="group" aria-labelledby="' + f('g3') + '">'
@@ -312,7 +314,6 @@
     var cur = 'gbp';
     var vatOn = false;
     var view = 'etsy';
-    var cleared = false;
     var readerState = { gbp: { sel: 'sumup', pct: '1.69' }, usd: { sel: 'square', pct: '2.6' } };
     var srTimer;
 
@@ -400,6 +401,7 @@
         ? 'Etsy UK: a 15p listing fee ($0.20), 6.5% transaction fee, 4% + 20p payment processing and a 0.48% regulatory fee, plus 20% VAT on those fees unless Etsy has your VAT number. Shopify Payments and card readers: UK card rates. Shopify POS is the Basic plan rate.'
         : 'Etsy US: a $0.20 listing fee, 6.5% transaction fee and 3% + 25¢ payment processing. Shopify Payments and card readers: US card rates. Shopify POS is the Basic plan rate.';
       qa('[data-uk]').forEach(function (n) { n.hidden = cur !== 'gbp'; });
+      qa('[data-us]').forEach(function (n) { n.hidden = cur !== 'usd'; });
     }
     function readerPreset() {
       var id = el.reader.value;
@@ -414,7 +416,24 @@
       return parseFloat(s);
     }
 
+    function exampleState() {
+      var keys = Object.keys(EXAMPLE);
+      if (keys.every(function (k) { return el[k].value === ''; })) return 'empty';
+      if (keys.every(function (k) { return el[k].value === EXAMPLE[k]; })) return 'example';
+      return 'own';
+    }
+    function syncExample() {
+      // Only offer to clear the example while it's untouched, and to put it back while the fields are empty,
+      // so the button never wipes figures someone has typed.
+      var st = exampleState();
+      el.example.hidden = st === 'own';
+      el.example.textContent = st === 'empty' ? 'Put the example back' : 'Clear the example';
+      el['example-text'].textContent = st === 'empty' ? 'Add your own figures for one piece.'
+        : st === 'example' ? 'It opens on an example mug.' : 'Using your own figures.';
+    }
+
     function render() {
+      syncExample();
       var notes = [];
       var missing = [];
       function need(name, label, allowZero) {
@@ -429,14 +448,14 @@
         return v;
       }
 
-      var clay = need('clay', 'clay cost');
+      var clay = need('clay', 'clay cost', true);
       var glaze = optional('glaze', 'glaze');
       var other = optional('other', 'other materials');
       var bisque = optional('bisque', 'bisque');
       var glazefire = optional('glazefire', 'glaze firing');
       var extra = optional('extra', 'extra firings');
       var hours = need('hours', 'hours on this piece');
-      var rate = need('rate', 'hourly rate');
+      var rate = need('rate', 'hourly rate', true);
       var overheadPct = need('overhead', 'overhead %', true);
       var profitPct = need('profit', 'profit %', true);
       var mult = need('mult', 'retail multiplier');
@@ -450,6 +469,7 @@
         if (c[1] >= 25) notes.push(money(c[1]) + ' ' + c[2] + ' one piece is more than a whole kiln load usually costs. For ' + Math.round(c[1]) + (cur === 'gbp' ? 'p' : '¢') + ', type ' + (c[1] / 100).toFixed(2) + '.');
       });
       if (hours >= 24) notes.push(fmt(hours, hours % 1 ? 2 : 0) + ' hours is over a day on one piece. For minutes, divide by 60: 30 minutes is 0.5.');
+      if (rate === 0) notes.push('With an hourly rate of 0, these prices don\'t pay you for your time.');
       if (cur === 'gbp' && rate > 0 && rate < NLW) notes.push(money(rate) + ' an hour is below the UK National Living Wage of £12.71.');
       if (overheadPct > 100) notes.push('An overhead of ' + plain(overheadPct) + '% is more than your costs: check it.');
       if (profitPct > 0 && profitPct <= 3) notes.push('Read ' + plain(profitPct) + ' as ' + plain(profitPct) + '% profit. To double your cost, type 100.');
@@ -465,7 +485,9 @@
       el.channels.innerHTML = '';
       if (missing.length) {
         var last = missing.pop();
-        addLine(el.prices, 'Enter your ' + (missing.length ? missing.join(', ') + ' and ' : '') + last + '.', 'cm-results-empty');
+        var msg = 'Enter your ' + (missing.length ? missing.join(', ') + ' and ' : '') + last + '.';
+        addLine(el.prices, msg, 'cm-results-empty');
+        announce(msg);
         el['sell-title'].hidden = true;
         el.note.textContent = '';
         el.split.hidden = true;
@@ -502,7 +524,8 @@
       var preset = readerPreset();
       var readerPct = val('readerpct');
       var readerOk = !isNaN(readerPct) && readerPct >= 0 && readerPct < 100;
-      if (!isNaN(readerPct) && readerPct >= 100) notes.push('A card fee can\'t be 100% or more: check the card reader fee.');
+      var readerError = !isNaN(readerPct) && readerPct >= 100 ? 'A card fee can\'t be 100% or more: check the card reader fee.' : '';
+      if (readerError) notes.push(readerError);
       var readerFees = readerOk ? paid * readerPct / 100 + (preset ? preset.fixed : 0) : NaN;
       var readerName = 'Card reader' + (preset ? ' (' + preset.name + ')' : '');
 
@@ -531,7 +554,7 @@
 
       if (cur === 'gbp' && !vat) notes.push('Etsy\'s fees include the 20% VAT it adds when it doesn\'t have your VAT number.');
       if (vat) notes.push('Retail is rounded with VAT in, as shoppers see it.');
-      notes.push('Fees on postage aren\'t counted.');
+      notes.push(cur === 'gbp' ? 'Fees on postage aren\'t counted.' : 'Fees on shipping aren\'t counted.');
       el.note.textContent = notes.join(' ');
 
       // ---- where the money goes ----
@@ -550,14 +573,20 @@
         title = 'Where ' + money(paid) + ' goes ' + (view === 'reader' ? 'with a card reader' : 'on ' + c.name);
       }
       el['split-title'].textContent = title;
+      var noFee = view !== 'wholesale' && isNaN(channels[view].fees);
+      el.bar.hidden = noFee;
+      if (noFee) {
+        el['split-list'].innerHTML = '<li class="cm-split-empty"></li>';
+        el['split-list'].firstChild.textContent = isNaN(readerPct) ? 'Enter the card reader fee % to see this split.' : 'Check the card reader fee % to see this split.';
+      }
       var loss = parts.profit < 0 ? -parts.profit : 0;
       if (loss) parts.profit = 0;
       var barTotal = 0;
       PARTS.forEach(function (p) { barTotal += parts[p.key]; });
       el.bar.innerHTML = '';
-      el['split-list'].innerHTML = '';
+      if (!noFee) el['split-list'].innerHTML = '';
       var labels = [];
-      PARTS.forEach(function (p) {
+      if (!noFee) PARTS.forEach(function (p) {
         var amt = parts[p.key];
         if (p.key === 'vat' && !(vat && view !== 'wholesale')) return;
         if (p.key === 'fees' && view === 'wholesale') return;
@@ -575,13 +604,13 @@
         li.innerHTML = '<span class="cm-sw"></span><span class="cm-sl-name"></span><span class="cm-sl-amt"></span><span class="cm-sl-pct"></span>';
         li.children[0].style.background = p.key === 'profit' && loss ? 'transparent' : p.color;
         li.children[1].textContent = p.key === 'profit' && loss ? 'Loss' : p.name;
-        li.children[2].textContent = p.key === 'profit' && loss ? money(-loss) : money(amt);
+        li.children[2].textContent = p.key === 'profit' && loss ? money(loss) : money(amt);
         li.children[3].textContent = p.key === 'profit' && loss ? '' : Math.round(pct) + '%';
         el['split-list'].appendChild(li);
       });
-      el.bar.setAttribute('aria-label', title + ': ' + labels.join(', ') + (loss ? ', a loss of ' + money(loss) : ''));
+      el.bar.setAttribute('aria-label', noFee ? title : title + ': ' + labels.join(', ') + (loss ? ', a loss of ' + money(loss) : ''));
 
-      announce('Wholesale ' + money(wholesale) + ', retail ' + money(paid) + '.');
+      announce('Wholesale ' + money(wholesale) + ', retail ' + money(paid) + '.' + (readerError ? ' ' + readerError : ''));
     }
 
     // ---- events ----
@@ -636,12 +665,11 @@
     });
 
     el.example.addEventListener('click', function () {
-      cleared = !cleared;
+      var st = exampleState();
+      if (st === 'own') return;
       Object.keys(EXAMPLE).forEach(function (k) {
-        el[k].value = cleared ? '' : EXAMPLE[k];
+        el[k].value = st === 'example' ? '' : EXAMPLE[k];
       });
-      el.example.textContent = cleared ? 'Put the example back' : 'Clear the example';
-      el['example-text'].textContent = cleared ? 'Add your own figures for one piece.' : 'It opens on an example mug.';
       render();
     });
 
