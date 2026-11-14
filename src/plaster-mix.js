@@ -29,6 +29,8 @@
  *   Fine Casting Plaster (Saint-Gobain Formula, Bath Potters) 100/70, 20 min working time.
  *   Keramicast (Saint-Gobain Formula, Potclays 3451-01) 100/56, 8 min working time.
  *   Crystacal R (Saint-Gobain Formula, Bath Potters) 100/35, 15 min working time.
+ * - Typed ratios: under 1 is a fraction (0.7 = 70); 1 to 2 is kg of plaster per litre of water (1.3 = 76.9);
+ *   anything else outside 20 to 100 is refused. A space over 100 litres is refused as a likely unit slip.
  * - Extra for waste: 10% by default. That is our own allowance for plaster left in the bucket and on tools,
  *   not a maker's figure.
  */
@@ -45,11 +47,11 @@
   var WASTE = 10;          // default extra for waste, %
   var TO_CM = { mm: 0.1, cm: 1, in: 2.54 };
   var NB = '\u00a0';      // keeps "450 ml" together when the note wraps
-  var MAX_ML = 200000;     // over 200 litres (about 190 kg of plaster) is read as a unit slip, not a real pour
+  var MAX_ML = 100000;     // over 100 litres (about 95 kg of plaster): stop and ask, it's almost always a unit slip
 
   var PLASTERS = {
     potclays: { ratio: 68, name: 'Potters Plaster',
-      info: 'Potters Plaster from Potclays (3450) or Bath Potters, both 100:68. Made for slip-casting and jigger moulds. About 9 minutes to work.' },
+      info: 'Potters Plaster from Potclays (3450) or Bath Potters, both 100:68. Made for slip-casting moulds. About 9 minutes to work.' },
     valentine: { ratio: 77, name: 'Valentine Clays Potters Plaster',
       info: 'Valentine Clays Potters Plaster: their datasheet says 1.3 kg of plaster to 1 litre of water (about 100:77). Starts to set in about 9 minutes.' },
     potterycrafts: { ratio: 60, name: 'Potterycrafts Potters Plaster',
@@ -171,6 +173,7 @@
     var shape = 'box';
     var unit = 'cm';
     var srTimer;
+    var ready = false;   // no read-out for the first, untouched render
 
     function q(sel) { return root.querySelector(sel); }
     function qa(sel) { return root.querySelectorAll(sel); }
@@ -250,6 +253,14 @@
       list.innerHTML = '';
       line(text, 'cm-results-empty');
       note.textContent = '';
+      // Never let a result that was waiting to be read out follow an error: clear it, then read the error.
+      sr.textContent = '';
+      if (ready) announce(text);
+      else clearTimeout(srTimer);
+    }
+
+    function ratioText(c) {
+      return String(Math.round(c * 10) / 10);
     }
 
     function render() {
@@ -263,11 +274,15 @@
 
       var notes = [];
 
-      // Water per 100 plaster
+      // Water per 100 plaster. Under 1 is a fraction (0.7 = 70). 1 to 2 is kg of plaster per litre of water,
+      // the way some bags word it (1.3 kg to 1 litre = 100 / 1.3 = 76.9 water per 100 plaster).
       var c = num(ratio);
-      if (c < 2) {
-        notes.push('Read ' + ratio.value + ' as ' + trim(c * 100) + ' g of water per 100 g of plaster.');
+      if (c < 1) {
+        notes.push('Read ' + ratio.value + ' as ' + ratioText(c * 100) + ' g of water per 100 g of plaster.');
         c = c * 100;
+      } else if (c <= 2) {
+        c = 100 / c;
+        notes.push('Read ' + ratio.value + ' as kg of plaster per litre of water: about ' + ratioText(c) + ' g of water per 100 g of plaster.');
       }
 
       // Sizes
@@ -286,8 +301,8 @@
         stop('Enter your ' + joinAnd(missing) + '.');
         return;
       }
-      if (c < 15 || c > 200) {
-        stop('Check the water per 100 g plaster. Most plasters take between 20 and 100: it\'s on the bag or the datasheet.');
+      if (c < 20 || c > 100) {
+        stop('Check the water per 100 g plaster: it should be between 20 and 100, and it\'s on the bag or the datasheet. You can also type kg of plaster per litre of water, such as 1.3.');
         return;
       }
 
@@ -296,13 +311,14 @@
         return shape === 'box' ? cm[0] * cm[1] * cm[2] : Math.PI * (cm[0] / 2) * (cm[0] / 2) * cm[1];   // ml = cm3
       }
       var space = spaceMl(TO_CM[unit]);
-      if (unit === 'cm' && space > MAX_ML) {
-        // e.g. 140 x 140 x 120 typed in mm while cm is selected: 2,352 litres in cm, 2.35 litres in mm
-        space = spaceMl(TO_CM.mm);
-        notes.push('Read your sizes as mm (' + sizes.map(trim).join(' × ') + ' mm): in cm that space would hold over 200 litres.');
-      } else if (unit === 'in' && space > MAX_ML) {
-        notes.push('That\'s over 200 litres. Check your sizes are in inches.');
-      } else if (unit === 'mm' && space < 5) {
+      if (space > MAX_ML) {
+        // e.g. 140 x 140 x 120 typed in mm while cm is selected: 2,352 litres. Ask rather than guess.
+        var big = 'That\'s ' + fmt(Math.round(space / 1000), 0) + NB + 'litres, far more than a mould or slab needs. ';
+        stop(big + (unit === 'cm' ? 'If your sizes are in mm, switch to mm.'
+          : unit === 'in' ? 'Check your sizes are in inches, not cm or mm.' : 'Check your sizes.'));
+        return;
+      }
+      if (unit === 'mm' && space < 5) {
         notes.push('That\'s only ' + vol(space) + '. If your sizes are in cm, switch to cm.');
       }
 
@@ -344,7 +360,7 @@
         : 'Space to fill: ' + vol(space) + '.';
       notes.push(fillText);
       notes.push(w > 0 ? 'Includes ' + trim(w) + '% extra for waste.' : 'No extra for waste included.');
-      notes.push(name + ' at 100:' + trim(c) + ': each kg of plaster makes about ' + fmt(c / 100 + 1 / PLASTER_SG, 2) + ' litres of mix.');
+      notes.push(name + ' at 100:' + ratioText(c) + ': each kg of plaster makes about ' + fmt(c / 100 + 1 / PLASTER_SG, 2) + ' litres of mix.');
       note.textContent = notes.join(' ');
       announce('Mix ' + grams(dry) + ' of plaster with ' + grams(water) + ' of water.');
     }
@@ -387,6 +403,7 @@
     });
 
     render();
+    ready = true;
   }
 
   function initAll() {
