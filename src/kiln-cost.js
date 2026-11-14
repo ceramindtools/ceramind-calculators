@@ -279,8 +279,10 @@
       list.innerHTML = '';
       if (missing.length) {
         var last = missing.pop();
-        line('Enter your ' + (missing.length ? missing.join(', ') + ' and ' : '') + last + '.', 'cm-results-empty');
+        var ask = 'Enter your ' + (missing.length ? missing.join(', ') + ' and ' : '') + last + '.';
+        line(ask, 'cm-results-empty');
         note.textContent = '';
+        announce(ask);   // replaces any pending result, so a stale cost is never read out
         return;
       }
 
