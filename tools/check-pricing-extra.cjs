@@ -21,6 +21,12 @@ const { chromium } = require(PW);
   const errors = [];
   page.on("pageerror", e => errors.push(String(e)));
   await page.goto(url + (url.startsWith("http") ? (url.includes("?") ? "&" : "?") + "r=" + Date.now() : ""), { waitUntil: "load", timeout: 60000 });
+  // the store's cookie banner and chat sit over the page: accept or hide them, as check.cjs does
+  for (const label of [/accept/i, /allow all/i, /^ok$/i]) {
+    const btn = page.getByRole("button", { name: label }).first();
+    if (await btn.isVisible().catch(() => false)) { await btn.click().catch(() => {}); break; }
+  }
+  await page.addStyleTag({ content: "html{scroll-behavior:auto!important}[id*=cookie],[id*=Cookie],[class*=cookie],[class*=Cookie],cookie-banner,.mobile-dock,.jdgm-revs-tab-btn,shopify-chat{display:none!important}" });
   await page.waitForSelector(spec.root + "[data-ceramind-init=true]", { timeout: 30000 });
   const root = page.locator(spec.root).first();
   const results = [];
