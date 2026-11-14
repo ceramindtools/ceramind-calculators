@@ -11,7 +11,7 @@ Free pottery calculators for [ceramindtools.com](https://www.ceramindtools.com).
 |---|---|---|
 | Clay shrinkage | `ceramind-shrinkage-calculator-embed.js` | the original hand-made file (its look is the shared look) |
 | Cone & kiln temperature converter | `ceramind-cone-converter-embed.js` | hand-made, own look |
-| Pottery pricing | `ceramind-pricing-calculator-embed.js` | hand-made, own look |
+| Pottery pricing | `ceramind-pricing-calculator-embed.js` | `src/pricing.js` (rebuilt on the shared look, Nov 2026) |
 | Kiln firing cost | `ceramind-kiln-cost-calculator-embed.js` | `src/kiln-cost.js` |
 
 ## How it's built
