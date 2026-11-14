@@ -8,11 +8,14 @@
  *
  * Built by build.py from src/plaster-mix.js + src/base.css + src/shared.js. Edit those, then run build.py.
  *
+ * Kept simple on purpose (Gabriel, 14 Nov 2026): "what the volume is, water, plaster, weight".
+ *
  * The maths:
- *   space to fill (ml) = box L x W x depth, or round pi x (D/2)^2 x depth, less the model's volume
- *   mix to make (ml)   = space to fill x (1 + extra for waste %)
- *   plaster (g)        = mix / (C/100 + 1/2.69)      C = parts water per 100 parts plaster, by weight
- *   water (g = ml)     = plaster x C/100
+ *   volume (ml)    = box L x W x depth, or round pi x (D/2)^2 x depth
+ *   mix (ml)       = volume x 1.10                    10% extra so you don't run short
+ *   plaster (g)    = mix / (C/100 + 1/2.69)           C = parts water per 100 parts plaster, by weight
+ *   water (g = ml) = plaster x C/100
+ *   total weight   = plaster + water
  *
  * Numbers used:
  * - 2.69 g per ml: how much room the plaster powder itself takes up once it is wet. Worked back from USG's
@@ -23,16 +26,17 @@
  *   Cross-check: Derek Au (plaster.glazy.org) poured 15 kg No. 1 Pottery Plaster + 10.5 kg water and measured
  *   15,860 cm3, i.e. 1.057 litres per kg. This formula gives 1.072 litres per kg at 70, 1.4% more.
  * - Ratios (water per 100 plaster, by weight), from each maker's or seller's own page or datasheet:
- *   Potters Plaster (Saint-Gobain Formula, Potclays 3450 and Bath Potters) 100/68, 9 min working time.
+ *   Potters Plaster (Saint-Gobain Formula, Potclays 3450 and Bath Potters) 100/68.
  *   Valentine Clays Potters Plaster: 1.3 kg plaster to 1 litre water (100:76.9, rounded to 77).
- *   Potterycrafts Potters Plaster P3335: 940 g plaster to 565 cc water (100:60.1, rounded to 60).
- *   Fine Casting Plaster (Saint-Gobain Formula, Bath Potters) 100/70, 20 min working time.
- *   Keramicast (Saint-Gobain Formula, Potclays 3451-01) 100/56, 8 min working time.
- *   Crystacal R (Saint-Gobain Formula, Bath Potters) 100/35, 15 min working time.
- * - Typed ratios: under 1 is a fraction (0.7 = 70); 1 to 2 is kg of plaster per litre of water (1.3 = 76.9);
- *   anything else outside 20 to 100 is refused. A space over 100 litres is refused as a likely unit slip.
- * - Extra for waste: 10% by default. That is our own allowance for plaster left in the bucket and on tools,
- *   not a maker's figure.
+ *   Potterycrafts Potters Plaster P3335: 940 g plaster to 565 ml water (100:60.1, rounded to 60). UNVERIFIED:
+ *   seen only in search extracts of their page, so it has no link.
+ *   Fine Casting Plaster (Saint-Gobain Formula, Bath Potters) 100/70.
+ *   Keramicast (Saint-Gobain Formula, Potclays 3451-01) 100/56.
+ *   Crystacal R (Saint-Gobain Formula, Bath Potters) 100/35.
+ * - Typed ratios ("My own ratio"): under 1 is a fraction (0.7 = 70); 1 to 2 is kg of plaster per litre of water
+ *   (1.3 = 76.9); anything else outside 20 to 100 is refused. A space over 100 litres is refused as a unit slip.
+ * - 10% extra: our own allowance for plaster left in the bucket and on tools, not a maker's figure.
+ * Full list with quotes: Ceramind Tools/Website/Calculators/Plaster Mix/sources.md
  */
 (function () {
   var TARGET_CLASS = 'ceramind-plaster-mix-calculator';
@@ -44,26 +48,27 @@
 /*@SHARED_JS@*/
 
   var PLASTER_SG = 2.69;   // g per ml of the plaster powder once wet (from USG's wet density, see above)
-  var WASTE = 10;          // default extra for waste, %
-  var TO_CM = { mm: 0.1, cm: 1, in: 2.54 };
-  var NB = '\u00a0';      // keeps "450 ml" together when the note wraps
+  var EXTRA = 10;          // % extra so you don't run short
+  var TO_CM = { cm: 1, in: 2.54 };
+  var NB = ' ';       // keeps "2.35 litres" together when a line wraps
   var MAX_ML = 100000;     // over 100 litres (about 95 kg of plaster): stop and ask, it's almost always a unit slip
 
+  var USG = 'https://www.theceramicshop.com/technical_info/Plaster/No1PotteryPlaster-DataSheet.pdf';
+  var POTCLAYS = 'https://www.potclays.co.uk/potters-plaster';
+  // Each preset: water per 100 plaster, and the short line under the menu that names (and links) its source.
   var PLASTERS = {
-    potclays: { ratio: 68, name: 'Potters Plaster',
-      info: 'Potters Plaster from Potclays (3450) or Bath Potters, both 100:68. Made for slip-casting moulds. About 9 minutes to work.' },
-    valentine: { ratio: 77, name: 'Valentine Clays Potters Plaster',
-      info: 'Valentine Clays Potters Plaster: their datasheet says 1.3 kg of plaster to 1 litre of water (about 100:77). Starts to set in about 9 minutes.' },
-    potterycrafts: { ratio: 60, name: 'Potterycrafts Potters Plaster',
-      info: 'Potterycrafts Potters Plaster (P3335): their mix is 940 g of plaster to 565 ml of water (about 100:60).' },
-    finecast: { ratio: 70, name: 'Fine Casting Plaster',
-      info: 'Fine Casting Plaster from Saint-Gobain Formula, sold by Bath Potters and others. About 20 minutes to work.' },
-    keramicast: { ratio: 56, name: 'Keramicast',
-      info: 'Keramicast from Potclays (3451-01), a harder, denser mould plaster. About 8 minutes to work.' },
-    crystacal: { ratio: 35, name: 'Crystacal R',
-      info: 'Crystacal R, a very hard Saint-Gobain Formula plaster for detailed casts and models. With so little water it sets far less absorbent than potters plaster. About 15 minutes to work.' }
+    potclays: { ratio: 68, before: 'Potters Plaster at 100:68, as listed by ', link: 'Potclays', url: POTCLAYS, after: '.' },
+    valentine: { ratio: 77, before: 'Potters Plaster at 1.3 kg to 1 litre of water (about 100:77), from the ', link: 'Valentine Clays datasheet',
+      url: 'https://valentineclays.co.uk/cdn/shop/files/Potters_Plaster_Technical_Data_Sheet.pdf', after: '.' },
+    potterycrafts: { ratio: 60, before: 'Potters Plaster at 940 g to 565 ml of water (about 100:60), as given by Potterycrafts.' },
+    finecast: { ratio: 70, before: 'Fine Casting Plaster at 100:70, as listed by ', link: 'Bath Potters',
+      url: 'https://bathpotters.co.uk/fine-casting-plaster/p1184', after: '.' },
+    keramicast: { ratio: 56, before: 'Keramicast at 100:56, as listed by ', link: 'Potclays',
+      url: 'https://www.potclays.co.uk/keramicast-high-density-plaster', after: '.' },
+    crystacal: { ratio: 35, before: 'Crystacal R, a hard plaster for detailed casts, at 100:35, as listed by ', link: 'Bath Potters',
+      url: 'https://bathpotters.co.uk/crystacal-r-plaster/p1012', after: '.' },
+    own: { before: 'Use the water per 100 g plaster from your bag or its datasheet.' }
   };
-  var OWN_INFO = 'Type the water per 100 g of plaster from your bag or its datasheet.';
 
   var CSS = ''
     + '.cm-calc .cm-plaster-info { margin-top: -0.45rem; }'
@@ -76,10 +81,10 @@
     return ''
       + '<div class="cm-card">'
       + '  <h3 class="cm-title">Plaster Mix Calculator</h3>'
-      + '  <p class="cm-sub">Work out how much plaster and water to mix for a mould, a drying bat or a wedging slab.</p>'
+      + '  <p class="cm-sub">Work out the water and plaster to mix for a mould, a drying bat or a wedging slab.</p>'
       + '  <div class="cm-mode-toggle" role="group" aria-label="Shape of the space to fill">'
       + '    <button type="button" class="cm-mode-btn is-active" data-shape="box" aria-pressed="true">Box or slab</button>'
-      + '    <button type="button" class="cm-mode-btn" data-shape="round" aria-pressed="false">Round (cylinder)</button>'
+      + '    <button type="button" class="cm-mode-btn" data-shape="round" aria-pressed="false">Round</button>'
       + '  </div>'
       + '  <div class="cm-row">'
       + '    <label class="cm-label" for="' + f('plaster') + '">Plaster</label>'
@@ -98,14 +103,13 @@
       + '    </select>'
       + '  </div>'
       + '  <p class="cm-hint cm-plaster-info" data-role="info"></p>'
-      + '  <div class="cm-row">'
+      + '  <div class="cm-row" data-own hidden>'
       + '    <label class="cm-label" for="' + f('ratio') + '">Water per 100 g plaster</label>'
       + '    <input type="number" id="' + f('ratio') + '" data-role="ratio" min="0" step="1" value="68" inputmode="decimal">'
       + '  </div>'
       + '  <div class="cm-row">'
       + '    <span class="cm-label">Units</span>'
       + '    <div class="cm-unit-toggle" role="group" aria-label="Units">'
-      + '      <button type="button" class="cm-unit-btn" data-unit="mm" aria-pressed="false">mm</button>'
       + '      <button type="button" class="cm-unit-btn is-active" data-unit="cm" aria-pressed="true">cm</button>'
       + '      <button type="button" class="cm-unit-btn" data-unit="in" aria-pressed="false">in</button>'
       + '    </div>'
@@ -124,26 +128,18 @@
       + '      <input type="number" class="cm-dim-input" id="' + f('dia') + '" data-role="dia" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 14">'
       + '    </div>'
       + '    <div class="cm-dim">'
-      + '      <label class="cm-dim-label" for="' + f('dep') + '" data-unit-label="Plaster depth">Plaster depth (cm)</label>'
+      + '      <label class="cm-dim-label" for="' + f('dep') + '" data-unit-label="Depth">Depth (cm)</label>'
       + '      <input type="number" class="cm-dim-input" id="' + f('dep') + '" data-role="dep" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 12">'
       + '    </div>'
-      + '    <div class="cm-dim">'
-      + '      <label class="cm-dim-label" for="' + f('model') + '">Model volume (ml)</label>'
-      + '      <input type="number" class="cm-dim-input" id="' + f('model') + '" data-role="model" min="0" step="1" inputmode="decimal" placeholder="optional">'
-      + '    </div>'
-      + '    <div class="cm-dim">'
-      + '      <label class="cm-dim-label" for="' + f('waste') + '">Extra for waste (%)</label>'
-      + '      <input type="number" class="cm-dim-input" id="' + f('waste') + '" data-role="waste" min="0" max="100" step="1" value="' + WASTE + '" inputmode="decimal">'
-      + '    </div>'
       + '  </div>'
-      + '  <p class="cm-hint">Measure inside the mould box or cottle, and how deep the plaster will go. To find a model\'s volume, lower it into a measuring jug of water until it\'s just covered: the rise in ml is its volume.</p>'
+      + '  <p class="cm-hint">Measure inside your mould box or cottle, and how deep the plaster will go.</p>'
       + '  <div class="cm-results">'
-      + '    <p class="cm-results-title">Mix this:</p>'
+      + '    <p class="cm-results-title">To fill this space:</p>'
       + '    <ul class="cm-results-list"></ul>'
       + '    <p class="cm-results-note" data-role="note"></p>'
       + '  </div>'
       + '  <p class="cm-sr" aria-live="polite" aria-atomic="true" data-role="sr"></p>'
-      + '  <p class="cm-disclaimer">This is a guide to help you plan a pour, not a guarantee. Plasters vary, so check the ratio on your own bag or datasheet and weigh both the plaster and the water. Ceramind Tools can\'t accept responsibility for decisions based on these results.</p>'
+      + '  <p class="cm-disclaimer">A guide to help you plan a pour, not a guarantee. Plasters vary, so check the ratio on your own bag and weigh the plaster and water. Ceramind Tools can\'t accept responsibility for decisions based on these results.</p>'
       + '  <p class="cm-credit">Powered by <a href="https://www.ceramindtools.com" target="_blank" rel="noopener">Ceramind® Tools</a></p>'
       + '</div>';
   }
@@ -160,6 +156,21 @@
       own.id = STYLE_ID;
       own.textContent = CSS;
       document.head.appendChild(own);
+    }
+  }
+
+  // Fill an element with plain text and, optionally, one source link (built as DOM, never as HTML).
+  function textWithLink(el, before, linkText, url, after) {
+    el.textContent = '';
+    el.appendChild(document.createTextNode(before));
+    if (linkText) {
+      var a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = linkText;
+      el.appendChild(a);
+      el.appendChild(document.createTextNode(after || ''));
     }
   }
 
@@ -184,8 +195,6 @@
     var wid = q('[data-role="wid"]');
     var dia = q('[data-role="dia"]');
     var dep = q('[data-role="dep"]');
-    var model = q('[data-role="model"]');
-    var waste = q('[data-role="waste"]');
     var list = q('.cm-results-list');
     var note = q('[data-role="note"]');
     var sr = q('[data-role="sr"]');
@@ -199,9 +208,15 @@
       return n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp });
     }
 
-    function trim(n) {
-      // 68 -> "68", 76.9 -> "76.9", up to 2 decimals
-      return String(Math.round(n * 100) / 100);
+    function ratioText(c) {
+      return String(Math.round(c * 10) / 10);
+    }
+
+    function vol(ml) {
+      if (ml < 0.5) return 'under 1' + NB + 'ml';
+      if (Math.round(ml) < 1000) return fmt(Math.round(ml), 0) + NB + 'ml';
+      if (ml < 9995) return fmt(ml / 1000, 2) + NB + 'litres';
+      return fmt(ml / 1000, 1) + NB + 'litres';
     }
 
     function grams(g) {
@@ -211,17 +226,15 @@
     }
 
     function waterText(g) {
-      // water: 1 g = 1 ml
-      if (g < 1) return 'under 1' + NB + 'g (under 1' + NB + 'ml)';
-      if (Math.round(g) < 10000) return fmt(Math.round(g), 0) + NB + 'g (' + fmt(Math.round(g), 0) + NB + 'ml)';
-      return fmt(g / 1000, 1) + NB + 'kg (' + fmt(g / 1000, 1) + NB + 'litres)';
+      // 1 ml of water weighs 1 g
+      if (g < 1) return 'under 1' + NB + 'ml';
+      if (Math.round(g) < 10000) return fmt(Math.round(g), 0) + NB + 'ml (' + fmt(Math.round(g), 0) + NB + 'g)';
+      return fmt(g / 1000, 1) + NB + 'litres (' + fmt(g / 1000, 1) + NB + 'kg)';
     }
 
-    function vol(ml) {
-      if (ml < 0.5) return 'under 1' + NB + 'ml';
-      if (Math.round(ml) < 1000) return fmt(Math.round(ml), 0) + NB + 'ml';
-      if (ml < 9995) return fmt(ml / 1000, 2) + NB + 'litres';
-      return fmt(ml / 1000, 1) + NB + 'litres';
+    function kg(g) {
+      if (g < 5) return 'under 0.01' + NB + 'kg';
+      return fmt(g / 1000, g < 9995 ? 2 : 1) + NB + 'kg';
     }
 
     function joinAnd(items) {
@@ -259,42 +272,41 @@
       else clearTimeout(srTimer);
     }
 
-    function ratioText(c) {
-      return String(Math.round(c * 10) / 10);
-    }
-
     function render() {
       qa('[data-box]').forEach(function (el) { el.hidden = shape !== 'box'; });
       qa('[data-round]').forEach(function (el) { el.hidden = shape !== 'round'; });
+      qa('[data-own]').forEach(function (el) { el.hidden = plaster.value !== 'own'; });
       qa('[data-unit-label]').forEach(function (el) {
         el.textContent = el.getAttribute('data-unit-label') + ' (' + unit + ')';
       });
       var preset = PLASTERS[plaster.value];
-      info.textContent = preset ? preset.info : OWN_INFO;
+      textWithLink(info, preset.before, preset.link, preset.url, preset.after);
 
       var notes = [];
 
-      // Water per 100 plaster. Under 1 is a fraction (0.7 = 70). 1 to 2 is kg of plaster per litre of water,
-      // the way some bags word it (1.3 kg to 1 litre = 100 / 1.3 = 76.9 water per 100 plaster).
-      var c = num(ratio);
-      if (c < 1) {
-        notes.push('Read ' + ratio.value + ' as ' + ratioText(c * 100) + ' g of water per 100 g of plaster.');
-        c = c * 100;
-      } else if (c <= 2) {
-        c = 100 / c;
-        notes.push('Read ' + ratio.value + ' as kg of plaster per litre of water: about ' + ratioText(c) + ' g of water per 100 g of plaster.');
+      // Water per 100 plaster. Presets use their own figure; "My own ratio" reads what was typed.
+      // Under 1 is a fraction (0.7 = 70). 1 to 2 is kg of plaster per litre of water (1.3 = 100 / 1.3 = 76.9).
+      var c = preset.ratio || num(ratio);
+      if (!preset.ratio) {
+        if (c < 1) {
+          notes.push('Read ' + ratio.value + ' as ' + ratioText(c * 100) + '.');
+          c = c * 100;
+        } else if (c <= 2) {
+          c = 100 / c;
+          notes.push('Read ' + ratio.value + ' as kg of plaster per litre of water (about ' + ratioText(c) + ').');
+        }
       }
 
       // Sizes
       var fields = shape === 'box'
-        ? [[len, 'length'], [wid, 'width'], [dep, 'plaster depth']]
-        : [[dia, 'diameter'], [dep, 'plaster depth']];
+        ? [[len, 'length'], [wid, 'width'], [dep, 'depth']]
+        : [[dia, 'diameter'], [dep, 'depth']];
       var missing = [];
       var sizes = [];
       fields.forEach(function (fd) {
         var v = num(fd[0]);
         if (isNaN(v)) missing.push(fd[1]);
-        sizes.push(v);
+        sizes.push(v * TO_CM[unit]);
       });
       if (isNaN(c)) missing.push('water per 100 g plaster');
       if (missing.length) {
@@ -302,67 +314,32 @@
         return;
       }
       if (c < 20 || c > 100) {
-        stop('Check the water per 100 g plaster: it should be between 20 and 100, and it\'s on the bag or the datasheet. You can also type kg of plaster per litre of water, such as 1.3.');
+        stop('Water per 100 g plaster should be 20 to 100. It\'s on the bag.');
         return;
       }
 
-      function spaceMl(toCm) {
-        var cm = sizes.map(function (s) { return s * toCm; });
-        return shape === 'box' ? cm[0] * cm[1] * cm[2] : Math.PI * (cm[0] / 2) * (cm[0] / 2) * cm[1];   // ml = cm3
-      }
-      var space = spaceMl(TO_CM[unit]);
+      var space = shape === 'box' ? sizes[0] * sizes[1] * sizes[2] : Math.PI * (sizes[0] / 2) * (sizes[0] / 2) * sizes[1];   // ml = cm3
       if (space > MAX_ML) {
-        // e.g. 140 x 140 x 120 typed in mm while cm is selected: 2,352 litres. Ask rather than guess.
-        var big = 'That\'s ' + fmt(Math.round(space / 1000), 0) + NB + 'litres, far more than a mould or slab needs. ';
-        stop(big + (unit === 'cm' ? 'If your sizes are in mm, switch to mm.'
-          : unit === 'in' ? 'Check your sizes are in inches, not cm or mm.' : 'Check your sizes.'));
-        return;
-      }
-      if (unit === 'mm' && space < 5) {
-        notes.push('That\'s only ' + vol(space) + '. If your sizes are in cm, switch to cm.');
-      }
-
-      // Model
-      var m = num(model);
-      if (m < 1) {
-        notes.push('Read ' + model.value + ' as litres: ' + vol(m * 1000) + '.');
-        m = m * 1000;
-      }
-      if (isNaN(m)) m = 0;
-      if (m >= space) {
-        stop('The model (' + vol(m) + ') is as big as the space to fill (' + vol(space) + '). Check the model volume and your sizes.');
+        // e.g. 140 x 140 x 120 measured in mm but typed with cm selected: 2,352 litres. Ask rather than guess.
+        stop('That\'s ' + fmt(Math.round(space / 1000), 0) + NB + 'litres. '
+          + (unit === 'cm' ? 'If you measured in mm, enter cm instead.' : 'Check your sizes are in inches.'));
         return;
       }
 
-      // Extra for waste
-      var w = parseFloat(waste.value);
-      if (isNaN(w) || w <= 0) {
-        if (w < 0) notes.push('Extra for waste can\'t be negative, so none is added.');
-        w = 0;
-      } else if (w > 100) {
-        notes.push('Extra for waste is capped at 100%.');
-        w = 100;
-      }
-
-      var fill = space - m;
-      var mix = fill * (1 + w / 100);
+      var mix = space * (1 + EXTRA / 100);
       var dry = mix / (c / 100 + 1 / PLASTER_SG);
       var water = dry * c / 100;
 
       list.innerHTML = '';
-      line('Plaster: ' + grams(dry));
+      line('Volume: ' + vol(space));
       line('Water: ' + waterText(water));
-      line('Makes: ' + vol(mix) + ' of mix');
+      line('Plaster: ' + grams(dry));
+      line('Total weight: ' + kg(dry + water));
 
-      var name = preset && Math.abs(preset.ratio - c) < 1e-9 ? preset.name : 'Your plaster';
-      var fillText = m > 0
-        ? 'Space to fill: ' + vol(space) + ' less the ' + vol(m) + ' model = ' + vol(fill) + '.'
-        : 'Space to fill: ' + vol(space) + '.';
-      notes.push(fillText);
-      notes.push(w > 0 ? 'Includes ' + trim(w) + '% extra for waste.' : 'No extra for waste included.');
-      notes.push(name + ' at 100:' + ratioText(c) + ': each kg of plaster makes about ' + fmt(c / 100 + 1 / PLASTER_SG, 2) + ' litres of mix.');
-      note.textContent = notes.join(' ');
-      announce('Mix ' + grams(dry) + ' of plaster with ' + grams(water) + ' of water.');
+      notes.push('Includes ' + EXTRA + '% extra so you don\'t run short. Based on ');
+      textWithLink(note, notes.join(' '), 'USG plaster data', USG, '.');
+      announce('To fill ' + vol(space) + ': ' + waterText(water).replace(/ \(.*\)/, '') + ' of water and '
+        + grams(dry) + ' of plaster, ' + kg(dry + water) + ' in all.');
     }
 
     qa('[data-shape]').forEach(function (btn) {
@@ -386,19 +363,13 @@
     });
 
     plaster.addEventListener('change', function () {
+      // Picking "My own ratio" starts from the last preset's figure, so the box is never empty.
       var preset = PLASTERS[plaster.value];
-      if (preset) ratio.value = preset.ratio;
+      if (preset.ratio) ratio.value = preset.ratio;
       render();
     });
 
-    ratio.addEventListener('input', function () {
-      var v = parseFloat(ratio.value);
-      var match = 'own';
-      Object.keys(PLASTERS).forEach(function (k) { if (PLASTERS[k].ratio === v) match = k; });
-      plaster.value = match;
-    });
-
-    [ratio, len, wid, dia, dep, model, waste].forEach(function (el) {
+    [ratio, len, wid, dia, dep].forEach(function (el) {
       el.addEventListener('input', render);
     });
 
