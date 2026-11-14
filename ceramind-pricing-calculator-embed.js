@@ -39,9 +39,31 @@
   var TARGET_CLASS = 'ceramind-pricing-calculator';
   var BASE_ID = 'ceramind-calc-base-v1';
   var STYLE_ID = 'ceramind-pricing-style';
-  var BASE_CSS = ".cm-calc,.cm-calc *{box-sizing: border-box;}.cm-calc{--cm-ink: #171717;--cm-brand: #473728;--cm-brand-soft: #4a4642;--cm-accent: #a4886e;--cm-sand: #d2c1b4;--cm-tint: #ffffff;--cm-bg: #e3e0df;--cm-card: #efedeb;--cm-border: #d9d4d0;--cm-field: #8f857c;font-family: inherit;color: var(--cm-ink);max-width: 480px;margin: 2rem auto;text-align: left;}.cm-calc [hidden]{display: none !important;}.cm-calc .cm-card{background: var(--cm-card);border: 1px solid var(--cm-border);border-radius: 14px;padding: 1.75rem;box-shadow: 0 1px 2px rgba(71,55,40,0.06),0 8px 24px rgba(71,55,40,0.06);}.cm-calc .cm-title{margin: 0 0 0.35rem;font-size: 1.35rem;font-weight: 700;color: var(--cm-brand);line-height: 1.2;}.cm-calc .cm-sub{margin: 0 0 1.25rem;font-size: 0.9rem;color: var(--cm-brand-soft);line-height: 1.45;}.cm-calc .cm-mode-toggle{display: flex;gap: 0.4rem;margin-bottom: 1.1rem;flex-wrap: wrap;}.cm-calc .cm-mode-btn{flex: 1 1 auto;min-width: 140px;padding: 0.55rem 0.7rem;font-size: 0.82rem;font-weight: 600;font-family: inherit;line-height: 1.3;border-radius: 999px;border: 1px solid var(--cm-field);background: transparent;color: var(--cm-brand-soft);cursor: pointer;transition: background 0.15s ease,color 0.15s ease,border-color 0.15s ease;}.cm-calc .cm-mode-btn.is-active{background: var(--cm-brand);border-color: var(--cm-brand);color: #fff;}.cm-calc a:focus-visible,.cm-calc .cm-mode-btn:focus-visible,.cm-calc .cm-unit-btn:focus-visible,.cm-calc select:focus-visible,.cm-calc input:focus-visible{outline: 2px solid var(--cm-brand);outline-offset: 2px;}.cm-calc .cm-row{display: flex;align-items: center;justify-content: space-between;gap: 1rem;margin-bottom: 0.85rem;}.cm-calc .cm-label{font-size: 0.85rem;font-weight: 600;color: var(--cm-brand);flex: 0 0 auto;}.cm-calc select,.cm-calc input[type=\"number\"]{font: inherit;font-size: 0.9rem;padding: 0.5rem 0.65rem;border-radius: 8px;border: 1px solid var(--cm-field);background: #fff;color: var(--cm-ink);max-width: 220px;width: 100%;margin: 0;min-height: 0;height: auto;}.cm-calc .cm-unit-toggle{display: flex;gap: 0.3rem;}.cm-calc .cm-unit-btn{padding: 0.4rem 0.85rem;font-size: 0.82rem;font-weight: 600;font-family: inherit;line-height: 1.3;border-radius: 8px;border: 1px solid var(--cm-field);background: transparent;color: var(--cm-brand-soft);cursor: pointer;}.cm-calc .cm-unit-btn.is-active{background: var(--cm-tint);border-color: var(--cm-brand);box-shadow: inset 0 0 0 1px var(--cm-brand);color: var(--cm-brand);}.cm-calc .cm-dims{display: grid;grid-template-columns: repeat(auto-fit,minmax(120px,1fr));gap: 0.75rem;margin: 1rem 0 1.25rem;}.cm-calc .cm-dim-label{display: block;font-size: 0.78rem;font-weight: 600;color: var(--cm-brand-soft);margin-bottom: 0.3rem;}.cm-calc .cm-dims input[type=\"number\"],.cm-calc .cm-dim-input{width: 100%;max-width: none;}.cm-calc .cm-visual{display: flex;align-items: center;gap: 1rem;background: var(--cm-bg);border-radius: 10px;padding: 0.9rem 1rem;margin-bottom: 1.1rem;}.cm-calc .cm-svg{width: 76px;height: 76px;flex: 0 0 auto;}.cm-calc .cm-visual-pct{margin: 0;font-size: 1.05rem;font-weight: 700;color: var(--cm-brand);line-height: 1.3;}.cm-calc .cm-visual-legend{margin: 0.3rem 0 0;font-size: 0.75rem;color: var(--cm-brand-soft);}.cm-calc .cm-visual-note{margin: 0.25rem 0 0;font-size: 0.68rem;font-style: italic;color: var(--cm-brand-soft);line-height: 1.4;}.cm-calc .cm-dot{display: inline-block;width: 9px;height: 9px;border-radius: 50%;margin-right: 0.3rem;vertical-align: middle;}.cm-calc .cm-dot-wet{border: 1.5px dashed var(--cm-brand-soft);}.cm-calc .cm-dot-fired{background: var(--cm-brand);}.cm-calc .cm-results{background: var(--cm-brand);color: #fff;border-radius: 10px;padding: 1rem 1.1rem;margin-bottom: 1.1rem;}.cm-calc .cm-results-title{margin: 0 0 0.5rem;font-size: 0.78rem;font-weight: 700;text-transform: uppercase;letter-spacing: 0.06em;opacity: 0.85;}.cm-calc .cm-results-list{margin: 0;padding: 0;list-style: none;display: flex;flex-direction: column;gap: 0.35rem;font-size: 1rem;font-weight: 600;}.cm-calc .cm-results-list li{margin: 0;padding: 0;color: #fff;}.cm-calc .cm-results-list li::before,.cm-calc .cm-results-list li::marker{content: none;}.cm-calc .cm-results-empty{font-size: 0.85rem;font-weight: 400;opacity: 0.75;}.cm-calc .cm-results-note{margin: 0.6rem 0 0;font-size: 0.75rem;font-weight: 400;opacity: 0.8;line-height: 1.4;color: #fff;}.cm-calc .cm-disclaimer{margin: 0 0 0.6rem;text-align: center;font-size: 0.7rem;line-height: 1.45;color: var(--cm-brand-soft);}.cm-calc .cm-credit{margin: 0;text-align: center;font-size: 0.72rem;color: var(--cm-brand-soft);}.cm-calc .cm-credit a{color: var(--cm-brand);font-weight: 600;text-decoration: none;}.cm-calc .cm-credit a:hover,.cm-calc .cm-credit a:focus-visible{text-decoration: underline;}@media (prefers-reduced-motion: reduce){.cm-calc *{transition: none !important;}}.cm-calc.cm-embed{max-width: none;margin: 0.75rem 0 1.5rem;}.cm-calc .cm-code-box{display: flex;align-items: center;gap: 0.9rem;background: var(--cm-card);border: 1px solid var(--cm-border);border-radius: 10px;padding: 0.9rem 1rem;}.cm-calc pre.cm-code{margin: 0;padding: 0;flex: 1 1 auto;min-width: 0;background: transparent;border: 0;font-family: ui-monospace,\"SF Mono\",Menlo,Consolas,monospace;font-size: 0.78rem;line-height: 1.55;color: var(--cm-ink);white-space: pre-wrap;word-break: normal;overflow-wrap: anywhere;}.cm-calc .cm-copy-btn{flex: 0 0 auto;padding: 0.55rem 1rem;font-family: inherit;font-size: 0.82rem;font-weight: 600;line-height: 1.3;border-radius: 999px;border: 1px solid var(--cm-brand);background: var(--cm-brand);color: #fff;cursor: pointer;transition: background 0.15s ease,color 0.15s ease;}.cm-calc .cm-copy-btn.is-done{background: #fff;color: var(--cm-brand);}.cm-calc .cm-copy-btn:focus-visible{outline: 2px solid var(--cm-brand);outline-offset: 2px;}.cm-calc .cm-hint{margin: -0.6rem 0 1.1rem;font-size: 0.75rem;line-height: 1.45;color: var(--cm-brand-soft);}.cm-calc .cm-sr{position: absolute !important;width: 1px;height: 1px;margin: -1px;padding: 0;overflow: hidden;clip: rect(0 0 0 0);white-space: nowrap;border: 0;}.cm-calc .cm-key{white-space: nowrap;margin-right: 0.6rem;}@media (max-width: 480px){.cm-calc .cm-card{padding: 1.4rem 1.25rem;}.cm-calc .cm-code-box{flex-direction: column;align-items: stretch;}.cm-calc .cm-row{display: grid;grid-template-columns: minmax(0,1fr);gap: 0.35rem;margin-bottom: 1rem;}.cm-calc .cm-row>select,.cm-calc .cm-row>input{max-width: none;}.cm-calc .cm-row>.cm-unit-toggle{justify-self: start;}}";
+  var BASE_CSS = ".cm-calc,.cm-calc *{box-sizing: border-box;}.cm-calc{--cm-ink: #171717;--cm-brand: #473728;--cm-brand-soft: #4a4642;--cm-accent: #a4886e;--cm-sand: #d2c1b4;--cm-tint: #ffffff;--cm-bg: #e3e0df;--cm-card: #efedeb;--cm-border: #d9d4d0;--cm-field: #8f857c;font-family: inherit;color: var(--cm-ink);max-width: 480px;margin: 2rem auto;text-align: left;}.cm-calc [hidden]{display: none !important;}.cm-calc .cm-card{background: var(--cm-card);border: 1px solid var(--cm-border);border-radius: 14px;padding: 1.75rem;box-shadow: 0 1px 2px rgba(71,55,40,0.06),0 8px 24px rgba(71,55,40,0.06);}.cm-calc .cm-title{margin: 0 0 0.35rem;font-size: 1.35rem;font-weight: 700;color: var(--cm-brand);line-height: 1.2;}.cm-calc .cm-sub{margin: 0 0 1.25rem;font-size: 0.9rem;color: var(--cm-brand-soft);line-height: 1.45;}.cm-calc .cm-mode-toggle{display: flex;gap: 0.4rem;margin-bottom: 1.1rem;flex-wrap: wrap;}.cm-calc .cm-mode-btn{flex: 1 1 auto;min-width: 140px;padding: 0.55rem 0.7rem;font-size: 0.82rem;font-weight: 600;font-family: inherit;line-height: 1.3;border-radius: 999px;border: 1px solid var(--cm-field);background: transparent;color: var(--cm-brand-soft);cursor: pointer;transition: background 0.15s ease,color 0.15s ease,border-color 0.15s ease;}.cm-calc .cm-mode-btn.is-active{background: var(--cm-brand);border-color: var(--cm-brand);color: #fff;}.cm-calc a:focus-visible,.cm-calc .cm-mode-btn:focus-visible,.cm-calc .cm-unit-btn:focus-visible,.cm-calc select:focus-visible,.cm-calc input:focus-visible{outline: 2px solid var(--cm-brand);outline-offset: 2px;}.cm-calc .cm-row{display: flex;align-items: center;justify-content: space-between;gap: 1rem;margin-bottom: 0.85rem;}.cm-calc .cm-label{font-size: 0.85rem;font-weight: 600;color: var(--cm-brand);flex: 0 0 auto;}.cm-calc select,.cm-calc input[type=\"number\"]{font: inherit;font-size: 0.9rem;padding: 0.5rem 0.65rem;border-radius: 8px;border: 1px solid var(--cm-field);background: #fff;color: var(--cm-ink);max-width: 220px;width: 100%;margin: 0;min-height: 0;height: auto;}.cm-calc .cm-unit-toggle{display: flex;gap: 0.3rem;}.cm-calc .cm-unit-btn{padding: 0.4rem 0.85rem;font-size: 0.82rem;font-weight: 600;font-family: inherit;line-height: 1.3;border-radius: 8px;border: 1px solid var(--cm-field);background: transparent;color: var(--cm-brand-soft);cursor: pointer;}.cm-calc .cm-unit-btn.is-active{background: var(--cm-tint);border-color: var(--cm-brand);box-shadow: inset 0 0 0 1px var(--cm-brand);color: var(--cm-brand);}.cm-calc .cm-dims{display: grid;grid-template-columns: repeat(auto-fit,minmax(120px,1fr));gap: 0.75rem;margin: 1rem 0 1.25rem;}.cm-calc .cm-dim-label{display: block;font-size: 0.78rem;font-weight: 600;color: var(--cm-brand-soft);margin-bottom: 0.3rem;}.cm-calc .cm-dims input[type=\"number\"],.cm-calc .cm-dim-input{width: 100%;max-width: none;}.cm-calc .cm-visual{display: flex;align-items: center;gap: 1rem;background: var(--cm-bg);border-radius: 10px;padding: 0.9rem 1rem;margin-bottom: 1.1rem;}.cm-calc .cm-svg{width: 76px;height: 76px;flex: 0 0 auto;}.cm-calc .cm-visual-pct{margin: 0;font-size: 1.05rem;font-weight: 700;color: var(--cm-brand);line-height: 1.3;}.cm-calc .cm-visual-legend{margin: 0.3rem 0 0;font-size: 0.75rem;color: var(--cm-brand-soft);}.cm-calc .cm-visual-note{margin: 0.25rem 0 0;font-size: 0.68rem;font-style: italic;color: var(--cm-brand-soft);line-height: 1.4;}.cm-calc .cm-dot{display: inline-block;width: 9px;height: 9px;border-radius: 50%;margin-right: 0.3rem;vertical-align: middle;}.cm-calc .cm-dot-wet{border: 1.5px dashed var(--cm-brand-soft);}.cm-calc .cm-dot-fired{background: var(--cm-brand);}.cm-calc .cm-results{background: var(--cm-brand);color: #fff;border-radius: 10px;padding: 1rem 1.1rem;margin-bottom: 1.1rem;}.cm-calc .cm-results-title{margin: 0 0 0.5rem;font-size: 0.78rem;font-weight: 700;text-transform: uppercase;letter-spacing: 0.06em;opacity: 0.85;}.cm-calc .cm-results-list{margin: 0;padding: 0;list-style: none;display: flex;flex-direction: column;gap: 0.35rem;font-size: 1rem;font-weight: 600;}.cm-calc .cm-results-list li{margin: 0;padding: 0;color: #fff;}.cm-calc .cm-results-list li::before,.cm-calc .cm-results-list li::marker{content: none;}.cm-calc .cm-results-empty{font-size: 0.85rem;font-weight: 400;opacity: 0.75;}.cm-calc .cm-results-note{margin: 0.6rem 0 0;font-size: 0.75rem;font-weight: 400;opacity: 0.8;line-height: 1.4;color: #fff;}.cm-calc a{color: var(--cm-brand);text-decoration: underline;text-underline-offset: 2px;}.cm-calc .cm-results a{color: #fff;}.cm-calc .cm-disclaimer{margin: 0 0 0.6rem;text-align: center;font-size: 0.7rem;line-height: 1.45;color: var(--cm-brand-soft);}.cm-calc .cm-credit{margin: 0;text-align: center;font-size: 0.72rem;color: var(--cm-brand-soft);}.cm-calc .cm-credit a{color: var(--cm-brand);font-weight: 600;text-decoration: none;}.cm-calc .cm-credit a:hover,.cm-calc .cm-credit a:focus-visible{text-decoration: underline;}@media (prefers-reduced-motion: reduce){.cm-calc *{transition: none !important;}}.cm-calc.cm-embed{max-width: none;margin: 0.75rem 0 1.5rem;}.cm-calc .cm-code-box{display: flex;align-items: center;gap: 0.9rem;background: var(--cm-card);border: 1px solid var(--cm-border);border-radius: 10px;padding: 0.9rem 1rem;}.cm-calc pre.cm-code{margin: 0;padding: 0;flex: 1 1 auto;min-width: 0;background: transparent;border: 0;font-family: ui-monospace,\"SF Mono\",Menlo,Consolas,monospace;font-size: 0.78rem;line-height: 1.55;color: var(--cm-ink);white-space: pre-wrap;word-break: normal;overflow-wrap: anywhere;}.cm-calc .cm-copy-btn{flex: 0 0 auto;padding: 0.55rem 1rem;font-family: inherit;font-size: 0.82rem;font-weight: 600;line-height: 1.3;border-radius: 999px;border: 1px solid var(--cm-brand);background: var(--cm-brand);color: #fff;cursor: pointer;transition: background 0.15s ease,color 0.15s ease;}.cm-calc .cm-copy-btn.is-done{background: #fff;color: var(--cm-brand);}.cm-calc .cm-copy-btn:focus-visible{outline: 2px solid var(--cm-brand);outline-offset: 2px;}.cm-calc .cm-hint{margin: -0.6rem 0 1.1rem;font-size: 0.75rem;line-height: 1.45;color: var(--cm-brand-soft);}.cm-calc .cm-sr{position: absolute !important;width: 1px;height: 1px;margin: -1px;padding: 0;overflow: hidden;clip: rect(0 0 0 0);white-space: nowrap;border: 0;}.cm-calc .cm-key{white-space: nowrap;margin-right: 0.6rem;}@media (max-width: 480px){.cm-calc .cm-card{padding: 1.4rem 1.25rem;}.cm-calc .cm-code-box{flex-direction: column;align-items: stretch;}.cm-calc .cm-row{display: grid;grid-template-columns: minmax(0,1fr);gap: 0.35rem;margin-bottom: 1rem;}.cm-calc .cm-row>select,.cm-calc .cm-row>input{max-width: none;}.cm-calc .cm-row>.cm-unit-toggle{justify-self: start;}}";
   var EMBED_FILE = 'ceramind-pricing-calculator-embed.js';
   var KILN_URL = 'https://ceramindtools.com/pages/kiln-cost-calculator';
+  // Official pages behind each figure (quotes in Ceramind Tools/Website/Calculators/Pottery Pricing/sources.md)
+  var LINKS = {
+    etsyFees: 'https://help.etsy.com/hc/articles/360035902374',
+    etsyProcessing: 'https://help.etsy.com/hc/articles/115015628847',
+    etsyRegulatory: 'https://help.etsy.com/hc/articles/1500011073202',
+    etsyVat: 'https://help.etsy.com/hc/articles/360040584433',
+    shopify: { gbp: 'https://www.shopify.com/uk/pricing', usd: 'https://www.shopify.com/pricing' },
+    sumup: 'https://www.sumup.com/en-gb/pricing/',
+    square: { gbp: 'https://squareup.com/gb/en/pricing', usd: 'https://squareup.com/us/en/payments/our-fees' },
+    zettle: 'https://www.zettle.com/gb/pricing',
+    vatRates: 'https://www.gov.uk/vat-rates',
+    vatRegister: 'https://www.gov.uk/register-for-vat',
+    hmrcVat: 'https://www.gov.uk/find-hmrc-contacts/vat-general-enquiries',
+    nlw: 'https://www.gov.uk/national-minimum-wage-rates',
+    keystone: 'https://www.ncad.ie/files/download/23_-_Pricing_your_work_by_Cornelia_McCarthy.pdf',
+    clay: 'https://www.potclays.co.uk/brown-clay/premium-sanded-buff/',
+    glaze: 'https://www.potclays.co.uk/stoneware-glaze/stoneware-matt/'
+  };
+  function link(url, text) {
+    // our own fixed text and URLs only
+    return '<a href="' + url + '" target="_blank" rel="noopener">' + text + '</a>';
+  }
 
   // ---- Shared by every calculator (build.py inlines this from src/shared.js) ----
   // Turns <div class="ceramind-embed-code" data-for="<calculator class>"><pre>…</pre></div> on a Ceramind page
@@ -109,14 +131,14 @@
   };
   var READERS = {
     gbp: [
-      { id: 'sumup', name: 'SumUp', pct: 1.69, fixed: 0 },
-      { id: 'square', name: 'Square', pct: 1.75, fixed: 0 },
-      { id: 'zettle', name: 'Zettle', pct: 1.75, fixed: 0 },
-      { id: 'shopifypos', name: 'Shopify POS', pct: 1.7, fixed: 0 }
+      { id: 'sumup', name: 'SumUp', pct: 1.69, fixed: 0, url: LINKS.sumup },
+      { id: 'square', name: 'Square', pct: 1.75, fixed: 0, url: LINKS.square.gbp },
+      { id: 'zettle', name: 'Zettle', pct: 1.75, fixed: 0, url: LINKS.zettle },
+      { id: 'shopifypos', name: 'Shopify POS', pct: 1.7, fixed: 0, url: LINKS.shopify.gbp }
     ],
     usd: [
-      { id: 'square', name: 'Square', pct: 2.6, fixed: 0.15 },
-      { id: 'shopifypos', name: 'Shopify POS', pct: 2.6, fixed: 0.10 }
+      { id: 'square', name: 'Square', pct: 2.6, fixed: 0.15, url: LINKS.square.usd },
+      { id: 'shopifypos', name: 'Shopify POS', pct: 2.6, fixed: 0.10, url: LINKS.shopify.usd }
     ]
   };
 
@@ -142,7 +164,6 @@
     + '.cm-calc.cm-pricing .cm-dim { display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; }'
     + '.cm-calc.cm-pricing .cm-group .cm-hint { margin: 0 0 0.2rem; }'
     + '.cm-calc.cm-pricing .cm-group .cm-row + .cm-hint { margin-top: -0.4rem; }'
-    + '.cm-calc.cm-pricing .cm-hint a { color: var(--cm-brand); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }'
     + '.cm-calc.cm-pricing .cm-results-list + .cm-results-title { margin-top: 0.9rem; }'
     + '.cm-calc.cm-pricing .cm-results-list li { line-height: 1.35; }'
     + '.cm-calc.cm-pricing .cm-split { background: #fff; border: 1px solid var(--cm-border); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1.1rem; }'
@@ -196,7 +217,7 @@
       +        dim('glaze', 'Glaze', EXAMPLE.glaze, { money: true, placeholder: '0' })
       +        dim('other', 'Other', EXAMPLE.other, { money: true, placeholder: '0' })
       + '    </div>'
-      + '    <p class="cm-hint">Weigh the clay you use, trimmings included. Other covers stains, decals, lustre and packaging.<span data-uk> Our example: 500 g of clay at 90p a kg, and 100 g of glaze powder at £11.30 a kg.</span><span data-us hidden> The example figures are UK prices, so change them to yours.</span></p>'
+      + '    <p class="cm-hint">Weigh the clay you use, trimmings included. Other covers stains, decals, lustre and packaging.<span data-uk> Our example: 500 g of ' + link(LINKS.clay, 'Potclays clay') + ' at 90p a kg, and 100 g of ' + link(LINKS.glaze, 'Potclays glaze powder') + ' at £11.30 a kg.</span><span data-us hidden> The example figures are UK prices, so change them to yours.</span></p>'
       + '  </div>'
 
       + '  <div class="cm-group" role="group" aria-labelledby="' + f('g2') + '">'
@@ -215,7 +236,7 @@
       +        dim('hours', 'Hours on this piece', EXAMPLE.hours, { step: '0.25' })
       +        dim('rate', 'Hourly rate', String(NLW), { money: true, step: '0.5' })
       + '    </div>'
-      + '    <p class="cm-hint">Count all your hands-on time: making, trimming, glazing and packing. 30 minutes is 0.5.<span data-uk> £12.71 is the UK National Living Wage from 1 April 2026.</span></p>'
+      + '    <p class="cm-hint">Count all your hands-on time: making, trimming, glazing and packing. 30 minutes is 0.5.<span data-uk> £12.71 is the ' + link(LINKS.nlw, 'UK National Living Wage') + ' from 1 April 2026.</span></p>'
       + '  </div>'
 
       + '  <div class="cm-group" role="group" aria-labelledby="' + f('g4') + '">'
@@ -225,7 +246,7 @@
       +        dim('profit', 'Profit %', '75', { step: '5' })
       +        dim('mult', 'Retail ×', '2', { step: '0.1' })
       + '    </div>'
-      + '    <p class="cm-hint">Overhead is studio rent, power, tools, insurance and stall fees, as a % of the costs above. Cost plus profit is your wholesale price. Shops usually sell at 2 × wholesale (Retail × 2), so charge that retail price everywhere you sell.</p>'
+      + '    <p class="cm-hint">Overhead is studio rent, power, tools, insurance and stall fees, as a % of the costs above. Cost plus profit is your wholesale price. Shops usually sell at 2 × wholesale (Retail × 2), as ' + link(LINKS.keystone, 'Cornelia McCarthy\'s pricing guide') + ' explains, so charge that retail price everywhere you sell.</p>'
       + '    <div class="cm-row">'
       + '      <label class="cm-label" for="' + f('round') + '">Round prices up to</label>'
       + '      <select id="' + f('round') + '" data-role="round">'
@@ -243,7 +264,7 @@
       + '        <button type="button" class="cm-unit-btn" data-vat="yes" aria-pressed="false">Yes</button>'
       + '      </div>'
       + '    </div>'
-      + '    <p class="cm-hint" data-uk>Only VAT-registered sellers add 20% VAT. You must register once your taxable turnover goes over £90,000 in 12 months. If you\'re registered, enter your costs without VAT.</p>'
+      + '    <p class="cm-hint" data-uk>Only VAT-registered sellers add VAT, at the ' + link(LINKS.vatRates, '20% standard rate') + '. ' + link(LINKS.vatRegister, 'GOV.UK') + ' says you must register once your taxable turnover goes over £90,000 in 12 months. If you\'re registered, enter your costs without VAT.</p>'
       + '  </div>'
 
       + '  <div class="cm-group" role="group" aria-labelledby="' + f('g5') + '">'
@@ -284,7 +305,7 @@
       + '  </div>'
 
       + '  <p class="cm-sr" aria-live="polite" aria-atomic="true" data-role="sr"></p>'
-      + '  <p class="cm-disclaimer">This is a guide to help you set prices, not financial or tax advice. Platform fees change, so check each one\'s fee page, and ask HMRC or an accountant about VAT. Ceramind Tools can\'t accept responsibility for decisions based on these results.</p>'
+      + '  <p class="cm-disclaimer">This is a guide to help you set prices, not financial or tax advice. Platform fees change, so check ' + link(LINKS.etsyFees, 'Etsy\'s') + ', <a href="' + LINKS.shopify.gbp + '" target="_blank" rel="noopener" data-role="shopify-link">Shopify\'s</a> and your card reader\'s fee pages, and ask ' + link(LINKS.hmrcVat, 'HMRC') + ' or an accountant about VAT. Ceramind Tools can\'t accept responsibility for decisions based on these results.</p>'
       + '  <p class="cm-credit">Powered by <a href="https://www.ceramindtools.com" target="_blank" rel="noopener">Ceramind® Tools</a></p>'
       + '</div>';
   }
@@ -359,10 +380,23 @@
       srTimer = setTimeout(function () { el.sr.textContent = text; }, 700);
     }
 
-    function addLine(list, text, cls) {
+    function rich(parent, parts) {
+      // parts: a string, or a list of strings and [text, url] links, built as DOM nodes
+      (typeof parts === 'string' ? [parts] : parts).forEach(function (part) {
+        if (typeof part === 'string') { parent.appendChild(document.createTextNode(part)); return; }
+        var a = document.createElement('a');
+        a.href = part[1];
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = part[0];
+        parent.appendChild(a);
+      });
+    }
+
+    function addLine(list, parts, cls) {
       var li = document.createElement('li');
       if (cls) li.className = cls;
-      li.textContent = text;
+      rich(li, parts);
       list.appendChild(li);
     }
 
@@ -397,9 +431,16 @@
     }
     function fillLabels() {
       qa('[data-money-label]').forEach(function (l) { l.textContent = l.getAttribute('data-money-label') + ' (' + sym() + ')'; });
-      el['fee-hint'].textContent = cur === 'gbp'
-        ? 'Etsy UK: a 15p listing fee ($0.20), 6.5% transaction fee, 4% + 20p payment processing and a 0.48% regulatory fee, plus 20% VAT on those fees unless Etsy has your VAT number. Shopify Payments and card readers: UK card rates. Shopify POS is the Basic plan rate.'
-        : 'Etsy US: a $0.20 listing fee, 6.5% transaction fee and 3% + 25¢ payment processing. Shopify Payments and card readers: US card rates. Shopify POS is the Basic plan rate.';
+      el['fee-hint'].innerHTML = '';
+      rich(el['fee-hint'], cur === 'gbp'
+        ? [['Etsy UK', LINKS.etsyFees], ': a 15p listing fee ($0.20) and 6.5% transaction fee, plus ', ['4% + 20p payment processing', LINKS.etsyProcessing],
+          ' and a ', ['0.48% regulatory fee', LINKS.etsyRegulatory], ', with ', ['20% VAT on those fees', LINKS.etsyVat], ' unless Etsy has your VAT number. ',
+          ['Shopify Payments', LINKS.shopify.gbp], ': UK card rates by plan, and Shopify POS at the Basic plan rate. Card readers: ',
+          ['SumUp', LINKS.sumup], ', ', ['Square', LINKS.square.gbp], ' and ', ['Zettle', LINKS.zettle], ' in-person rates.']
+        : [['Etsy US', LINKS.etsyFees], ': a $0.20 listing fee and 6.5% transaction fee, plus ', ['3% + 25¢ payment processing', LINKS.etsyProcessing], '. ',
+          ['Shopify Payments', LINKS.shopify.usd], ': US card rates by plan, and Shopify POS at the Basic plan rate. Card reader: the ',
+          ['Square', LINKS.square.usd], ' US in-person rate.']);
+      q('[data-role="shopify-link"]').href = LINKS.shopify[cur];
       qa('[data-uk]').forEach(function (n) { n.hidden = cur !== 'gbp'; });
       qa('[data-us]').forEach(function (n) { n.hidden = cur !== 'usd'; });
     }
@@ -470,7 +511,7 @@
       });
       if (hours >= 24) notes.push(fmt(hours, hours % 1 ? 2 : 0) + ' hours is over a day on one piece. For minutes, divide by 60: 30 minutes is 0.5.');
       if (rate === 0) notes.push('With an hourly rate of 0, these prices don\'t pay you for your time.');
-      if (cur === 'gbp' && rate > 0 && rate < NLW) notes.push(money(rate) + ' an hour is below the UK National Living Wage of £12.71.');
+      if (cur === 'gbp' && rate > 0 && rate < NLW) notes.push([money(rate) + ' an hour is below the ', ['UK National Living Wage', LINKS.nlw], ' of £12.71.']);
       if (overheadPct > 100) notes.push('An overhead of ' + plain(overheadPct) + '% is more than your costs: check it.');
       if (profitPct > 0 && profitPct <= 3) notes.push('Read ' + plain(profitPct) + ' as ' + plain(profitPct) + '% profit. To double your cost, type 100.');
       if (mult >= 20) {
@@ -527,11 +568,11 @@
       var readerError = !isNaN(readerPct) && readerPct >= 100 ? 'A card fee can\'t be 100% or more: check the card reader fee.' : '';
       if (readerError) notes.push(readerError);
       var readerFees = readerOk ? paid * readerPct / 100 + (preset ? preset.fixed : 0) : NaN;
-      var readerName = 'Card reader' + (preset ? ' (' + preset.name + ')' : '');
+      var readerName = preset ? ['Card reader (', [preset.name, preset.url], ')'] : ['Card reader'];
 
       var channels = {
-        etsy: { name: 'Etsy', fees: etsyFees },
-        shopify: { name: 'Shopify', fees: shopifyFees },
+        etsy: { name: [['Etsy', LINKS.etsyFees]], label: 'Etsy', fees: etsyFees },
+        shopify: { name: [['Shopify', LINKS.shopify[cur]]], label: 'Shopify', fees: shopifyFees },
         reader: { name: readerName, fees: readerFees }
       };
       Object.keys(channels).forEach(function (k) {
@@ -548,14 +589,15 @@
       el['sell-title'].textContent = 'Selling at ' + money(paid);
       ['etsy', 'shopify', 'reader'].forEach(function (k) {
         var c = channels[k];
-        if (isNaN(c.fees)) { addLine(el.channels, c.name + (isNaN(readerPct) ? ': enter its fee % to see this' : ': check its fee %')); return; }
-        addLine(el.channels, c.name + ': ' + money(c.fees) + ' in fees, ' + (c.profit < 0 ? 'a loss of ' + money(-c.profit) : money(c.profit) + ' profit'));
+        if (isNaN(c.fees)) { addLine(el.channels, c.name.concat(isNaN(readerPct) ? ': enter its fee % to see this' : ': check its fee %')); return; }
+        addLine(el.channels, c.name.concat(': ' + money(c.fees) + ' in fees, ' + (c.profit < 0 ? 'a loss of ' + money(-c.profit) : money(c.profit) + ' profit')));
       });
 
-      if (cur === 'gbp' && !vat) notes.push('Etsy\'s fees include the 20% VAT it adds when it doesn\'t have your VAT number.');
+      if (cur === 'gbp' && !vat) notes.push(['Etsy\'s fees include the ', ['20% VAT it adds', LINKS.etsyVat], ' when it doesn\'t have your VAT number.']);
       if (vat) notes.push('Retail is rounded with VAT in, as shoppers see it.');
       notes.push(cur === 'gbp' ? 'Fees on postage aren\'t counted.' : 'Fees on shipping aren\'t counted.');
-      el.note.textContent = notes.join(' ');
+      el.note.innerHTML = '';
+      notes.forEach(function (n, i) { if (i) rich(el.note, ' '); rich(el.note, n); });
 
       // ---- where the money goes ----
       var parts = { materials: materials, firing: firing, time: time, overhead: overhead, vat: 0, fees: 0, profit: 0 };
@@ -570,7 +612,7 @@
         parts.vat = vatAmt;
         parts.fees = isNaN(c.fees) ? 0 : c.fees;
         parts.profit = paid - vatAmt - parts.fees - cost;
-        title = 'Where ' + money(paid) + ' goes ' + (view === 'reader' ? 'with a card reader' : 'on ' + c.name);
+        title = 'Where ' + money(paid) + ' goes ' + (view === 'reader' ? 'with a card reader' : 'on ' + c.label);
       }
       el['split-title'].textContent = title;
       var noFee = view !== 'wholesale' && isNaN(channels[view].fees);

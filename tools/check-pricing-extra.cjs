@@ -5,7 +5,8 @@
 //   node tools/check-pricing-extra.cjs <url> tests/pricing-extra.json
 //
 // Each case: { "name", "do": [[select|fill|click, sel, value]], "wait": ms, "in": selector (inside the root),
-//              "expect": [...], "absent": [...], "hidden": [selectors], "visible": [selectors] }
+//              "expect": [...], "absent": [...], "hidden": [selectors], "visible": [selectors],
+//              "links": [[link text, part of its href]] }
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
@@ -43,6 +44,15 @@ const { chromium } = require(PW);
     const wrong = (c.absent || []).filter(t => text.includes(t));
     for (const s of c.hidden || []) if (await root.locator(s).first().isVisible()) wrong.push("visible: " + s);
     for (const s of c.visible || []) if (!(await root.locator(s).first().isVisible())) missing.push("hidden: " + s);
+    if (c.links) {
+      // every [text, part of href] must be a visible link that opens in a new tab with rel="noopener"
+      const anchors = await root.locator(c.in || ":scope").first().evaluate(box => [...box.querySelectorAll("a")]
+        .filter(a => a.getClientRects().length)
+        .map(a => ({ text: a.textContent.trim(), href: a.href, target: a.target, rel: a.rel })));
+      for (const [t, h] of c.links) {
+        if (!anchors.some(x => x.text === t && x.href.includes(h) && x.target === "_blank" && /noopener/.test(x.rel))) missing.push("link: " + t + " -> " + h);
+      }
+    }
     results.push({ name: c.name, ok: !missing.length && !wrong.length, missing, wrong, text: text.slice(0, 400) });
   }
   await browser.close();

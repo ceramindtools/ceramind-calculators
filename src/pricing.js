@@ -42,6 +42,28 @@
   var BASE_CSS = /*@BASE_CSS@*/'';
   var EMBED_FILE = 'ceramind-pricing-calculator-embed.js';
   var KILN_URL = 'https://ceramindtools.com/pages/kiln-cost-calculator';
+  // Official pages behind each figure (quotes in Ceramind Tools/Website/Calculators/Pottery Pricing/sources.md)
+  var LINKS = {
+    etsyFees: 'https://help.etsy.com/hc/articles/360035902374',
+    etsyProcessing: 'https://help.etsy.com/hc/articles/115015628847',
+    etsyRegulatory: 'https://help.etsy.com/hc/articles/1500011073202',
+    etsyVat: 'https://help.etsy.com/hc/articles/360040584433',
+    shopify: { gbp: 'https://www.shopify.com/uk/pricing', usd: 'https://www.shopify.com/pricing' },
+    sumup: 'https://www.sumup.com/en-gb/pricing/',
+    square: { gbp: 'https://squareup.com/gb/en/pricing', usd: 'https://squareup.com/us/en/payments/our-fees' },
+    zettle: 'https://www.zettle.com/gb/pricing',
+    vatRates: 'https://www.gov.uk/vat-rates',
+    vatRegister: 'https://www.gov.uk/register-for-vat',
+    hmrcVat: 'https://www.gov.uk/find-hmrc-contacts/vat-general-enquiries',
+    nlw: 'https://www.gov.uk/national-minimum-wage-rates',
+    keystone: 'https://www.ncad.ie/files/download/23_-_Pricing_your_work_by_Cornelia_McCarthy.pdf',
+    clay: 'https://www.potclays.co.uk/brown-clay/premium-sanded-buff/',
+    glaze: 'https://www.potclays.co.uk/stoneware-glaze/stoneware-matt/'
+  };
+  function link(url, text) {
+    // our own fixed text and URLs only
+    return '<a href="' + url + '" target="_blank" rel="noopener">' + text + '</a>';
+  }
 
 /*@SHARED_JS@*/
 
@@ -61,14 +83,14 @@
   };
   var READERS = {
     gbp: [
-      { id: 'sumup', name: 'SumUp', pct: 1.69, fixed: 0 },
-      { id: 'square', name: 'Square', pct: 1.75, fixed: 0 },
-      { id: 'zettle', name: 'Zettle', pct: 1.75, fixed: 0 },
-      { id: 'shopifypos', name: 'Shopify POS', pct: 1.7, fixed: 0 }
+      { id: 'sumup', name: 'SumUp', pct: 1.69, fixed: 0, url: LINKS.sumup },
+      { id: 'square', name: 'Square', pct: 1.75, fixed: 0, url: LINKS.square.gbp },
+      { id: 'zettle', name: 'Zettle', pct: 1.75, fixed: 0, url: LINKS.zettle },
+      { id: 'shopifypos', name: 'Shopify POS', pct: 1.7, fixed: 0, url: LINKS.shopify.gbp }
     ],
     usd: [
-      { id: 'square', name: 'Square', pct: 2.6, fixed: 0.15 },
-      { id: 'shopifypos', name: 'Shopify POS', pct: 2.6, fixed: 0.10 }
+      { id: 'square', name: 'Square', pct: 2.6, fixed: 0.15, url: LINKS.square.usd },
+      { id: 'shopifypos', name: 'Shopify POS', pct: 2.6, fixed: 0.10, url: LINKS.shopify.usd }
     ]
   };
 
@@ -94,7 +116,6 @@
     + '.cm-calc.cm-pricing .cm-dim { display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; }'
     + '.cm-calc.cm-pricing .cm-group .cm-hint { margin: 0 0 0.2rem; }'
     + '.cm-calc.cm-pricing .cm-group .cm-row + .cm-hint { margin-top: -0.4rem; }'
-    + '.cm-calc.cm-pricing .cm-hint a { color: var(--cm-brand); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }'
     + '.cm-calc.cm-pricing .cm-results-list + .cm-results-title { margin-top: 0.9rem; }'
     + '.cm-calc.cm-pricing .cm-results-list li { line-height: 1.35; }'
     + '.cm-calc.cm-pricing .cm-split { background: #fff; border: 1px solid var(--cm-border); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1.1rem; }'
@@ -148,7 +169,7 @@
       +        dim('glaze', 'Glaze', EXAMPLE.glaze, { money: true, placeholder: '0' })
       +        dim('other', 'Other', EXAMPLE.other, { money: true, placeholder: '0' })
       + '    </div>'
-      + '    <p class="cm-hint">Weigh the clay you use, trimmings included. Other covers stains, decals, lustre and packaging.<span data-uk> Our example: 500 g of clay at 90p a kg, and 100 g of glaze powder at £11.30 a kg.</span><span data-us hidden> The example figures are UK prices, so change them to yours.</span></p>'
+      + '    <p class="cm-hint">Weigh the clay you use, trimmings included. Other covers stains, decals, lustre and packaging.<span data-uk> Our example: 500 g of ' + link(LINKS.clay, 'Potclays clay') + ' at 90p a kg, and 100 g of ' + link(LINKS.glaze, 'Potclays glaze powder') + ' at £11.30 a kg.</span><span data-us hidden> The example figures are UK prices, so change them to yours.</span></p>'
       + '  </div>'
 
       + '  <div class="cm-group" role="group" aria-labelledby="' + f('g2') + '">'
@@ -167,7 +188,7 @@
       +        dim('hours', 'Hours on this piece', EXAMPLE.hours, { step: '0.25' })
       +        dim('rate', 'Hourly rate', String(NLW), { money: true, step: '0.5' })
       + '    </div>'
-      + '    <p class="cm-hint">Count all your hands-on time: making, trimming, glazing and packing. 30 minutes is 0.5.<span data-uk> £12.71 is the UK National Living Wage from 1 April 2026.</span></p>'
+      + '    <p class="cm-hint">Count all your hands-on time: making, trimming, glazing and packing. 30 minutes is 0.5.<span data-uk> £12.71 is the ' + link(LINKS.nlw, 'UK National Living Wage') + ' from 1 April 2026.</span></p>'
       + '  </div>'
 
       + '  <div class="cm-group" role="group" aria-labelledby="' + f('g4') + '">'
@@ -177,7 +198,7 @@
       +        dim('profit', 'Profit %', '75', { step: '5' })
       +        dim('mult', 'Retail ×', '2', { step: '0.1' })
       + '    </div>'
-      + '    <p class="cm-hint">Overhead is studio rent, power, tools, insurance and stall fees, as a % of the costs above. Cost plus profit is your wholesale price. Shops usually sell at 2 × wholesale (Retail × 2), so charge that retail price everywhere you sell.</p>'
+      + '    <p class="cm-hint">Overhead is studio rent, power, tools, insurance and stall fees, as a % of the costs above. Cost plus profit is your wholesale price. Shops usually sell at 2 × wholesale (Retail × 2), as ' + link(LINKS.keystone, 'Cornelia McCarthy\'s pricing guide') + ' explains, so charge that retail price everywhere you sell.</p>'
       + '    <div class="cm-row">'
       + '      <label class="cm-label" for="' + f('round') + '">Round prices up to</label>'
       + '      <select id="' + f('round') + '" data-role="round">'
@@ -195,7 +216,7 @@
       + '        <button type="button" class="cm-unit-btn" data-vat="yes" aria-pressed="false">Yes</button>'
       + '      </div>'
       + '    </div>'
-      + '    <p class="cm-hint" data-uk>Only VAT-registered sellers add 20% VAT. You must register once your taxable turnover goes over £90,000 in 12 months. If you\'re registered, enter your costs without VAT.</p>'
+      + '    <p class="cm-hint" data-uk>Only VAT-registered sellers add VAT, at the ' + link(LINKS.vatRates, '20% standard rate') + '. ' + link(LINKS.vatRegister, 'GOV.UK') + ' says you must register once your taxable turnover goes over £90,000 in 12 months. If you\'re registered, enter your costs without VAT.</p>'
       + '  </div>'
 
       + '  <div class="cm-group" role="group" aria-labelledby="' + f('g5') + '">'
@@ -236,7 +257,7 @@
       + '  </div>'
 
       + '  <p class="cm-sr" aria-live="polite" aria-atomic="true" data-role="sr"></p>'
-      + '  <p class="cm-disclaimer">This is a guide to help you set prices, not financial or tax advice. Platform fees change, so check each one\'s fee page, and ask HMRC or an accountant about VAT. Ceramind Tools can\'t accept responsibility for decisions based on these results.</p>'
+      + '  <p class="cm-disclaimer">This is a guide to help you set prices, not financial or tax advice. Platform fees change, so check ' + link(LINKS.etsyFees, 'Etsy\'s') + ', <a href="' + LINKS.shopify.gbp + '" target="_blank" rel="noopener" data-role="shopify-link">Shopify\'s</a> and your card reader\'s fee pages, and ask ' + link(LINKS.hmrcVat, 'HMRC') + ' or an accountant about VAT. Ceramind Tools can\'t accept responsibility for decisions based on these results.</p>'
       + '  <p class="cm-credit">Powered by <a href="https://www.ceramindtools.com" target="_blank" rel="noopener">Ceramind® Tools</a></p>'
       + '</div>';
   }
@@ -311,10 +332,23 @@
       srTimer = setTimeout(function () { el.sr.textContent = text; }, 700);
     }
 
-    function addLine(list, text, cls) {
+    function rich(parent, parts) {
+      // parts: a string, or a list of strings and [text, url] links, built as DOM nodes
+      (typeof parts === 'string' ? [parts] : parts).forEach(function (part) {
+        if (typeof part === 'string') { parent.appendChild(document.createTextNode(part)); return; }
+        var a = document.createElement('a');
+        a.href = part[1];
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = part[0];
+        parent.appendChild(a);
+      });
+    }
+
+    function addLine(list, parts, cls) {
       var li = document.createElement('li');
       if (cls) li.className = cls;
-      li.textContent = text;
+      rich(li, parts);
       list.appendChild(li);
     }
 
@@ -349,9 +383,16 @@
     }
     function fillLabels() {
       qa('[data-money-label]').forEach(function (l) { l.textContent = l.getAttribute('data-money-label') + ' (' + sym() + ')'; });
-      el['fee-hint'].textContent = cur === 'gbp'
-        ? 'Etsy UK: a 15p listing fee ($0.20), 6.5% transaction fee, 4% + 20p payment processing and a 0.48% regulatory fee, plus 20% VAT on those fees unless Etsy has your VAT number. Shopify Payments and card readers: UK card rates. Shopify POS is the Basic plan rate.'
-        : 'Etsy US: a $0.20 listing fee, 6.5% transaction fee and 3% + 25¢ payment processing. Shopify Payments and card readers: US card rates. Shopify POS is the Basic plan rate.';
+      el['fee-hint'].innerHTML = '';
+      rich(el['fee-hint'], cur === 'gbp'
+        ? [['Etsy UK', LINKS.etsyFees], ': a 15p listing fee ($0.20) and 6.5% transaction fee, plus ', ['4% + 20p payment processing', LINKS.etsyProcessing],
+          ' and a ', ['0.48% regulatory fee', LINKS.etsyRegulatory], ', with ', ['20% VAT on those fees', LINKS.etsyVat], ' unless Etsy has your VAT number. ',
+          ['Shopify Payments', LINKS.shopify.gbp], ': UK card rates by plan, and Shopify POS at the Basic plan rate. Card readers: ',
+          ['SumUp', LINKS.sumup], ', ', ['Square', LINKS.square.gbp], ' and ', ['Zettle', LINKS.zettle], ' in-person rates.']
+        : [['Etsy US', LINKS.etsyFees], ': a $0.20 listing fee and 6.5% transaction fee, plus ', ['3% + 25¢ payment processing', LINKS.etsyProcessing], '. ',
+          ['Shopify Payments', LINKS.shopify.usd], ': US card rates by plan, and Shopify POS at the Basic plan rate. Card reader: the ',
+          ['Square', LINKS.square.usd], ' US in-person rate.']);
+      q('[data-role="shopify-link"]').href = LINKS.shopify[cur];
       qa('[data-uk]').forEach(function (n) { n.hidden = cur !== 'gbp'; });
       qa('[data-us]').forEach(function (n) { n.hidden = cur !== 'usd'; });
     }
@@ -422,7 +463,7 @@
       });
       if (hours >= 24) notes.push(fmt(hours, hours % 1 ? 2 : 0) + ' hours is over a day on one piece. For minutes, divide by 60: 30 minutes is 0.5.');
       if (rate === 0) notes.push('With an hourly rate of 0, these prices don\'t pay you for your time.');
-      if (cur === 'gbp' && rate > 0 && rate < NLW) notes.push(money(rate) + ' an hour is below the UK National Living Wage of £12.71.');
+      if (cur === 'gbp' && rate > 0 && rate < NLW) notes.push([money(rate) + ' an hour is below the ', ['UK National Living Wage', LINKS.nlw], ' of £12.71.']);
       if (overheadPct > 100) notes.push('An overhead of ' + plain(overheadPct) + '% is more than your costs: check it.');
       if (profitPct > 0 && profitPct <= 3) notes.push('Read ' + plain(profitPct) + ' as ' + plain(profitPct) + '% profit. To double your cost, type 100.');
       if (mult >= 20) {
@@ -479,11 +520,11 @@
       var readerError = !isNaN(readerPct) && readerPct >= 100 ? 'A card fee can\'t be 100% or more: check the card reader fee.' : '';
       if (readerError) notes.push(readerError);
       var readerFees = readerOk ? paid * readerPct / 100 + (preset ? preset.fixed : 0) : NaN;
-      var readerName = 'Card reader' + (preset ? ' (' + preset.name + ')' : '');
+      var readerName = preset ? ['Card reader (', [preset.name, preset.url], ')'] : ['Card reader'];
 
       var channels = {
-        etsy: { name: 'Etsy', fees: etsyFees },
-        shopify: { name: 'Shopify', fees: shopifyFees },
+        etsy: { name: [['Etsy', LINKS.etsyFees]], label: 'Etsy', fees: etsyFees },
+        shopify: { name: [['Shopify', LINKS.shopify[cur]]], label: 'Shopify', fees: shopifyFees },
         reader: { name: readerName, fees: readerFees }
       };
       Object.keys(channels).forEach(function (k) {
@@ -500,14 +541,15 @@
       el['sell-title'].textContent = 'Selling at ' + money(paid);
       ['etsy', 'shopify', 'reader'].forEach(function (k) {
         var c = channels[k];
-        if (isNaN(c.fees)) { addLine(el.channels, c.name + (isNaN(readerPct) ? ': enter its fee % to see this' : ': check its fee %')); return; }
-        addLine(el.channels, c.name + ': ' + money(c.fees) + ' in fees, ' + (c.profit < 0 ? 'a loss of ' + money(-c.profit) : money(c.profit) + ' profit'));
+        if (isNaN(c.fees)) { addLine(el.channels, c.name.concat(isNaN(readerPct) ? ': enter its fee % to see this' : ': check its fee %')); return; }
+        addLine(el.channels, c.name.concat(': ' + money(c.fees) + ' in fees, ' + (c.profit < 0 ? 'a loss of ' + money(-c.profit) : money(c.profit) + ' profit')));
       });
 
-      if (cur === 'gbp' && !vat) notes.push('Etsy\'s fees include the 20% VAT it adds when it doesn\'t have your VAT number.');
+      if (cur === 'gbp' && !vat) notes.push(['Etsy\'s fees include the ', ['20% VAT it adds', LINKS.etsyVat], ' when it doesn\'t have your VAT number.']);
       if (vat) notes.push('Retail is rounded with VAT in, as shoppers see it.');
       notes.push(cur === 'gbp' ? 'Fees on postage aren\'t counted.' : 'Fees on shipping aren\'t counted.');
-      el.note.textContent = notes.join(' ');
+      el.note.innerHTML = '';
+      notes.forEach(function (n, i) { if (i) rich(el.note, ' '); rich(el.note, n); });
 
       // ---- where the money goes ----
       var parts = { materials: materials, firing: firing, time: time, overhead: overhead, vat: 0, fees: 0, profit: 0 };
@@ -522,7 +564,7 @@
         parts.vat = vatAmt;
         parts.fees = isNaN(c.fees) ? 0 : c.fees;
         parts.profit = paid - vatAmt - parts.fees - cost;
-        title = 'Where ' + money(paid) + ' goes ' + (view === 'reader' ? 'with a card reader' : 'on ' + c.name);
+        title = 'Where ' + money(paid) + ' goes ' + (view === 'reader' ? 'with a card reader' : 'on ' + c.label);
       }
       el['split-title'].textContent = title;
       var noFee = view !== 'wholesale' && isNaN(channels[view].fees);

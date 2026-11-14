@@ -1,53 +1,532 @@
 {
-  "root": ".ceramind-pricing-calculator",
-  "cases": [
-    { "name": "$ hints carry no UK prices",
-      "do": [["click", "[data-cur=usd]"]], "in": ".cm-card",
-      "expect": ["The example figures are UK prices", "divide one firing's cost by the number of pieces in the kiln", "Fees on shipping"],
-      "absent": ["(£)", "90p a kg", "£11.30", "37p a mug", "£12.71", "£90,000", "National Living Wage", "postage"] },
-    { "name": "£ hints come back",
-      "do": [["click", "[data-cur=gbp]"]], "in": ".cm-card",
-      "expect": ["500 g of clay at 90p a kg", "£11.30 a kg", "about 37p a mug", "National Living Wage", "Fees on postage"],
-      "absent": ["UK prices", "divide one firing"] },
-    { "name": "card reader view with a blank fee shows no chart",
-      "do": [["click", "[data-view=reader]"], ["fill", "[data-role=readerpct]", ""]], "in": ".cm-split",
-      "expect": ["Enter the card reader fee % to see this split."], "absent": ["Profit", "Fees", "Materials"],
-      "hidden": [".cm-bar"] },
-    { "name": "card fee of 150% asks to check it",
-      "do": [["fill", "[data-role=readerpct]", "150"]], "in": ".cm-split",
-      "expect": ["Check the card reader fee % to see this split."], "hidden": [".cm-bar"] },
-    { "name": "fee back: chart returns (profit 25.15085 of 36 = 70%)",
-      "do": [["fill", "[data-role=readerpct]", "1.69"]], "in": ".cm-split",
-      "expect": ["Where £36.00 goes with a card reader", "Fees 61p 2%", "Profit £25.15 70%"], "visible": [".cm-bar"] },
-    { "name": "a loss shows without a double negative",
-      "do": [["click", "[data-view=etsy]"], ["fill", "[data-role=mult]", "1"], ["fill", "[data-role=profit]", "0"]], "in": ".cm-split",
-      "expect": ["Where £11.00 goes on Etsy", "Fees £1.87", "Loss £1.11"], "absent": ["−", "Profit"] },
-    { "name": "screen reader line gives the result",
-      "do": [["fill", "[data-role=mult]", "2"], ["fill", "[data-role=profit]", "75"]], "wait": 1000, "in": ".cm-sr",
-      "expect": ["Wholesale £18.00, retail £36.00."] },
-    { "name": "a result pending when a field is blanked is never read out",
-      "do": [["fill", "[data-role=hours]", "1"], ["fill", "[data-role=hours]", ""]], "wait": 1000, "in": ".cm-sr",
-      "expect": ["Enter your hours on this piece."], "absent": ["Wholesale"] },
-    { "name": "back to a result",
-      "do": [["fill", "[data-role=hours]", "0.5"]], "wait": 1000, "in": ".cm-sr",
-      "expect": ["Wholesale £18.00, retail £36.00."] },
-    { "name": "card fee error is read out",
-      "do": [["fill", "[data-role=readerpct]", "150"]], "wait": 1000, "in": ".cm-sr",
-      "expect": ["A card fee can't be 100% or more"] },
-    { "name": "example untouched: offer to clear it",
-      "do": [["fill", "[data-role=readerpct]", "1.69"]], "in": ".cm-example",
-      "expect": ["It opens on an example mug.", "Clear the example"], "visible": ["[data-role=example]"] },
-    { "name": "own figures typed after clearing: no button that could wipe them",
-      "do": [["click", "[data-role=example]"], ["fill", "[data-role=clay]", "2"], ["fill", "[data-role=glaze]", "0.50"], ["fill", "[data-role=hours]", "1"]],
-      "in": ".cm-example", "expect": ["Using your own figures."], "hidden": ["[data-role=example]"] },
-    { "name": "editing one example figure also hides the button",
-      "do": [["fill", "[data-role=clay]", "0.45"], ["fill", "[data-role=glaze]", "1.13"], ["fill", "[data-role=bisque]", "0.37"], ["fill", "[data-role=glazefire]", "0.60"], ["fill", "[data-role=hours]", "0.75"]],
-      "in": ".cm-example", "expect": ["Using your own figures."], "hidden": ["[data-role=example]"] },
-    { "name": "all fields empty: offer to put the example back",
-      "do": [["fill", "[data-role=clay]", ""], ["fill", "[data-role=glaze]", ""], ["fill", "[data-role=bisque]", ""], ["fill", "[data-role=glazefire]", ""], ["fill", "[data-role=hours]", ""]],
-      "in": ".cm-example", "expect": ["Add your own figures for one piece.", "Put the example back"], "visible": ["[data-role=example]"] },
-    { "name": "putting it back restores the mug",
-      "do": [["click", "[data-role=example]"]], "in": ".cm-results",
-      "expect": ["Cost to make: £10.24", "Retail: £36.00"] }
-  ]
+ "root": ".ceramind-pricing-calculator",
+ "cases": [
+  {
+   "name": "results link Etsy, Shopify, SumUp and Etsy's VAT on fees",
+   "in": ".cm-results",
+   "expect": [
+    "Etsy: £5.16 in fees, £20.60 profit"
+   ],
+   "links": [
+    [
+     "Etsy",
+     "help.etsy.com/hc/articles/360035902374"
+    ],
+    [
+     "Shopify",
+     "shopify.com/uk/pricing"
+    ],
+    [
+     "SumUp",
+     "sumup.com/en-gb/pricing"
+    ],
+    [
+     "20% VAT it adds",
+     "help.etsy.com/hc/articles/360040584433"
+    ]
+   ]
+  },
+  {
+   "name": "hints and disclaimer link their sources (£)",
+   "in": ".cm-card",
+   "links": [
+    [
+     "Potclays clay",
+     "potclays.co.uk/brown-clay/premium-sanded-buff"
+    ],
+    [
+     "Potclays glaze powder",
+     "potclays.co.uk/stoneware-glaze/stoneware-matt"
+    ],
+    [
+     "Kiln Firing Cost Calculator",
+     "ceramindtools.com/pages/kiln-cost-calculator"
+    ],
+    [
+     "UK National Living Wage",
+     "gov.uk/national-minimum-wage-rates"
+    ],
+    [
+     "Cornelia McCarthy's pricing guide",
+     "Pricing_your_work_by_Cornelia_McCarthy.pdf"
+    ],
+    [
+     "20% standard rate",
+     "gov.uk/vat-rates"
+    ],
+    [
+     "GOV.UK",
+     "gov.uk/register-for-vat"
+    ],
+    [
+     "Etsy UK",
+     "help.etsy.com/hc/articles/360035902374"
+    ],
+    [
+     "4% + 20p payment processing",
+     "help.etsy.com/hc/articles/115015628847"
+    ],
+    [
+     "0.48% regulatory fee",
+     "help.etsy.com/hc/articles/1500011073202"
+    ],
+    [
+     "20% VAT on those fees",
+     "help.etsy.com/hc/articles/360040584433"
+    ],
+    [
+     "Shopify Payments",
+     "shopify.com/uk/pricing"
+    ],
+    [
+     "Square",
+     "squareup.com/gb/en/pricing"
+    ],
+    [
+     "Zettle",
+     "zettle.com/gb/pricing"
+    ],
+    [
+     "Etsy's",
+     "help.etsy.com/hc/articles/360035902374"
+    ],
+    [
+     "Shopify's",
+     "shopify.com/uk/pricing"
+    ],
+    [
+     "HMRC",
+     "gov.uk/find-hmrc-contacts/vat-general-enquiries"
+    ]
+   ]
+  },
+  {
+   "name": "rate below the National Living Wage links GOV.UK in the note",
+   "do": [
+    [
+     "fill",
+     "[data-role=rate]",
+     "8"
+    ]
+   ],
+   "in": ".cm-results",
+   "expect": [
+    "£8.00 an hour is below the UK National Living Wage of £12.71."
+   ],
+   "links": [
+    [
+     "UK National Living Wage",
+     "gov.uk/national-minimum-wage-rates"
+    ]
+   ]
+  },
+  {
+   "name": "$ links go to the US pages",
+   "do": [
+    [
+     "fill",
+     "[data-role=rate]",
+     "12.71"
+    ],
+    [
+     "click",
+     "[data-cur=usd]"
+    ]
+   ],
+   "in": ".cm-card",
+   "expect": [
+    "Card reader (Square): $1.09 in fees, $24.67 profit"
+   ],
+   "links": [
+    [
+     "Etsy US",
+     "help.etsy.com/hc/articles/360035902374"
+    ],
+    [
+     "3% + 25¢ payment processing",
+     "help.etsy.com/hc/articles/115015628847"
+    ],
+    [
+     "Shopify Payments",
+     "shopify.com/pricing"
+    ],
+    [
+     "Square",
+     "squareup.com/us/en/payments/our-fees"
+    ],
+    [
+     "Shopify's",
+     "www.shopify.com/pricing"
+    ]
+   ]
+  },
+  {
+   "name": "back to £: Shopify links back to the UK page",
+   "do": [
+    [
+     "click",
+     "[data-cur=gbp]"
+    ]
+   ],
+   "in": ".cm-card",
+   "links": [
+    [
+     "Shopify's",
+     "shopify.com/uk/pricing"
+    ],
+    [
+     "Shopify",
+     "shopify.com/uk/pricing"
+    ]
+   ]
+  },
+  {
+   "name": "$ hints carry no UK prices",
+   "do": [
+    [
+     "click",
+     "[data-cur=usd]"
+    ]
+   ],
+   "in": ".cm-card",
+   "expect": [
+    "The example figures are UK prices",
+    "divide one firing's cost by the number of pieces in the kiln",
+    "Fees on shipping"
+   ],
+   "absent": [
+    "(£)",
+    "90p a kg",
+    "£11.30",
+    "37p a mug",
+    "£12.71",
+    "£90,000",
+    "National Living Wage",
+    "postage"
+   ]
+  },
+  {
+   "name": "£ hints come back",
+   "do": [
+    [
+     "click",
+     "[data-cur=gbp]"
+    ]
+   ],
+   "in": ".cm-card",
+   "expect": [
+    "500 g of Potclays clay at 90p a kg",
+    "£11.30 a kg",
+    "about 37p a mug",
+    "National Living Wage",
+    "Fees on postage"
+   ],
+   "absent": [
+    "UK prices",
+    "divide one firing"
+   ]
+  },
+  {
+   "name": "card reader view with a blank fee shows no chart",
+   "do": [
+    [
+     "click",
+     "[data-view=reader]"
+    ],
+    [
+     "fill",
+     "[data-role=readerpct]",
+     ""
+    ]
+   ],
+   "in": ".cm-split",
+   "expect": [
+    "Enter the card reader fee % to see this split."
+   ],
+   "absent": [
+    "Profit",
+    "Fees",
+    "Materials"
+   ],
+   "hidden": [
+    ".cm-bar"
+   ]
+  },
+  {
+   "name": "card fee of 150% asks to check it",
+   "do": [
+    [
+     "fill",
+     "[data-role=readerpct]",
+     "150"
+    ]
+   ],
+   "in": ".cm-split",
+   "expect": [
+    "Check the card reader fee % to see this split."
+   ],
+   "hidden": [
+    ".cm-bar"
+   ]
+  },
+  {
+   "name": "fee back: chart returns (profit 25.15085 of 36 = 70%)",
+   "do": [
+    [
+     "fill",
+     "[data-role=readerpct]",
+     "1.69"
+    ]
+   ],
+   "in": ".cm-split",
+   "expect": [
+    "Where £36.00 goes with a card reader",
+    "Fees 61p 2%",
+    "Profit £25.15 70%"
+   ],
+   "visible": [
+    ".cm-bar"
+   ]
+  },
+  {
+   "name": "a loss shows without a double negative",
+   "do": [
+    [
+     "click",
+     "[data-view=etsy]"
+    ],
+    [
+     "fill",
+     "[data-role=mult]",
+     "1"
+    ],
+    [
+     "fill",
+     "[data-role=profit]",
+     "0"
+    ]
+   ],
+   "in": ".cm-split",
+   "expect": [
+    "Where £11.00 goes on Etsy",
+    "Fees £1.87",
+    "Loss £1.11"
+   ],
+   "absent": [
+    "−",
+    "Profit"
+   ]
+  },
+  {
+   "name": "screen reader line gives the result",
+   "do": [
+    [
+     "fill",
+     "[data-role=mult]",
+     "2"
+    ],
+    [
+     "fill",
+     "[data-role=profit]",
+     "75"
+    ]
+   ],
+   "wait": 1000,
+   "in": ".cm-sr",
+   "expect": [
+    "Wholesale £18.00, retail £36.00."
+   ]
+  },
+  {
+   "name": "a result pending when a field is blanked is never read out",
+   "do": [
+    [
+     "fill",
+     "[data-role=hours]",
+     "1"
+    ],
+    [
+     "fill",
+     "[data-role=hours]",
+     ""
+    ]
+   ],
+   "wait": 1000,
+   "in": ".cm-sr",
+   "expect": [
+    "Enter your hours on this piece."
+   ],
+   "absent": [
+    "Wholesale"
+   ]
+  },
+  {
+   "name": "back to a result",
+   "do": [
+    [
+     "fill",
+     "[data-role=hours]",
+     "0.5"
+    ]
+   ],
+   "wait": 1000,
+   "in": ".cm-sr",
+   "expect": [
+    "Wholesale £18.00, retail £36.00."
+   ]
+  },
+  {
+   "name": "card fee error is read out",
+   "do": [
+    [
+     "fill",
+     "[data-role=readerpct]",
+     "150"
+    ]
+   ],
+   "wait": 1000,
+   "in": ".cm-sr",
+   "expect": [
+    "A card fee can't be 100% or more"
+   ]
+  },
+  {
+   "name": "example untouched: offer to clear it",
+   "do": [
+    [
+     "fill",
+     "[data-role=readerpct]",
+     "1.69"
+    ]
+   ],
+   "in": ".cm-example",
+   "expect": [
+    "It opens on an example mug.",
+    "Clear the example"
+   ],
+   "visible": [
+    "[data-role=example]"
+   ]
+  },
+  {
+   "name": "own figures typed after clearing: no button that could wipe them",
+   "do": [
+    [
+     "click",
+     "[data-role=example]"
+    ],
+    [
+     "fill",
+     "[data-role=clay]",
+     "2"
+    ],
+    [
+     "fill",
+     "[data-role=glaze]",
+     "0.50"
+    ],
+    [
+     "fill",
+     "[data-role=hours]",
+     "1"
+    ]
+   ],
+   "in": ".cm-example",
+   "expect": [
+    "Using your own figures."
+   ],
+   "hidden": [
+    "[data-role=example]"
+   ]
+  },
+  {
+   "name": "editing one example figure also hides the button",
+   "do": [
+    [
+     "fill",
+     "[data-role=clay]",
+     "0.45"
+    ],
+    [
+     "fill",
+     "[data-role=glaze]",
+     "1.13"
+    ],
+    [
+     "fill",
+     "[data-role=bisque]",
+     "0.37"
+    ],
+    [
+     "fill",
+     "[data-role=glazefire]",
+     "0.60"
+    ],
+    [
+     "fill",
+     "[data-role=hours]",
+     "0.75"
+    ]
+   ],
+   "in": ".cm-example",
+   "expect": [
+    "Using your own figures."
+   ],
+   "hidden": [
+    "[data-role=example]"
+   ]
+  },
+  {
+   "name": "all fields empty: offer to put the example back",
+   "do": [
+    [
+     "fill",
+     "[data-role=clay]",
+     ""
+    ],
+    [
+     "fill",
+     "[data-role=glaze]",
+     ""
+    ],
+    [
+     "fill",
+     "[data-role=bisque]",
+     ""
+    ],
+    [
+     "fill",
+     "[data-role=glazefire]",
+     ""
+    ],
+    [
+     "fill",
+     "[data-role=hours]",
+     ""
+    ]
+   ],
+   "in": ".cm-example",
+   "expect": [
+    "Add your own figures for one piece.",
+    "Put the example back"
+   ],
+   "visible": [
+    "[data-role=example]"
+   ]
+  },
+  {
+   "name": "putting it back restores the mug",
+   "do": [
+    [
+     "click",
+     "[data-role=example]"
+    ]
+   ],
+   "in": ".cm-results",
+   "expect": [
+    "Cost to make: £10.24",
+    "Retail: £36.00"
+   ]
+  }
+ ]
 }
