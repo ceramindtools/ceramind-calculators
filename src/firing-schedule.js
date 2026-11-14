@@ -27,8 +27,12 @@
  * - Drop and hold (glaze): Plainsman Clays via Digitalfire (C04PLTP, PLC6DS, C6DHSC): fall 100°F (56°C) at
  *   900°F/hr (500°C/hr) and hold 30 min.
  * - Slow cool (glaze): Digitalfire 04DSDH step 5 and C6DHSC step 5: 150°F/hr (83°C/hr) to 1400°F (760°C), then off.
- * - Cone temperatures: Orton self-supporting cones at 60°C/hr over the last 100°C, the same figures as the live
- *   Ceramind cone converter (ceramind-cone-converter-embed.js). Bartlett's tables use these too (cone 04 = 1063°C).
+ * - Cone temperatures: Orton self-supporting cones, the live Ceramind cone converter's two columns (60 and 150°C/hr
+ *   over the last 100°C, ceramind-cone-converter-embed.js). Each schedule uses the column nearer its last ramp:
+ *   Slow 44, Med/Slow 60 and Medium 67°C/hr use 60°C/hr (cone 6 = 1222°C); Fast 111°C/hr uses 150°C/hr
+ *   (cone 6 = 1243°C). A Bartlett controller corrects for this itself; a plain ramp/hold controller needs the
+ *   figure shown. Slow ends below 60°C/hr and the table has no slower column, so the note says the cone may bend early.
+ * - Fast caveat: Potclays advises glaze firings at 100–130°C/hr, so Fast (317°C/hr from cold) carries a warning.
  * - Lowest top temperature 800°C: Hot Clay gives stoneware bisque as 800–1000°C.
  */
 (function () {
@@ -57,12 +61,21 @@
   var DROP = { rate: 900, by: 100, hold: 30 };
   var SLOW_COOL = { rate: 150, to: 1400 };
 
-  // Orton self-supporting cones, °C at 60°C/hr (Ceramind cone converter data)
+  // Orton self-supporting cones, °C: [heated at 60°C/hr, at 150°C/hr] over the last 100°C (Ceramind cone converter data)
   var CONE_C = {
-    '010': 903, '09': 920, '08': 942, '07': 976, '06': 998, '05': 1031, '04': 1063, '03': 1086, '02': 1102,
-    '01': 1119, '1': 1137, '4': 1162, '5': 1186, '5½': 1203, '6': 1222, '7': 1239, '8': 1249, '9': 1260,
-    '10': 1285, '11': 1294
+    '010': [903, 915], '09': [920, 930], '08': [942, 956], '07': [976, 987], '06': [998, 1013], '05': [1031, 1044],
+    '04': [1063, 1077], '03': [1086, 1104], '02': [1102, 1122], '01': [1119, 1138], '1': [1137, 1154],
+    '4': [1162, 1183], '5': [1186, 1207], '5½': [1203, 1225], '6': [1222, 1243], '7': [1239, 1257],
+    '8': [1249, 1271], '9': [1260, 1280], '10': [1285, 1305], '11': [1294, 1315]
   };
+  var CONE_RATES = [60, 150];   // °C/hr for the two columns above
+
+  // The last ramp of a speed, in °F/hr, and which cone column (0 = 60°C/hr, 1 = 150°C/hr) is nearer to it
+  function lastRateF(speedKey) { var segs = SPEEDS[speedKey].segs; return segs[segs.length - 1][0]; }
+  function coneCol(speedKey) {
+    var r = lastRateF(speedKey) * 5 / 9;
+    return Math.abs(r - CONE_RATES[0]) <= Math.abs(r - CONE_RATES[1]) ? 0 : 1;
+  }
 
   var FIRINGS = {
     bisque: {
@@ -114,7 +127,9 @@
     + '.cm-calc .cm-step-n { flex: 0 0 auto; min-width: 1.35rem; padding: 0.05rem 0.3rem; border-radius: 6px; text-align: center;'
     + '  background: rgba(255,255,255,0.16); font-size: 0.75rem; font-weight: 700; }'
     + '.cm-calc .cm-step-tag { font-weight: 400; opacity: 0.85; white-space: nowrap; }'
-    + '.cm-calc .cm-steps + .cm-results-list { border-top: 1px solid rgba(255,255,255,0.28); padding-top: 0.6rem; }'
+    + '.cm-calc .cm-steps:not(:empty) ~ .cm-results-list { border-top: 1px solid rgba(255,255,255,0.28); padding-top: 0.6rem; }'
+    + '.cm-calc .cm-results-caution { margin: 0 0 0.7rem; padding: 0.5rem 0.65rem; border-radius: 8px; background: rgba(255,255,255,0.13);'
+    + '  color: #fff; font-size: 0.8rem; font-weight: 600; line-height: 1.4; }'
     + '.cm-calc .cm-tips { margin: 0 0 0.9rem; padding: 0 0 0 1.1rem; font-size: 0.75rem; line-height: 1.45; color: var(--cm-brand-soft); }'
     + '.cm-calc .cm-tips li { margin: 0 0 0.25rem; padding: 0; }'
     + '.cm-calc .cm-cost { margin: 0 0 1rem; }'
@@ -187,7 +202,7 @@
       + '      <input type="time" class="cm-dim-input" id="' + f('start') + '" data-role="start">'
       + '    </div>'
       + '  </div>'
-      + '  <p class="cm-hint">Not sure? Pick the thicker or damper option. The slower schedule gives water and burn-off more time.</p>'
+      + '  <p class="cm-hint" data-role="ware-hint"></p>'
       + '  <div class="cm-visual cm-visual-graph" data-role="graph-box">'
       + '    <svg viewBox="0 0 320 132" class="cm-graph" aria-hidden="true" focusable="false">'
       + '      <line class="cm-graph-grid" data-role="g-grid1" x1="44" x2="314"></line>'
@@ -205,6 +220,7 @@
       + '  <div class="cm-results">'
       + '    <p class="cm-results-title">Your starting schedule</p>'
       + '    <ol class="cm-steps" data-role="steps"></ol>'
+      + '    <p class="cm-results-caution" data-role="caution" hidden></p>'
       + '    <ul class="cm-results-list"></ul>'
       + '    <p class="cm-results-note" data-role="note"></p>'
       + '  </div>'
@@ -303,6 +319,13 @@
     var cost = q('[data-role="cost"]');
     var graphBox = q('[data-role="graph-box"]');
     var bung = q('[data-role="bung"]');
+    var caution = q('[data-role="caution"]');
+    var wareHint = q('[data-role="ware-hint"]');
+
+    function speedNow() { return FIRINGS[firing.value].speed[thick]; }
+    // A cone's top temperature for the schedule on screen: the Orton column nearer its last ramp
+    function coneC(name) { return CONE_C[name][coneCol(speedNow())]; }
+    function perHourF(rF) { return (unit === 'c' ? Math.round(rF * 5 / 9) + '°C' : Math.round(rF) + '°F') + ' an hour'; }
     var lastSchedule = null;
 
     function sym() { return unit === 'c' ? '°C' : '°F'; }
@@ -349,7 +372,7 @@
       fr.cones.forEach(function (name) {
         var o = document.createElement('option');
         o.value = name;
-        o.textContent = 'Cone ' + name + ' · ' + cText(CONE_C[name]);
+        o.textContent = 'Cone ' + name + ' · ' + cText(coneC(name));
         cone.appendChild(o);
       });
       var own = document.createElement('option');
@@ -361,7 +384,7 @@
 
     function setTopFromCone() {
       if (cone.value === 'own') return;
-      top.value = Math.round(inUnit(CONE_C[cone.value]));
+      top.value = Math.round(inUnit(coneC(cone.value)));
       lastSet = null;
     }
 
@@ -369,7 +392,7 @@
     function coneFor(v) {
       var cones = FIRINGS[firing.value].cones;
       for (var i = 0; i < cones.length; i++) {
-        if (Math.round(inUnit(CONE_C[cones[i]])) === v) return cones[i];
+        if (Math.round(inUnit(coneC(cones[i]))) === v) return cones[i];
       }
       return null;
     }
@@ -470,12 +493,16 @@
       qa('[data-glaze]').forEach(function (el) { el.hidden = !fr.glaze; });
       topLabel.textContent = 'Top temperature (' + sym() + ')';
       bung.textContent = cText(600);
+      wareHint.textContent = fr.glaze
+        ? 'Bartlett has two glaze speeds: Fast for thin ware and Medium for anything thicker. Still damp adds a drying hold first.'
+        : 'Not sure? Pick the thicker or damper option. The slower schedule gives water and burn-off more time.';
       top.placeholder = unit === 'c' ? 'e.g. 1000' : 'e.g. 1832';
 
       var notes = [];
       stepsEl.innerHTML = '';
       list.innerHTML = '';
       note.textContent = '';
+      caution.hidden = true;
 
       var raw = parseFloat(top.value);
       var topC = NaN, coneName = null;
@@ -485,7 +512,7 @@
           coneName = cone.value !== 'own' ? cone.value : null;
         } else {
           coneName = coneFor(raw);
-          topC = coneName ? CONE_C[coneName] : (unit === 'c' ? raw : fToC(raw));
+          topC = coneName ? coneC(coneName) : (unit === 'c' ? raw : fToC(raw));
           if (!coneName && unit === 'c' && raw > MAX_C && fToC(raw) >= MIN_C && fToC(raw) <= MAX_C) {
             topC = fToC(raw);
             notes.push('Read ' + top.value + ' as °F: ' + Math.round(topC) + '°C.');
@@ -502,6 +529,7 @@
       else if (topC > MAX_C + 0.5) problem = 'That\'s hotter than these firings go. Enter a top temperature up to ' + cText(MAX_C) + '.';
       if (problem) {
         line(problem, 'cm-results-empty');
+        announce(problem);   // replaces any pending result, so a stale total is never read out
         graphBox.hidden = true;
         lastSchedule = null;
         setCost(null);
@@ -535,15 +563,28 @@
       var use = SPEED_USE[s.speed];
       if (typeof use !== 'string') use = use[fr.glaze ? 'glaze' : 'bisque'];
       var src = ['Ramps: Bartlett\'s "' + SPEEDS[s.speed].name + '" kiln controller preset, ' + use + '.'];
+      if (fr.glaze && thick === 'thick') src.push('Bartlett has no slower glaze speed, so thick ware fires on Medium too.');
+      if (s.speed === 'fast') {
+        caution.hidden = false;
+        caution.textContent = 'Fast climbs at ' + perHourF(570) + ' from cold. Bartlett gives it only for thin glazed ware, and Potclays advises '
+          + '100 to 130°C an hour for glaze firings, so choose Normal unless your clay or glaze maker allows a fast firing.';
+      }
       if (dry === 'damp') src.push('Drying: Bartlett\'s ' + PREHEAT.hours[thick] + '-hour preheat for damp ware.');
       if (fr.glaze && cool.value !== 'off') {
         src.push((cool.value === 'slow' ? 'Drop, hold and slow cool' : 'Drop and hold') + ': Plainsman Clays\' schedules on Digitalfire'
           + (firing.value === 'highfire' ? ', published for cone 04 to 6 and used here at your top temperature.' : '.'));
       }
-      src.push(coneName
-        ? 'Cone ' + coneName + ' is ' + cText(CONE_C[coneName]) + ' (Orton self-supporting cone, heated at ' + (unit === 'c' ? '60°C' : '108°F') + ' an hour at the end).'
-        : 'At your own top temperature of ' + cText(topC) + '.');
-      var lo = CONE_C[fr.cones[0]], hi = CONE_C[fr.cones[fr.cones.length - 1]];
+      if (coneName) {
+        var col = coneCol(s.speed), colF = CONE_RATES[col] * 9 / 5, rF = lastRateF(s.speed);
+        var cs = 'Cone ' + coneName + ' is ' + cText(topC) + ': Orton\'s self-supporting figure for a ' + perHourF(colF) + ' finish';
+        if (Math.abs(rF - colF) < 1) cs += ', the same as this schedule\'s last ramp.';
+        else if (rF < colF && col === 0) cs += '. This schedule ends slower, at ' + perHourF(rF) + ', so the cone may bend a little before this temperature: watch your witness cone.';
+        else cs += ', the nearer of the chart\'s two columns to this schedule\'s last ramp of ' + perHourF(rF) + '.';
+        src.push(cs);
+      } else {
+        src.push('At your own top temperature of ' + cText(topC) + '.');
+      }
+      var lo = coneC(fr.cones[0]), hi = coneC(fr.cones[fr.cones.length - 1]);
       if (topC < lo - 25 || topC > hi + 25) {
         notes.push(cText(topC) + ' is outside the usual cones for ' + (/^[aeiou]/.test(fr.name) ? 'an ' : 'a ') + fr.name
           + ' (cone ' + fr.cones[0] + ' to ' + fr.cones[fr.cones.length - 1] + ', ' + cText(lo) + ' to ' + cText(hi) + '). Check the firing type.');
@@ -587,7 +628,7 @@
         var exact = null;
         var v = parseFloat(top.value);
         if (lastSet && top.value === lastSet.text) exact = lastSet.c;
-        else if (!isNaN(v) && v > 0) exact = cone.value !== 'own' ? CONE_C[cone.value] : (unit === 'c' ? v : fToC(v));
+        else if (!isNaN(v) && v > 0) exact = cone.value !== 'own' ? coneC(cone.value) : (unit === 'c' ? v : fToC(v));
         unit = next;
         setPressed(qa('[data-unit]'), 'data-unit', unit);
         var keep = cone.value;
@@ -606,6 +647,9 @@
         if (next === thick) return;
         thick = next;
         setPressed(qa('[data-thick]'), 'data-thick', thick);
+        // The speed may change, and with it the cone's top temperature (see coneCol)
+        fillCones(cone.value);
+        setTopFromCone();
         render();
       });
     });
