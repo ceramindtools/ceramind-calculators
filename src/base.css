@@ -205,6 +205,9 @@
 .cm-calc .cm-results-list li::before, .cm-calc .cm-results-list li::marker { content: none; }
 .cm-calc .cm-results-empty { font-size: 0.85rem; font-weight: 400; opacity: 0.75; }
 .cm-calc .cm-results-note { margin: 0.6rem 0 0; font-size: 0.75rem; font-weight: 400; opacity: 0.8; line-height: 1.4; color: #fff; }
+/* Source links inside a calculator's own text (notes, hints, disclaimer) */
+.cm-calc a { color: var(--cm-brand); text-decoration: underline; text-underline-offset: 2px; }
+.cm-calc .cm-results a { color: #fff; }
 /* Every calculator ends with its own short disclaimer, then the credit line */
 .cm-calc .cm-disclaimer {
   margin: 0 0 0.6rem;
