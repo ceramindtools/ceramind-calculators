@@ -32,7 +32,7 @@
  *   near casting slip, "1.80–1.85" (Wikipedia, Slip casting).
  * - Glaze per pot: a mug takes about 0.15 L (Potclays, "How much powder glaze"). The other pots are OUR estimates,
  *   scaled from that mug by the area glazed inside and out (mug 8.5 x 9.5 cm = about 564 cm², so about 0.27 ml per cm²).
- * - Additions (colourants, opacifiers) are percentages of the base and go on top of its 100 (Ceramic Arts Network
+ * - Additions (colourants, opacifiers) are percentages of the base and go on top of its 100 (Ceramic Arts Daily
  *   forum; Ceramic School's worked example totals 107.3).
  * - Default recipe: Leach 4-3-2-1 (potash feldspar 40, silica 30, whiting 20, kaolin 10), as printed in Roger Graham's
  *   guide ("Leach Cone-8 glaze"), plus a 5% red iron oxide addition as an example.
