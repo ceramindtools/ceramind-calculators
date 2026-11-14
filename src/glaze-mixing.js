@@ -32,6 +32,8 @@
  *   near casting slip, "1.80–1.85" (Wikipedia, Slip casting).
  * - Glaze per pot: a mug takes about 0.15 L (Potclays, "How much powder glaze"). The other pots are OUR estimates,
  *   scaled from that mug by the area glazed inside and out (mug 8.5 x 9.5 cm = about 564 cm², so about 0.27 ml per cm²).
+ * - A base that doesn't add up to 100 (e.g. written in parts, 4/3/2/1) is read as parts and scaled to 100, so the
+ *   grams are always right; the person is told. "Scale to 100%" only rewrites the base; additions stay as typed.
  * - Additions (colourants, opacifiers) are percentages of the base and go on top of its 100 (Ceramic Arts Daily
  *   forum; Ceramic School's worked example totals 107.3).
  * - Default recipe: Leach 4-3-2-1 (potash feldspar 40, silica 30, whiting 20, kaolin 10), as printed in Roger Graham's
@@ -513,8 +515,8 @@
       base.forEach(function (r) { if (r.pct > 0) baseSum += r.pct; });
       adds.forEach(function (r) { if (r.pct > 0) addSum += r.pct; });
 
-      baseSumEl.textContent = 'Base total: ' + pctText(baseSum) + '%';
       var off = baseSum > 0 && Math.abs(baseSum - 100) >= 0.005;
+      baseSumEl.textContent = 'Base total: ' + pctText(baseSum) + (off ? ' (not 100)' : '%');
       baseSumEl.classList.toggle('is-off', off);
       addSumEl.textContent = adds.length ? 'Additions: ' + pctText(addSum) + '%' : '';
 
@@ -527,9 +529,9 @@
       }
       var checkMsg = '';
       if (off) {
-        checkMsg = 'Your base adds up to ' + pctText(baseSum) + '%, not 100%.';
+        checkMsg = 'Your base adds up to ' + pctText(baseSum) + ', not 100, so we read it as parts out of ' + pctText(baseSum) + '.';
         if (moveRow) checkMsg += ' ' + moveRow.name + ' looks like a colourant. If your recipe lists it after the 100%, move it to the additions.';
-        else checkMsg += ' Scaling keeps the glaze the same and makes the base total 100%.';
+        else checkMsg += ' The weights below are already right. Scaling only rewrites the base as percentages; additions stay as they are.';
       }
       check.hidden = !checkMsg;
       checkText.textContent = checkMsg;
@@ -542,34 +544,37 @@
       if (missing.length) return askFor(missing);
       if (baseSum <= 0) return askFor(['a % for at least one base ingredient']);
 
-      var per = basis === 'base' ? size / 100 : size / (baseSum + addSum);
+      // Always work from the base scaled to 100: a base typed as parts (4/3/2/1) or one that is a little off
+      // still gives the right glaze. Additions are a % of that base weight.
+      var baseW = basis === 'base' ? size : size / (1 + addSum / 100);
+      var per = baseW / baseSum;
       base.forEach(function (r) { line(r.name + ': ' + grams(r.pct * per)); });
       var used = adds.filter(function (r) { return r.pct > 0; });
       if (used.length) {
         line('Additions, on top of the base', 'cm-gm-sub');
-        used.forEach(function (r) { line(r.name + ' (' + pctText(r.pct) + '%): ' + grams(r.pct * per)); });
+        used.forEach(function (r) { line(r.name + ' (' + pctText(r.pct) + '%): ' + grams(r.pct / 100 * baseW)); });
       }
-      var total = (baseSum + addSum) * per;
+      var total = baseW * (1 + addSum / 100);
       line('Total to weigh: ' + grams(total), 'cm-gm-total');
 
       if (off) {
-        notes.push('Your base adds up to ' + pctText(baseSum) + '%, not 100%, so it weighs ' + grams(baseSum * per) + '.');
+        notes.push('Your base adds up to ' + pctText(baseSum) + ', not 100, so we read it as parts out of ' + pctText(baseSum) + ' and scaled it to 100%.');
         if (moveRow) notes.push(moveRow.name + ' may belong in the additions.');
       }
       if (used.length && basis === 'base') {
-        notes.push('The ' + pctText(addSum) + '% of additions goes on top of the ' + grams(baseSum * per) + ' base, so the batch weighs ' + grams(total) + '.');
+        notes.push('The ' + pctText(addSum) + '% of additions goes on top of the ' + grams(baseW) + ' base, so the batch weighs ' + grams(total) + '.');
       } else if (used.length) {
-        notes.push('The additions are counted inside your ' + grams(size) + ', so the base is ' + grams(baseSum * per) + ' and the additions ' + grams(addSum * per) + '.');
+        notes.push('The additions are counted inside your ' + grams(size) + ', so the base is ' + grams(baseW) + ' and the additions ' + grams(addSum / 100 * baseW) + '.');
       }
 
-      // picture: the base up to the 100% line, additions past it
-      var scale = Math.max(baseSum + addSum, 100);
+      // picture: the base (scaled to 100) up to the 100% line, additions past it
+      var scale = 100 + addSum;
       var html = '';
-      base.forEach(function (r) { if (r.pct > 0) html += seg('cm-gm-seg-base', r.pct / scale * 100); });
+      base.forEach(function (r) { if (r.pct > 0) html += seg('cm-gm-seg-base', r.pct / baseSum * 100 / scale * 100); });
       used.forEach(function (r) { html += seg('cm-gm-seg-add', r.pct / scale * 100); });
       html += '<span class="cm-gm-mark" style="left:' + (100 / scale * 100).toFixed(3) + '%"></span>';
       bar.innerHTML = html;
-      legend.innerHTML = key('cm-dot-fired', 'Base ' + pctText(baseSum) + '%')
+      legend.innerHTML = key('cm-dot-fired', 'Base 100%')
         + (used.length ? key('cm-dot-add', 'Additions ' + pctText(addSum) + '%') : '')
         + key('cm-dot-line', '100% line');
       explain.textContent = used.length
@@ -637,6 +642,7 @@
       var check100 = 'Check: 100 ml should weigh ' + fmt(s2 * 100, Math.round(s2 * 1000) % 10 ? 1 : 0) + ' g';
       if (Math.abs(s1 - s2) < 0.005) {
         line('No change: it\'s already at SG ' + sgText(s2) + '.');
+        announce('No change: it\'s already at SG ' + sgText(s2) + '.');
         vis.hidden = true;
       } else if (s1 > s2) {
         var add = v1 * (s1 - s2) / (s2 - 1);
@@ -655,13 +661,14 @@
         line('Pour off: ' + fmt(pour, 0) + ' ml of clear water');
         line('Or stir in: ' + weight(powder) + ' of dry glaze');
         notes.push('Leave the glaze to settle overnight first, so the water you pour off is clear (Potclays).');
+        notes.push('The pour-off figure needs no guess about the powder. The stir-in figure assumes the powder is about 2.6 times as heavy as water, so check the SG after.');
         line(check100);
         bar.hidden = true;
         legend.hidden = true;
         vis.hidden = false;
         explain.textContent = 'Your ' + fmt(m, 0) + ' g at SG ' + sgText(s1) + ' fills ' + fmt(v1, 0) + ' ml. Pouring off '
           + fmt(pour, 0) + ' ml of clear water leaves ' + fmt(m - pour, 0) + ' g in ' + fmt(v1 - pour, 0) + ' ml, which is SG '
-          + sgText(s2) + '. Adding powder instead assumes it is about 2.6 times as heavy as water.';
+          + sgText(s2) + '.';
         announce('Pour off ' + fmt(pour, 0) + ' ml of water.');
       }
       notes.push(presetNote());
@@ -765,7 +772,6 @@
 
     scaleBtn.addEventListener('click', function () {
       var base = readRows('base').filter(function (r) { return r.pct > 0; });
-      var adds = readRows('add').filter(function (r) { return r.pct > 0; });
       var sum = base.reduce(function (a, r) { return a + r.pct; }, 0);
       if (!sum) return;
       var k = 100 / sum;
@@ -780,7 +786,6 @@
       // rounding to 2 places can leave 99.99 or 100.01: settle it on the biggest ingredient
       var diff = Math.round((100 - total) * 100) / 100;
       if (diff) biggest.input.value = Math.round((parseFloat(biggest.input.value) + diff) * 100) / 100;
-      adds.forEach(function (r) { r.input.value = Math.round(r.pct * k * 100) / 100; });
       render();
       // the check box hides once the base is 100, so put focus back on the recipe
       biggest.input.focus();

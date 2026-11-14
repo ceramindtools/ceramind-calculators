@@ -1,158 +1,876 @@
 {
-  "root": ".ceramind-glaze-mixing-calculator",
-  "cases": [
-    { "name": "default: Leach 4-3-2-1 + 5% red iron oxide, 1,000 g of base",
-      "expect": ["WEIGH OUT:", "Potash feldspar: 400 g", "Silica: 300 g", "Whiting: 200 g", "China clay: 100 g",
-                 "ADDITIONS, ON TOP OF THE BASE", "Red iron oxide (5%): 50.0 g", "Total to weigh: 1,050 g",
-                 "goes on top of the 1,000 g base, so the batch weighs 1,050 g"],
-      "absent": ["adds up to"] },
-    { "name": "batch size counts the additions too: 1,000 / 105 per %",
-      "do": [["click", "[data-basis=total]"]],
-      "expect": ["Potash feldspar: 381 g", "Silica: 286 g", "Whiting: 190 g", "China clay: 95.2 g",
-                 "Red iron oxide (5%): 47.6 g", "Total to weigh: 1,000 g", "counted inside your 1,000 g, so the base is 952 g and the additions 47.6 g"] },
-    { "name": "clicking the selected toggle changes nothing",
-      "do": [["click", "[data-basis=total]"]],
-      "expect": ["Potash feldspar: 381 g", "Total to weigh: 1,000 g"] },
-    { "name": "base only, 500 g",
-      "do": [["click", "[data-basis=base]"], ["fill", "[data-role=batch]", "500"]],
-      "expect": ["Potash feldspar: 200 g", "Silica: 150 g", "Whiting: 100 g", "China clay: 50.0 g",
-                 "Red iron oxide (5%): 25.0 g", "Total to weigh: 525 g"] },
-    { "name": "2 typed as the batch is read as 2 kg",
-      "do": [["fill", "[data-role=batch]", "2"]],
-      "expect": ["Read 2 as kilograms: 2,000 g.", "Potash feldspar: 800 g", "Total to weigh: 2,100 g"] },
-    { "name": "big batches get thousands commas",
-      "do": [["fill", "[data-role=batch]", "25000"]],
-      "expect": ["Potash feldspar: 10,000 g", "Red iron oxide (5%): 1,250 g", "Total to weigh: 26,250 g"] },
-    { "name": "base adding up to 96 is flagged and weighed as typed",
-      "do": [["fill", "[data-role=batch]", "1000"], ["fill", "[data-list=base] .cm-gm-row:nth-child(4) [data-role=pct]", "6"]],
-      "expect": ["China clay: 60.0 g", "Your base adds up to 96%, not 100%, so it weighs 960 g.", "Total to weigh: 1,010 g"] },
-    { "name": "scale to 100: 41.67 / 31.25 / 20.83 / 6.25, addition 5.21",
-      "do": [["click", "[data-role=scale]"]],
-      "expect": ["Potash feldspar: 417 g", "Silica: 313 g", "Whiting: 208 g", "China clay: 62.5 g",
-                 "Red iron oxide (5.21%): 52.1 g", "Total to weigh: 1,052 g"],
-      "absent": ["adds up to"] },
-    { "name": "remove the addition",
-      "do": [["click", "[data-list=add] .cm-gm-row:nth-child(1) [data-role=remove]"]],
-      "expect": ["Potash feldspar: 417 g", "Total to weigh: 1,000 g"],
-      "absent": ["ADDITIONS", "on top of"] },
-    { "name": "a colourant typed into the base is spotted",
-      "do": [["click", "[data-add=base]"], ["fill", "[data-list=base] .cm-gm-row:last-child [data-role=name]", "Copper carbonate"],
-             ["fill", "[data-list=base] .cm-gm-row:last-child [data-role=pct]", "3"]],
-      "expect": ["Copper carbonate: 30.0 g", "Your base adds up to 103%, not 100%", "Copper carbonate may belong in the additions.", "Total to weigh: 1,030 g"] },
-    { "name": "move it to the additions",
-      "do": [["click", "[data-role=move]"]],
-      "expect": ["ADDITIONS, ON TOP OF THE BASE", "Copper carbonate (3%): 30.0 g", "Potash feldspar: 417 g", "Total to weigh: 1,030 g"],
-      "absent": ["adds up to", "may belong"] },
-    { "name": "blank batch size names what's missing",
-      "do": [["fill", "[data-role=batch]", ""]],
-      "expect": ["Enter your batch size."] },
-    { "name": "a named ingredient with no %",
-      "do": [["fill", "[data-role=batch]", "1000"], ["fill", "[data-list=base] .cm-gm-row:nth-child(3) [data-role=pct]", ""]],
-      "expect": ["Enter a % for Whiting."] },
-    { "name": "two things missing",
-      "do": [["fill", "[data-role=batch]", ""]],
-      "expect": ["Enter your batch size and a % for Whiting."] },
-    { "name": "negative % is refused",
-      "do": [["fill", "[data-role=batch]", "1000"], ["fill", "[data-list=base] .cm-gm-row:nth-child(3) [data-role=pct]", "-5"]],
-      "expect": ["A percentage can't be negative: check Whiting."] },
-    { "name": "put Whiting back",
-      "do": [["fill", "[data-list=base] .cm-gm-row:nth-child(3) [data-role=pct]", "20.83"]],
-      "expect": ["Whiting: 208 g", "Total to weigh: 1,030 g"] },
-
-    { "name": "water: 1,000 g dry for dipping at 1.45",
-      "do": [["click", "[data-mode=water]"]],
-      "expect": ["MIX WITH:", "Water: 983 ml (983 g)", "Makes about: 1.37 L of glaze", "Check: 100 ml should weigh 145 g", "Digitalfire gives 1.40"] },
-    { "name": "brushing preset 1.50",
-      "do": [["select", "[data-role=use]", "brushing"]],
-      "expect": ["Water: 846 ml (846 g)", "Makes about: 1.23 L of glaze", "should weigh 150 g", "Spectrum"] },
-    { "name": "spraying preset 1.35",
-      "do": [["select", "[data-role=use]", "spraying"]],
-      "expect": ["Water: 1,374 ml (1,374 g)", "Makes about: 1.76 L of glaze", "should weigh 135 g", "Roger Graham"] },
-    { "name": "own SG 1.40 matches Potclays' 1.54 L per kg",
-      "do": [["fill", "[data-role=sg]", "1.4"]],
-      "expect": ["Water: 1,154 ml (1,154 g)", "Makes about: 1.54 L of glaze", "At your own SG."] },
-    { "name": "145 read as grams per 100 ml",
-      "do": [["fill", "[data-role=sg]", "145"]],
-      "expect": ["Read 145 as grams per 100 ml: SG 1.45.", "Water: 983 ml (983 g)"] },
-    { "name": "1450 read as grams per litre",
-      "do": [["fill", "[data-role=sg]", "1450"]],
-      "expect": ["Read 1,450 as grams per litre: SG 1.45.", "Water: 983 ml (983 g)"] },
-    { "name": "14.5 read as grams per 10 ml (syringe method)",
-      "do": [["fill", "[data-role=sg]", "14.5"]],
-      "expect": ["Read 14.5 as grams per 10 ml: SG 1.45.", "Water: 983 ml (983 g)"] },
-    { "name": "SG 1.0 is impossible",
-      "do": [["fill", "[data-role=sg]", "1"]],
-      "expect": ["The target SG must be above 1.00."], "absent": ["Water:"] },
-    { "name": "SG 2.3 is impossible",
-      "do": [["fill", "[data-role=sg]", "2.3"]],
-      "expect": ["The target SG must be 2.0 or less."], "absent": ["Water:"] },
-    { "name": "SG 1.8 works but warns",
-      "do": [["fill", "[data-role=sg]", "1.8"]],
-      "expect": ["Water: 385 ml (385 g)", "Makes about: 0.77 L of glaze", "close to casting slip"] },
-    { "name": "SG 1.15 works but warns",
-      "do": [["fill", "[data-role=sg]", "1.15"]],
-      "expect": ["Water: 3,718 ml (3,718 g)", "Makes about: 4.10 L of glaze", "very thin for a glaze"] },
-    { "name": "2.5 typed as dry weight is read as kg",
-      "do": [["fill", "[data-role=sg]", "1.45"], ["fill", "[data-role=dry]", "2.5"]],
-      "expect": ["Read 2.5 as kilograms: 2,500 g.", "Water: 2,457 ml (2,457 g)", "Makes about: 3.42 L of glaze"] },
-    { "name": "the whole 1,050 g batch at 1.45",
-      "do": [["fill", "[data-role=dry]", "1050"]],
-      "expect": ["Water: 1,032 ml (1,032 g)", "Makes about: 1.44 L of glaze"] },
-    { "name": "blank dry weight",
-      "do": [["fill", "[data-role=dry]", ""]],
-      "expect": ["Enter your dry glaze weight."] },
-    { "name": "blank dry weight and SG",
-      "do": [["fill", "[data-role=sg]", ""]],
-      "expect": ["Enter your dry glaze weight and a target SG."] },
-    { "name": "mixed bucket starts by asking for weight and SG",
-      "do": [["fill", "[data-role=sg]", "1.45"], ["fill", "[data-role=dry]", "1000"], ["click", "[data-from=bucket]"]],
-      "expect": ["Enter the weight of your glaze and its SG now."] },
-    { "name": "5 kg at 1.55 thinned to 1.45",
-      "do": [["fill", "[data-role=wet]", "5"], ["fill", "[data-role=now]", "1.55"]],
-      "expect": ["TO REACH SG 1.45:", "Add water: 717 ml (717 g)", "Makes about: 3.94 L of glaze", "Check: 100 ml should weigh 145 g"] },
-    { "name": "5 kg at 1.35 is too thin",
-      "do": [["fill", "[data-role=now]", "1.35"]],
-      "expect": ["TOO THIN FOR SG 1.45. EITHER:", "Pour off: 823 ml of clear water", "Or stir in: 837 g of dry glaze", "settle overnight"] },
-    { "name": "already at target",
-      "do": [["fill", "[data-role=now]", "1.45"]],
-      "expect": ["No change: it's already at SG 1.45."] },
-    { "name": "5000 typed in kg is read as grams",
-      "do": [["fill", "[data-role=wet]", "5000"], ["fill", "[data-role=now]", "1.55"]],
-      "expect": ["Read 5,000 as grams: 5 kg.", "Add water: 717 ml (717 g)"] },
-    { "name": "SG now below 1 is impossible",
-      "do": [["fill", "[data-role=now]", "0.9"]],
-      "expect": ["The SG now must be above 1.00."] },
-    { "name": "back to dry powder keeps 1,000 g",
-      "do": [["click", "[data-from=dry]"]],
-      "expect": ["Water: 983 ml (983 g)"] },
-
-    { "name": "pots: 20 mugs at 1.45",
-      "do": [["click", "[data-mode=pots]"]],
-      "expect": ["FOR 20 MUGS, MIX ABOUT:", "Glaze: 3.00 L", "Dry glaze powder: 2.19 kg", "Water: 2.16 L",
-                 "Potclays' rule of thumb", "1 kg of powder makes about 1.37 L"] },
-    { "name": "20 mugs at 1.40 is Potclays' 2 kg",
-      "do": [["fill", "[data-role=sg]", "1.4"]],
-      "expect": ["Glaze: 3.00 L", "Dry glaze powder: 1.95 kg", "Water: 2.25 L", "1 kg of powder makes about 1.54 L"] },
-    { "name": "12 cereal bowls",
-      "do": [["select", "[data-role=kind]", "cereal"], ["fill", "[data-role=pots]", "12"]],
-      "expect": ["FOR 12 CEREAL BOWLS, MIX ABOUT:", "Glaze: 2.16 L", "Dry glaze powder: 1.40 kg", "Water: 1.62 L", "Our estimate for this pot"] },
-    { "name": "0.2 per pot read as litres, kind switches to my own",
-      "do": [["fill", "[data-role=per]", "0.2"]],
-      "expect": ["Read 0.2 as litres: 200 ml.", "FOR 12 POTS, MIX ABOUT:", "Glaze: 2.40 L", "Dry glaze powder: 1.56 kg", "Water: 1.80 L", "At your own figure per pot."] },
-    { "name": "10,000 mugs get commas",
-      "do": [["select", "[data-role=kind]", "mug"], ["fill", "[data-role=pots]", "10000"]],
-      "expect": ["FOR 10,000 MUGS", "Glaze: 1,500 L", "Dry glaze powder: 975 kg", "Water: 1,125 L"] },
-    { "name": "one mug",
-      "do": [["fill", "[data-role=pots]", "1"]],
-      "expect": ["FOR 1 MUG, MIX ABOUT:", "Glaze: 0.15 L", "Dry glaze powder: 98 g", "Water: 0.11 L"] },
-    { "name": "2.4 pots rounds to 2",
-      "do": [["fill", "[data-role=pots]", "2.4"]],
-      "expect": ["Rounded to 2 pots.", "FOR 2 MUGS", "Glaze: 0.30 L"] },
-    { "name": "blank pots",
-      "do": [["fill", "[data-role=pots]", ""]],
-      "expect": ["Enter your number of pots."] },
-    { "name": "back to the recipe keeps it",
-      "do": [["click", "[data-mode=batch]"], ["click", "[data-mode=batch]"]],
-      "expect": ["Potash feldspar: 417 g", "Copper carbonate (3%): 30.0 g", "Total to weigh: 1,030 g"] }
-  ]
+ "root": ".ceramind-glaze-mixing-calculator",
+ "cases": [
+  {
+   "name": "default: Leach 4-3-2-1 + 5% red iron oxide, 1,000 g of base",
+   "expect": [
+    "WEIGH OUT:",
+    "Potash feldspar: 400 g",
+    "Silica: 300 g",
+    "Whiting: 200 g",
+    "China clay: 100 g",
+    "ADDITIONS, ON TOP OF THE BASE",
+    "Red iron oxide (5%): 50.0 g",
+    "Total to weigh: 1,050 g",
+    "goes on top of the 1,000 g base, so the batch weighs 1,050 g"
+   ],
+   "absent": [
+    "adds up to"
+   ]
+  },
+  {
+   "name": "batch size counts the additions too: 1,000 / 105 per %",
+   "do": [
+    [
+     "click",
+     "[data-basis=total]"
+    ]
+   ],
+   "expect": [
+    "Potash feldspar: 381 g",
+    "Silica: 286 g",
+    "Whiting: 190 g",
+    "China clay: 95.2 g",
+    "Red iron oxide (5%): 47.6 g",
+    "Total to weigh: 1,000 g",
+    "counted inside your 1,000 g, so the base is 952 g and the additions 47.6 g"
+   ]
+  },
+  {
+   "name": "clicking the selected toggle changes nothing",
+   "do": [
+    [
+     "click",
+     "[data-basis=total]"
+    ]
+   ],
+   "expect": [
+    "Potash feldspar: 381 g",
+    "Total to weigh: 1,000 g"
+   ]
+  },
+  {
+   "name": "base only, 500 g",
+   "do": [
+    [
+     "click",
+     "[data-basis=base]"
+    ],
+    [
+     "fill",
+     "[data-role=batch]",
+     "500"
+    ]
+   ],
+   "expect": [
+    "Potash feldspar: 200 g",
+    "Silica: 150 g",
+    "Whiting: 100 g",
+    "China clay: 50.0 g",
+    "Red iron oxide (5%): 25.0 g",
+    "Total to weigh: 525 g"
+   ]
+  },
+  {
+   "name": "2 typed as the batch is read as 2 kg",
+   "do": [
+    [
+     "fill",
+     "[data-role=batch]",
+     "2"
+    ]
+   ],
+   "expect": [
+    "Read 2 as kilograms: 2,000 g.",
+    "Potash feldspar: 800 g",
+    "Total to weigh: 2,100 g"
+   ]
+  },
+  {
+   "name": "big batches get thousands commas",
+   "do": [
+    [
+     "fill",
+     "[data-role=batch]",
+     "25000"
+    ]
+   ],
+   "expect": [
+    "Potash feldspar: 10,000 g",
+    "Red iron oxide (5%): 1,250 g",
+    "Total to weigh: 26,250 g"
+   ]
+  },
+  {
+   "name": "base adding up to 96 is read as parts out of 96, additions stay % of the base",
+   "do": [
+    [
+     "fill",
+     "[data-role=batch]",
+     "1000"
+    ],
+    [
+     "fill",
+     "[data-list=base] .cm-gm-row:nth-child(4) [data-role=pct]",
+     "6"
+    ]
+   ],
+   "expect": [
+    "Potash feldspar: 417 g",
+    "Silica: 313 g",
+    "Whiting: 208 g",
+    "China clay: 62.5 g",
+    "Red iron oxide (5%): 50.0 g",
+    "Total to weigh: 1,050 g",
+    "Your base adds up to 96, not 100, so we read it as parts out of 96 and scaled it to 100%."
+   ]
+  },
+  {
+   "name": "scale to 100: base becomes 41.67 / 31.25 / 20.83 / 6.25, the 5% addition is left alone, weights unchanged",
+   "do": [
+    [
+     "click",
+     "[data-role=scale]"
+    ]
+   ],
+   "expect": [
+    "Potash feldspar: 417 g",
+    "Silica: 313 g",
+    "Whiting: 208 g",
+    "China clay: 62.5 g",
+    "Red iron oxide (5%): 50.0 g",
+    "Total to weigh: 1,050 g"
+   ],
+   "absent": [
+    "adds up to",
+    "5.21"
+   ]
+  },
+  {
+   "name": "remove the addition",
+   "do": [
+    [
+     "click",
+     "[data-list=add] .cm-gm-row:nth-child(1) [data-role=remove]"
+    ]
+   ],
+   "expect": [
+    "Potash feldspar: 417 g",
+    "Total to weigh: 1,000 g"
+   ],
+   "absent": [
+    "ADDITIONS",
+    "on top of"
+   ]
+  },
+  {
+   "name": "a colourant typed into the base is spotted",
+   "do": [
+    [
+     "click",
+     "[data-add=base]"
+    ],
+    [
+     "fill",
+     "[data-list=base] .cm-gm-row:last-child [data-role=name]",
+     "Copper carbonate"
+    ],
+    [
+     "fill",
+     "[data-list=base] .cm-gm-row:last-child [data-role=pct]",
+     "3"
+    ]
+   ],
+   "expect": [
+    "Potash feldspar: 405 g",
+    "Copper carbonate: 29.1 g",
+    "Total to weigh: 1,000 g",
+    "Your base adds up to 103, not 100",
+    "Copper carbonate may belong in the additions."
+   ]
+  },
+  {
+   "name": "move it to the additions",
+   "do": [
+    [
+     "click",
+     "[data-role=move]"
+    ]
+   ],
+   "expect": [
+    "ADDITIONS, ON TOP OF THE BASE",
+    "Copper carbonate (3%): 30.0 g",
+    "Potash feldspar: 417 g",
+    "Total to weigh: 1,030 g"
+   ],
+   "absent": [
+    "adds up to",
+    "may belong"
+   ]
+  },
+  {
+   "name": "blank batch size names what's missing",
+   "do": [
+    [
+     "fill",
+     "[data-role=batch]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your batch size."
+   ]
+  },
+  {
+   "name": "a named ingredient with no %",
+   "do": [
+    [
+     "fill",
+     "[data-role=batch]",
+     "1000"
+    ],
+    [
+     "fill",
+     "[data-list=base] .cm-gm-row:nth-child(3) [data-role=pct]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter a % for Whiting."
+   ]
+  },
+  {
+   "name": "two things missing",
+   "do": [
+    [
+     "fill",
+     "[data-role=batch]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your batch size and a % for Whiting."
+   ]
+  },
+  {
+   "name": "negative % is refused",
+   "do": [
+    [
+     "fill",
+     "[data-role=batch]",
+     "1000"
+    ],
+    [
+     "fill",
+     "[data-list=base] .cm-gm-row:nth-child(3) [data-role=pct]",
+     "-5"
+    ]
+   ],
+   "expect": [
+    "A percentage can't be negative: check Whiting."
+   ]
+  },
+  {
+   "name": "put Whiting back",
+   "do": [
+    [
+     "fill",
+     "[data-list=base] .cm-gm-row:nth-child(3) [data-role=pct]",
+     "20.83"
+    ]
+   ],
+   "expect": [
+    "Whiting: 208 g",
+    "Total to weigh: 1,030 g"
+   ]
+  },
+  {
+   "name": "a recipe in parts (4/3/2/1) gives the same glaze as 40/30/20/10",
+   "do": [
+    [
+     "fill",
+     "[data-list=base] .cm-gm-row:nth-child(1) [data-role=pct]",
+     "4"
+    ],
+    [
+     "fill",
+     "[data-list=base] .cm-gm-row:nth-child(2) [data-role=pct]",
+     "3"
+    ],
+    [
+     "fill",
+     "[data-list=base] .cm-gm-row:nth-child(3) [data-role=pct]",
+     "2"
+    ],
+    [
+     "fill",
+     "[data-list=base] .cm-gm-row:nth-child(4) [data-role=pct]",
+     "1"
+    ],
+    [
+     "fill",
+     "[data-list=add] .cm-gm-row:nth-child(1) [data-role=name]",
+     "Red iron oxide"
+    ],
+    [
+     "fill",
+     "[data-list=add] .cm-gm-row:nth-child(1) [data-role=pct]",
+     "5"
+    ]
+   ],
+   "expect": [
+    "Potash feldspar: 400 g",
+    "Silica: 300 g",
+    "Whiting: 200 g",
+    "China clay: 100 g",
+    "Red iron oxide (5%): 50.0 g",
+    "Total to weigh: 1,050 g",
+    "Your base adds up to 10, not 100, so we read it as parts out of 10"
+   ],
+   "absent": [
+    "Potash feldspar: 40.0 g",
+    "333"
+   ]
+  },
+  {
+   "name": "parts recipe with the batch counting the additions",
+   "do": [
+    [
+     "click",
+     "[data-basis=total]"
+    ]
+   ],
+   "expect": [
+    "Potash feldspar: 381 g",
+    "Silica: 286 g",
+    "Whiting: 190 g",
+    "China clay: 95.2 g",
+    "Red iron oxide (5%): 47.6 g",
+    "Total to weigh: 1,000 g"
+   ]
+  },
+  {
+   "name": "scaling the parts recipe leaves the 5% addition alone",
+   "do": [
+    [
+     "click",
+     "[data-basis=base]"
+    ],
+    [
+     "click",
+     "[data-role=scale]"
+    ]
+   ],
+   "expect": [
+    "Potash feldspar: 400 g",
+    "Red iron oxide (5%): 50.0 g",
+    "Total to weigh: 1,050 g"
+   ],
+   "absent": [
+    "adds up to",
+    "4.9",
+    "0.5%"
+   ]
+  },
+  {
+   "name": "water: 1,000 g dry for dipping at 1.45",
+   "do": [
+    [
+     "click",
+     "[data-mode=water]"
+    ]
+   ],
+   "expect": [
+    "MIX WITH:",
+    "Water: 983 ml (983 g)",
+    "Makes about: 1.37 L of glaze",
+    "Check: 100 ml should weigh 145 g",
+    "Digitalfire gives 1.40"
+   ]
+  },
+  {
+   "name": "brushing preset 1.50",
+   "do": [
+    [
+     "select",
+     "[data-role=use]",
+     "brushing"
+    ]
+   ],
+   "expect": [
+    "Water: 846 ml (846 g)",
+    "Makes about: 1.23 L of glaze",
+    "should weigh 150 g",
+    "Spectrum"
+   ]
+  },
+  {
+   "name": "spraying preset 1.35",
+   "do": [
+    [
+     "select",
+     "[data-role=use]",
+     "spraying"
+    ]
+   ],
+   "expect": [
+    "Water: 1,374 ml (1,374 g)",
+    "Makes about: 1.76 L of glaze",
+    "should weigh 135 g",
+    "Roger Graham"
+   ]
+  },
+  {
+   "name": "own SG 1.40 matches Potclays' 1.54 L per kg",
+   "do": [
+    [
+     "fill",
+     "[data-role=sg]",
+     "1.4"
+    ]
+   ],
+   "expect": [
+    "Water: 1,154 ml (1,154 g)",
+    "Makes about: 1.54 L of glaze",
+    "At your own SG."
+   ]
+  },
+  {
+   "name": "145 read as grams per 100 ml",
+   "do": [
+    [
+     "fill",
+     "[data-role=sg]",
+     "145"
+    ]
+   ],
+   "expect": [
+    "Read 145 as grams per 100 ml: SG 1.45.",
+    "Water: 983 ml (983 g)"
+   ]
+  },
+  {
+   "name": "1450 read as grams per litre",
+   "do": [
+    [
+     "fill",
+     "[data-role=sg]",
+     "1450"
+    ]
+   ],
+   "expect": [
+    "Read 1,450 as grams per litre: SG 1.45.",
+    "Water: 983 ml (983 g)"
+   ]
+  },
+  {
+   "name": "14.5 read as grams per 10 ml (syringe method)",
+   "do": [
+    [
+     "fill",
+     "[data-role=sg]",
+     "14.5"
+    ]
+   ],
+   "expect": [
+    "Read 14.5 as grams per 10 ml: SG 1.45.",
+    "Water: 983 ml (983 g)"
+   ]
+  },
+  {
+   "name": "SG 1.0 is impossible",
+   "do": [
+    [
+     "fill",
+     "[data-role=sg]",
+     "1"
+    ]
+   ],
+   "expect": [
+    "The target SG must be above 1.00."
+   ],
+   "absent": [
+    "Water:"
+   ]
+  },
+  {
+   "name": "SG 2.3 is impossible",
+   "do": [
+    [
+     "fill",
+     "[data-role=sg]",
+     "2.3"
+    ]
+   ],
+   "expect": [
+    "The target SG must be 2.0 or less."
+   ],
+   "absent": [
+    "Water:"
+   ]
+  },
+  {
+   "name": "SG 1.8 works but warns",
+   "do": [
+    [
+     "fill",
+     "[data-role=sg]",
+     "1.8"
+    ]
+   ],
+   "expect": [
+    "Water: 385 ml (385 g)",
+    "Makes about: 0.77 L of glaze",
+    "close to casting slip"
+   ]
+  },
+  {
+   "name": "SG 1.15 works but warns",
+   "do": [
+    [
+     "fill",
+     "[data-role=sg]",
+     "1.15"
+    ]
+   ],
+   "expect": [
+    "Water: 3,718 ml (3,718 g)",
+    "Makes about: 4.10 L of glaze",
+    "very thin for a glaze"
+   ]
+  },
+  {
+   "name": "2.5 typed as dry weight is read as kg",
+   "do": [
+    [
+     "fill",
+     "[data-role=sg]",
+     "1.45"
+    ],
+    [
+     "fill",
+     "[data-role=dry]",
+     "2.5"
+    ]
+   ],
+   "expect": [
+    "Read 2.5 as kilograms: 2,500 g.",
+    "Water: 2,457 ml (2,457 g)",
+    "Makes about: 3.42 L of glaze"
+   ]
+  },
+  {
+   "name": "the whole 1,050 g batch at 1.45",
+   "do": [
+    [
+     "fill",
+     "[data-role=dry]",
+     "1050"
+    ]
+   ],
+   "expect": [
+    "Water: 1,032 ml (1,032 g)",
+    "Makes about: 1.44 L of glaze"
+   ]
+  },
+  {
+   "name": "blank dry weight",
+   "do": [
+    [
+     "fill",
+     "[data-role=dry]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your dry glaze weight."
+   ]
+  },
+  {
+   "name": "blank dry weight and SG",
+   "do": [
+    [
+     "fill",
+     "[data-role=sg]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your dry glaze weight and a target SG."
+   ]
+  },
+  {
+   "name": "mixed bucket starts by asking for weight and SG",
+   "do": [
+    [
+     "fill",
+     "[data-role=sg]",
+     "1.45"
+    ],
+    [
+     "fill",
+     "[data-role=dry]",
+     "1000"
+    ],
+    [
+     "click",
+     "[data-from=bucket]"
+    ]
+   ],
+   "expect": [
+    "Enter the weight of your glaze and its SG now."
+   ]
+  },
+  {
+   "name": "5 kg at 1.55 thinned to 1.45",
+   "do": [
+    [
+     "fill",
+     "[data-role=wet]",
+     "5"
+    ],
+    [
+     "fill",
+     "[data-role=now]",
+     "1.55"
+    ]
+   ],
+   "expect": [
+    "TO REACH SG 1.45:",
+    "Add water: 717 ml (717 g)",
+    "Makes about: 3.94 L of glaze",
+    "Check: 100 ml should weigh 145 g"
+   ]
+  },
+  {
+   "name": "5 kg at 1.35 is too thin",
+   "do": [
+    [
+     "fill",
+     "[data-role=now]",
+     "1.35"
+    ]
+   ],
+   "expect": [
+    "TOO THIN FOR SG 1.45. EITHER:",
+    "Pour off: 823 ml of clear water",
+    "Or stir in: 837 g of dry glaze",
+    "settle overnight",
+    "The pour-off figure needs no guess about the powder. The stir-in figure assumes the powder is about 2.6 times as heavy as water"
+   ]
+  },
+  {
+   "name": "already at target",
+   "do": [
+    [
+     "fill",
+     "[data-role=now]",
+     "1.45"
+    ]
+   ],
+   "expect": [
+    "No change: it's already at SG 1.45."
+   ]
+  },
+  {
+   "name": "5000 typed in kg is read as grams",
+   "do": [
+    [
+     "fill",
+     "[data-role=wet]",
+     "5000"
+    ],
+    [
+     "fill",
+     "[data-role=now]",
+     "1.55"
+    ]
+   ],
+   "expect": [
+    "Read 5,000 as grams: 5 kg.",
+    "Add water: 717 ml (717 g)"
+   ]
+  },
+  {
+   "name": "SG now below 1 is impossible",
+   "do": [
+    [
+     "fill",
+     "[data-role=now]",
+     "0.9"
+    ]
+   ],
+   "expect": [
+    "The SG now must be above 1.00."
+   ]
+  },
+  {
+   "name": "back to dry powder keeps 1,000 g",
+   "do": [
+    [
+     "click",
+     "[data-from=dry]"
+    ]
+   ],
+   "expect": [
+    "Water: 983 ml (983 g)"
+   ]
+  },
+  {
+   "name": "pots: 20 mugs at 1.45",
+   "do": [
+    [
+     "click",
+     "[data-mode=pots]"
+    ]
+   ],
+   "expect": [
+    "FOR 20 MUGS, MIX ABOUT:",
+    "Glaze: 3.00 L",
+    "Dry glaze powder: 2.19 kg",
+    "Water: 2.16 L",
+    "Potclays' rule of thumb",
+    "1 kg of powder makes about 1.37 L"
+   ]
+  },
+  {
+   "name": "20 mugs at 1.40 is Potclays' 2 kg",
+   "do": [
+    [
+     "fill",
+     "[data-role=sg]",
+     "1.4"
+    ]
+   ],
+   "expect": [
+    "Glaze: 3.00 L",
+    "Dry glaze powder: 1.95 kg",
+    "Water: 2.25 L",
+    "1 kg of powder makes about 1.54 L"
+   ]
+  },
+  {
+   "name": "12 cereal bowls",
+   "do": [
+    [
+     "select",
+     "[data-role=kind]",
+     "cereal"
+    ],
+    [
+     "fill",
+     "[data-role=pots]",
+     "12"
+    ]
+   ],
+   "expect": [
+    "FOR 12 CEREAL BOWLS, MIX ABOUT:",
+    "Glaze: 2.16 L",
+    "Dry glaze powder: 1.40 kg",
+    "Water: 1.62 L",
+    "Our estimate for this pot"
+   ]
+  },
+  {
+   "name": "0.2 per pot read as litres, kind switches to my own",
+   "do": [
+    [
+     "fill",
+     "[data-role=per]",
+     "0.2"
+    ]
+   ],
+   "expect": [
+    "Read 0.2 as litres: 200 ml.",
+    "FOR 12 POTS, MIX ABOUT:",
+    "Glaze: 2.40 L",
+    "Dry glaze powder: 1.56 kg",
+    "Water: 1.80 L",
+    "At your own figure per pot."
+   ]
+  },
+  {
+   "name": "10,000 mugs get commas",
+   "do": [
+    [
+     "select",
+     "[data-role=kind]",
+     "mug"
+    ],
+    [
+     "fill",
+     "[data-role=pots]",
+     "10000"
+    ]
+   ],
+   "expect": [
+    "FOR 10,000 MUGS",
+    "Glaze: 1,500 L",
+    "Dry glaze powder: 975 kg",
+    "Water: 1,125 L"
+   ]
+  },
+  {
+   "name": "one mug",
+   "do": [
+    [
+     "fill",
+     "[data-role=pots]",
+     "1"
+    ]
+   ],
+   "expect": [
+    "FOR 1 MUG, MIX ABOUT:",
+    "Glaze: 0.15 L",
+    "Dry glaze powder: 98 g",
+    "Water: 0.11 L"
+   ]
+  },
+  {
+   "name": "2.4 pots rounds to 2",
+   "do": [
+    [
+     "fill",
+     "[data-role=pots]",
+     "2.4"
+    ]
+   ],
+   "expect": [
+    "Rounded to 2 pots.",
+    "FOR 2 MUGS",
+    "Glaze: 0.30 L"
+   ]
+  },
+  {
+   "name": "blank pots",
+   "do": [
+    [
+     "fill",
+     "[data-role=pots]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your number of pots."
+   ]
+  },
+  {
+   "name": "back to the recipe keeps it",
+   "do": [
+    [
+     "click",
+     "[data-mode=batch]"
+    ],
+    [
+     "click",
+     "[data-mode=batch]"
+    ]
+   ],
+   "expect": [
+    "Potash feldspar: 400 g",
+    "Red iron oxide (5%): 50.0 g",
+    "Total to weigh: 1,050 g"
+   ]
+  }
+ ]
 }
