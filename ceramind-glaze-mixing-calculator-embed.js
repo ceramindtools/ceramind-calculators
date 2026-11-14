@@ -43,7 +43,7 @@
   var TARGET_CLASS = 'ceramind-glaze-mixing-calculator';
   var BASE_ID = 'ceramind-calc-base-v1';
   var STYLE_ID = 'ceramind-glaze-mixing-style';
-  var BASE_CSS = ".cm-calc,.cm-calc *{box-sizing: border-box;}.cm-calc{--cm-ink: #171717;--cm-brand: #473728;--cm-brand-soft: #4a4642;--cm-accent: #a4886e;--cm-sand: #d2c1b4;--cm-tint: #ffffff;--cm-bg: #e3e0df;--cm-card: #efedeb;--cm-border: #d9d4d0;--cm-field: #8f857c;font-family: inherit;color: var(--cm-ink);max-width: 480px;margin: 2rem auto;text-align: left;}.cm-calc [hidden]{display: none !important;}.cm-calc .cm-card{background: var(--cm-card);border: 1px solid var(--cm-border);border-radius: 14px;padding: 1.75rem;box-shadow: 0 1px 2px rgba(71,55,40,0.06),0 8px 24px rgba(71,55,40,0.06);}.cm-calc .cm-title{margin: 0 0 0.35rem;font-size: 1.35rem;font-weight: 700;color: var(--cm-brand);line-height: 1.2;}.cm-calc .cm-sub{margin: 0 0 1.25rem;font-size: 0.9rem;color: var(--cm-brand-soft);line-height: 1.45;}.cm-calc .cm-mode-toggle{display: flex;gap: 0.4rem;margin-bottom: 1.1rem;flex-wrap: wrap;}.cm-calc .cm-mode-btn{flex: 1 1 auto;min-width: 140px;padding: 0.55rem 0.7rem;font-size: 0.82rem;font-weight: 600;font-family: inherit;line-height: 1.3;border-radius: 999px;border: 1px solid var(--cm-field);background: transparent;color: var(--cm-brand-soft);cursor: pointer;transition: background 0.15s ease,color 0.15s ease,border-color 0.15s ease;}.cm-calc .cm-mode-btn.is-active{background: var(--cm-brand);border-color: var(--cm-brand);color: #fff;}.cm-calc a:focus-visible,.cm-calc .cm-mode-btn:focus-visible,.cm-calc .cm-unit-btn:focus-visible,.cm-calc select:focus-visible,.cm-calc input:focus-visible{outline: 2px solid var(--cm-brand);outline-offset: 2px;}.cm-calc .cm-row{display: flex;align-items: center;justify-content: space-between;gap: 1rem;margin-bottom: 0.85rem;}.cm-calc .cm-label{font-size: 0.85rem;font-weight: 600;color: var(--cm-brand);flex: 0 0 auto;}.cm-calc select,.cm-calc input[type=\"number\"]{font: inherit;font-size: 0.9rem;padding: 0.5rem 0.65rem;border-radius: 8px;border: 1px solid var(--cm-field);background: #fff;color: var(--cm-ink);max-width: 220px;width: 100%;margin: 0;min-height: 0;height: auto;}.cm-calc .cm-unit-toggle{display: flex;gap: 0.3rem;}.cm-calc .cm-unit-btn{padding: 0.4rem 0.85rem;font-size: 0.82rem;font-weight: 600;font-family: inherit;line-height: 1.3;border-radius: 8px;border: 1px solid var(--cm-field);background: transparent;color: var(--cm-brand-soft);cursor: pointer;}.cm-calc .cm-unit-btn.is-active{background: var(--cm-tint);border-color: var(--cm-brand);box-shadow: inset 0 0 0 1px var(--cm-brand);color: var(--cm-brand);}.cm-calc .cm-dims{display: grid;grid-template-columns: repeat(auto-fit,minmax(120px,1fr));gap: 0.75rem;margin: 1rem 0 1.25rem;}.cm-calc .cm-dim-label{display: block;font-size: 0.78rem;font-weight: 600;color: var(--cm-brand-soft);margin-bottom: 0.3rem;}.cm-calc .cm-dims input[type=\"number\"],.cm-calc .cm-dim-input{width: 100%;max-width: none;}.cm-calc .cm-visual{display: flex;align-items: center;gap: 1rem;background: var(--cm-bg);border-radius: 10px;padding: 0.9rem 1rem;margin-bottom: 1.1rem;}.cm-calc .cm-svg{width: 76px;height: 76px;flex: 0 0 auto;}.cm-calc .cm-visual-pct{margin: 0;font-size: 1.05rem;font-weight: 700;color: var(--cm-brand);line-height: 1.3;}.cm-calc .cm-visual-legend{margin: 0.3rem 0 0;font-size: 0.75rem;color: var(--cm-brand-soft);}.cm-calc .cm-visual-note{margin: 0.25rem 0 0;font-size: 0.68rem;font-style: italic;color: var(--cm-brand-soft);line-height: 1.4;}.cm-calc .cm-dot{display: inline-block;width: 9px;height: 9px;border-radius: 50%;margin-right: 0.3rem;vertical-align: middle;}.cm-calc .cm-dot-wet{border: 1.5px dashed var(--cm-brand-soft);}.cm-calc .cm-dot-fired{background: var(--cm-brand);}.cm-calc .cm-results{background: var(--cm-brand);color: #fff;border-radius: 10px;padding: 1rem 1.1rem;margin-bottom: 1.1rem;}.cm-calc .cm-results-title{margin: 0 0 0.5rem;font-size: 0.78rem;font-weight: 700;text-transform: uppercase;letter-spacing: 0.06em;opacity: 0.85;}.cm-calc .cm-results-list{margin: 0;padding: 0;list-style: none;display: flex;flex-direction: column;gap: 0.35rem;font-size: 1rem;font-weight: 600;}.cm-calc .cm-results-list li{margin: 0;padding: 0;color: #fff;}.cm-calc .cm-results-list li::before,.cm-calc .cm-results-list li::marker{content: none;}.cm-calc .cm-results-empty{font-size: 0.85rem;font-weight: 400;opacity: 0.75;}.cm-calc .cm-results-note{margin: 0.6rem 0 0;font-size: 0.75rem;font-weight: 400;opacity: 0.8;line-height: 1.4;color: #fff;}.cm-calc .cm-disclaimer{margin: 0 0 0.6rem;text-align: center;font-size: 0.7rem;line-height: 1.45;color: var(--cm-brand-soft);}.cm-calc .cm-credit{margin: 0;text-align: center;font-size: 0.72rem;color: var(--cm-brand-soft);}.cm-calc .cm-credit a{color: var(--cm-brand);font-weight: 600;text-decoration: none;}.cm-calc .cm-credit a:hover,.cm-calc .cm-credit a:focus-visible{text-decoration: underline;}@media (prefers-reduced-motion: reduce){.cm-calc *{transition: none !important;}}.cm-calc.cm-embed{max-width: none;margin: 0.75rem 0 1.5rem;}.cm-calc .cm-code-box{display: flex;align-items: center;gap: 0.9rem;background: var(--cm-card);border: 1px solid var(--cm-border);border-radius: 10px;padding: 0.9rem 1rem;}.cm-calc pre.cm-code{margin: 0;padding: 0;flex: 1 1 auto;min-width: 0;background: transparent;border: 0;font-family: ui-monospace,\"SF Mono\",Menlo,Consolas,monospace;font-size: 0.78rem;line-height: 1.55;color: var(--cm-ink);white-space: pre-wrap;word-break: normal;overflow-wrap: anywhere;}.cm-calc .cm-copy-btn{flex: 0 0 auto;padding: 0.55rem 1rem;font-family: inherit;font-size: 0.82rem;font-weight: 600;line-height: 1.3;border-radius: 999px;border: 1px solid var(--cm-brand);background: var(--cm-brand);color: #fff;cursor: pointer;transition: background 0.15s ease,color 0.15s ease;}.cm-calc .cm-copy-btn.is-done{background: #fff;color: var(--cm-brand);}.cm-calc .cm-copy-btn:focus-visible{outline: 2px solid var(--cm-brand);outline-offset: 2px;}.cm-calc .cm-hint{margin: -0.6rem 0 1.1rem;font-size: 0.75rem;line-height: 1.45;color: var(--cm-brand-soft);}.cm-calc .cm-sr{position: absolute !important;width: 1px;height: 1px;margin: -1px;padding: 0;overflow: hidden;clip: rect(0 0 0 0);white-space: nowrap;border: 0;}.cm-calc .cm-key{white-space: nowrap;margin-right: 0.6rem;}@media (max-width: 480px){.cm-calc .cm-card{padding: 1.4rem 1.25rem;}.cm-calc .cm-code-box{flex-direction: column;align-items: stretch;}.cm-calc .cm-row{display: grid;grid-template-columns: minmax(0,1fr);gap: 0.35rem;margin-bottom: 1rem;}.cm-calc .cm-row>select,.cm-calc .cm-row>input{max-width: none;}.cm-calc .cm-row>.cm-unit-toggle{justify-self: start;}}";
+  var BASE_CSS = ".cm-calc,.cm-calc *{box-sizing: border-box;}.cm-calc{--cm-ink: #171717;--cm-brand: #473728;--cm-brand-soft: #4a4642;--cm-accent: #a4886e;--cm-sand: #d2c1b4;--cm-tint: #ffffff;--cm-bg: #e3e0df;--cm-card: #efedeb;--cm-border: #d9d4d0;--cm-field: #8f857c;font-family: inherit;color: var(--cm-ink);max-width: 480px;margin: 2rem auto;text-align: left;}.cm-calc [hidden]{display: none !important;}.cm-calc .cm-card{background: var(--cm-card);border: 1px solid var(--cm-border);border-radius: 14px;padding: 1.75rem;box-shadow: 0 1px 2px rgba(71,55,40,0.06),0 8px 24px rgba(71,55,40,0.06);}.cm-calc .cm-title{margin: 0 0 0.35rem;font-size: 1.35rem;font-weight: 700;color: var(--cm-brand);line-height: 1.2;}.cm-calc .cm-sub{margin: 0 0 1.25rem;font-size: 0.9rem;color: var(--cm-brand-soft);line-height: 1.45;}.cm-calc .cm-mode-toggle{display: flex;gap: 0.4rem;margin-bottom: 1.1rem;flex-wrap: wrap;}.cm-calc .cm-mode-btn{flex: 1 1 auto;min-width: 140px;padding: 0.55rem 0.7rem;font-size: 0.82rem;font-weight: 600;font-family: inherit;line-height: 1.3;border-radius: 999px;border: 1px solid var(--cm-field);background: transparent;color: var(--cm-brand-soft);cursor: pointer;transition: background 0.15s ease,color 0.15s ease,border-color 0.15s ease;}.cm-calc .cm-mode-btn.is-active{background: var(--cm-brand);border-color: var(--cm-brand);color: #fff;}.cm-calc a:focus-visible,.cm-calc .cm-mode-btn:focus-visible,.cm-calc .cm-unit-btn:focus-visible,.cm-calc select:focus-visible,.cm-calc input:focus-visible{outline: 2px solid var(--cm-brand);outline-offset: 2px;}.cm-calc .cm-row{display: flex;align-items: center;justify-content: space-between;gap: 1rem;margin-bottom: 0.85rem;}.cm-calc .cm-label{font-size: 0.85rem;font-weight: 600;color: var(--cm-brand);flex: 0 0 auto;}.cm-calc select,.cm-calc input[type=\"number\"]{font: inherit;font-size: 0.9rem;padding: 0.5rem 0.65rem;border-radius: 8px;border: 1px solid var(--cm-field);background: #fff;color: var(--cm-ink);max-width: 220px;width: 100%;margin: 0;min-height: 0;height: auto;}.cm-calc .cm-unit-toggle{display: flex;gap: 0.3rem;}.cm-calc .cm-unit-btn{padding: 0.4rem 0.85rem;font-size: 0.82rem;font-weight: 600;font-family: inherit;line-height: 1.3;border-radius: 8px;border: 1px solid var(--cm-field);background: transparent;color: var(--cm-brand-soft);cursor: pointer;}.cm-calc .cm-unit-btn.is-active{background: var(--cm-tint);border-color: var(--cm-brand);box-shadow: inset 0 0 0 1px var(--cm-brand);color: var(--cm-brand);}.cm-calc .cm-dims{display: grid;grid-template-columns: repeat(auto-fit,minmax(120px,1fr));gap: 0.75rem;margin: 1rem 0 1.25rem;}.cm-calc .cm-dim-label{display: block;font-size: 0.78rem;font-weight: 600;color: var(--cm-brand-soft);margin-bottom: 0.3rem;}.cm-calc .cm-dims input[type=\"number\"],.cm-calc .cm-dim-input{width: 100%;max-width: none;}.cm-calc .cm-visual{display: flex;align-items: center;gap: 1rem;background: var(--cm-bg);border-radius: 10px;padding: 0.9rem 1rem;margin-bottom: 1.1rem;}.cm-calc .cm-svg{width: 76px;height: 76px;flex: 0 0 auto;}.cm-calc .cm-visual-pct{margin: 0;font-size: 1.05rem;font-weight: 700;color: var(--cm-brand);line-height: 1.3;}.cm-calc .cm-visual-legend{margin: 0.3rem 0 0;font-size: 0.75rem;color: var(--cm-brand-soft);}.cm-calc .cm-visual-note{margin: 0.25rem 0 0;font-size: 0.68rem;font-style: italic;color: var(--cm-brand-soft);line-height: 1.4;}.cm-calc .cm-dot{display: inline-block;width: 9px;height: 9px;border-radius: 50%;margin-right: 0.3rem;vertical-align: middle;}.cm-calc .cm-dot-wet{border: 1.5px dashed var(--cm-brand-soft);}.cm-calc .cm-dot-fired{background: var(--cm-brand);}.cm-calc .cm-results{background: var(--cm-brand);color: #fff;border-radius: 10px;padding: 1rem 1.1rem;margin-bottom: 1.1rem;}.cm-calc .cm-results-title{margin: 0 0 0.5rem;font-size: 0.78rem;font-weight: 700;text-transform: uppercase;letter-spacing: 0.06em;opacity: 0.85;}.cm-calc .cm-results-list{margin: 0;padding: 0;list-style: none;display: flex;flex-direction: column;gap: 0.35rem;font-size: 1rem;font-weight: 600;}.cm-calc .cm-results-list li{margin: 0;padding: 0;color: #fff;}.cm-calc .cm-results-list li::before,.cm-calc .cm-results-list li::marker{content: none;}.cm-calc .cm-results-empty{font-size: 0.85rem;font-weight: 400;opacity: 0.75;}.cm-calc .cm-results-note{margin: 0.6rem 0 0;font-size: 0.75rem;font-weight: 400;opacity: 0.8;line-height: 1.4;color: #fff;}.cm-calc a{color: var(--cm-brand);text-decoration: underline;text-underline-offset: 2px;}.cm-calc .cm-results a{color: #fff;}.cm-calc .cm-disclaimer{margin: 0 0 0.6rem;text-align: center;font-size: 0.7rem;line-height: 1.45;color: var(--cm-brand-soft);}.cm-calc .cm-credit{margin: 0;text-align: center;font-size: 0.72rem;color: var(--cm-brand-soft);}.cm-calc .cm-credit a{color: var(--cm-brand);font-weight: 600;text-decoration: none;}.cm-calc .cm-credit a:hover,.cm-calc .cm-credit a:focus-visible{text-decoration: underline;}@media (prefers-reduced-motion: reduce){.cm-calc *{transition: none !important;}}.cm-calc.cm-embed{max-width: none;margin: 0.75rem 0 1.5rem;}.cm-calc .cm-code-box{display: flex;align-items: center;gap: 0.9rem;background: var(--cm-card);border: 1px solid var(--cm-border);border-radius: 10px;padding: 0.9rem 1rem;}.cm-calc pre.cm-code{margin: 0;padding: 0;flex: 1 1 auto;min-width: 0;background: transparent;border: 0;font-family: ui-monospace,\"SF Mono\",Menlo,Consolas,monospace;font-size: 0.78rem;line-height: 1.55;color: var(--cm-ink);white-space: pre-wrap;word-break: normal;overflow-wrap: anywhere;}.cm-calc .cm-copy-btn{flex: 0 0 auto;padding: 0.55rem 1rem;font-family: inherit;font-size: 0.82rem;font-weight: 600;line-height: 1.3;border-radius: 999px;border: 1px solid var(--cm-brand);background: var(--cm-brand);color: #fff;cursor: pointer;transition: background 0.15s ease,color 0.15s ease;}.cm-calc .cm-copy-btn.is-done{background: #fff;color: var(--cm-brand);}.cm-calc .cm-copy-btn:focus-visible{outline: 2px solid var(--cm-brand);outline-offset: 2px;}.cm-calc .cm-hint{margin: -0.6rem 0 1.1rem;font-size: 0.75rem;line-height: 1.45;color: var(--cm-brand-soft);}.cm-calc .cm-sr{position: absolute !important;width: 1px;height: 1px;margin: -1px;padding: 0;overflow: hidden;clip: rect(0 0 0 0);white-space: nowrap;border: 0;}.cm-calc .cm-key{white-space: nowrap;margin-right: 0.6rem;}@media (max-width: 480px){.cm-calc .cm-card{padding: 1.4rem 1.25rem;}.cm-calc .cm-code-box{flex-direction: column;align-items: stretch;}.cm-calc .cm-row{display: grid;grid-template-columns: minmax(0,1fr);gap: 0.35rem;margin-bottom: 1rem;}.cm-calc .cm-row>select,.cm-calc .cm-row>input{max-width: none;}.cm-calc .cm-row>.cm-unit-toggle{justify-self: start;}}";
   var EMBED_FILE = 'ceramind-glaze-mixing-calculator-embed.js';
 
   // ---- Shared by every calculator (build.py inlines this from src/shared.js) ----
@@ -98,10 +98,21 @@
 
   var DENSITY = 2.6;   // dry glaze materials, g per ml
   var PRESET_SG = { dipping: 1.45, brushing: 1.5, spraying: 1.35 };
+  // Source pages. Notes link a source by writing [anchor text](key); rich() turns that into a real link.
+  var SRC = {
+    dfSG: 'https://digitalfire.com/glossary/specific+gravity',
+    dfKaolin: 'https://digitalfire.com/material/kaolin',
+    dfFeldspar: 'https://digitalfire.com/material/potash+feldspar',
+    spectrum: 'https://www.sheffield-pottery.com/pages/usage-and-tips-for-spectrum-glazes',
+    graham: 'https://digitalfire.com/4sight/datasheets/GlazeSprayingForCraftPotter.pdf',
+    potclaysPowder: 'https://www.potclays.co.uk/powdered-glazes-colours-frits/',
+    potclaysMug: 'https://www.potclays.co.uk/glaze-questions/how-much-powder-glaze/',
+    slip: 'https://en.wikipedia.org/wiki/Slip_casting'
+  };
   var PRESET_NOTES = {
-    dipping: 'Dipping: Digitalfire gives 1.40 for a dip of 5 seconds and 1.50 for a dip of 1 second, and finds home-made glazes work best around 1.45.',
-    brushing: 'Brushing glazes usually sit between 1.45 and 1.60 (Spectrum). Powdered glaze also needs a brushing medium to brush well (Potclays).',
-    spraying: 'Spraying: Roger Graham\'s guide for craft potters sprays most glazes at 1.35 to 1.40.'
+    dipping: 'Dipping: [Digitalfire](dfSG) gives 1.40 for a dip of 5 seconds and 1.50 for a dip of 1 second, and finds home-made glazes work best around 1.45.',
+    brushing: 'Brushing glazes usually sit between 1.45 and 1.60 ([Spectrum](spectrum)). Powdered glaze also needs a brushing medium to brush well ([Potclays](potclaysPowder)).',
+    spraying: 'Spraying: [Roger Graham\'s guide for craft potters](graham) sprays most glazes at 1.35 to 1.40.'
   };
   // ml of mixed glaze per pot. Mug: Potclays. The rest: scaled from the mug by glazed area (our estimate).
   var POTS = {
@@ -270,7 +281,7 @@
       + '    <label class="cm-label" for="' + f('sg') + '">Target SG</label>'
       + '    <input type="number" id="' + f('sg') + '" data-role="sg" min="1" max="2" step="0.01" value="1.45" inputmode="decimal">'
       + '  </div>'
-      + '  <p class="cm-gm-note" data-show="water pots">SG is how heavy the glaze is next to water: weigh 100 ml of glaze and divide the grams by 100. Water is 1.00.</p>'
+      + '  <p class="cm-gm-note" data-show="water pots">SG is how heavy the glaze is next to water: weigh 100 ml of glaze and divide the grams by 100 (<a href="' + SRC.potclaysPowder + '" target="_blank" rel="noopener">Potclays</a>). Water is 1.00.</p>'
       + '  <p class="cm-gm-note" data-show="pots">The other pots are scaled from the mug by the area glazed. Leave enough in the bucket to dip your tallest pot.</p>'
       // ---- picture and results
       + '  <div class="cm-gm-vis" data-role="vis">'
@@ -408,6 +419,32 @@
       if (cls) li.className = cls;
       li.textContent = text;
       list.appendChild(li);
+      return li;
+    }
+
+    // Text with [anchor](key) source links -> text nodes and <a> elements (never innerHTML).
+    var LINK_RE = /\[([^\]]+)\]\((\w+)\)/g;
+    function rich(el, text) {
+      el.textContent = '';
+      var last = 0;
+      var m;
+      LINK_RE.lastIndex = 0;
+      while ((m = LINK_RE.exec(text))) {
+        if (!SRC.hasOwnProperty(m[2])) continue;
+        el.appendChild(document.createTextNode(text.slice(last, m.index)));
+        var a = document.createElement('a');
+        a.href = SRC[m[2]];
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = m[1];
+        el.appendChild(a);
+        last = LINK_RE.lastIndex;
+      }
+      el.appendChild(document.createTextNode(text.slice(last)));
+    }
+
+    function plain(text) {
+      return text.replace(LINK_RE, function (all, t, k) { return SRC.hasOwnProperty(k) ? t : all; });
     }
 
     function announce(text) {
@@ -429,10 +466,10 @@
     }
 
     function fail(text) {
-      line(text, 'cm-results-empty');
+      rich(line('', 'cm-results-empty'), text);
       note.textContent = '';
       vis.hidden = true;
-      announce(text);
+      announce(plain(text));
     }
 
     // ---------- ingredient rows ----------
@@ -512,9 +549,9 @@
         notes.push('Read ' + typed(el) + ' as grams per 10 ml: SG ' + sgText(s) + '.');
       }
       if (s <= 1) return { error: who + ' must be above 1.00. Water on its own is 1.00, and glaze is water plus powder.' };
-      if (s > 2) return { error: who + ' must be 2.0 or less. Glazes sit between about 1.25 and 1.70, and even casting slip is only about 1.8. Enter it like 1.45 (100 ml weighing 145 g).' };
-      if (s < 1.2) notes.push('SG ' + sgText(s) + ' is very thin for a glaze: brushing glazes go down to about 1.25 (Digitalfire). Check that\'s what you meant.');
-      if (s > 1.7) notes.push('SG ' + sgText(s) + ' is thicker than dipping glazes go (up to 1.70, Spectrum) and close to casting slip (about 1.8), which needs a deflocculant to stay runny.');
+      if (s > 2) return { error: who + ' must be 2.0 or less. Glazes sit between about 1.25 ([Digitalfire](dfSG)) and 1.70 ([Spectrum](spectrum)), and even [casting slip](slip) is only about 1.8. Enter it like 1.45 (100 ml weighing 145 g).' };
+      if (s < 1.2) notes.push('SG ' + sgText(s) + ' is very thin for a glaze: brushing glazes go down to about 1.25 ([Digitalfire](dfSG)). Check that\'s what you meant.');
+      if (s > 1.7) notes.push('SG ' + sgText(s) + ' is thicker than dipping glazes go (up to 1.70, [Spectrum](spectrum)) and close to [casting slip](slip) (about 1.8), which needs a deflocculant to stay runny.');
       return { sg: s, notes: notes };
     }
 
@@ -629,7 +666,7 @@
         ? 'A recipe\'s base adds up to 100. Colourants and other additions are a % of that base and sit on top of it, so the recipe adds up to ' + pctText(baseSum + addSum) + '%.'
         : 'A recipe\'s base adds up to 100. Add any colourants as additions: they sit on top of the 100.';
       vis.hidden = false;
-      note.textContent = notes.join(' ');
+      rich(note, notes.join(' '));
       announce('Weigh out ' + grams(total) + ' in all.');
     }
 
@@ -659,11 +696,11 @@
         notes.push(presetNote());
         notes.push('Powders vary, so add most of the water, sieve, check the SG, then top up using "A mixed bucket".');
         showSplit(powderMl, w, 'Water');
-        explain.textContent = 'Glaze powder is about 2.6 times as heavy as water, so ' + fmt(dry, 0) + ' g of it fills about '
+        rich(explain, 'Glaze powder is about 2.6 times as heavy as water (Digitalfire lists [kaolin at 2.62](dfKaolin) and [potash feldspar at 2.56](dfFeldspar)), so ' + fmt(dry, 0) + ' g of it fills about '
           + fmt(powderMl, 0) + ' ml. SG ' + sgText(s) + ' means a litre of glaze weighs ' + fmt(s * 1000, 0) + ' g. With '
           + fmt(w, 0) + ' ml of water you have ' + fmt(dry + w, 0) + ' g in ' + fmt(vol, 0) + ' ml, and '
-          + fmt(dry + w, 0) + ' ÷ ' + fmt(vol, 0) + ' = ' + sgText(s) + '.';
-        note.textContent = notes.join(' ');
+          + fmt(dry + w, 0) + ' ÷ ' + fmt(vol, 0) + ' = ' + sgText(s) + '.');
+        rich(note, notes.join(' '));
         announce('Add ' + fmt(w, 0) + ' ml of water.');
         return;
       }
@@ -708,8 +745,8 @@
         title.textContent = 'Too thin for SG ' + sgText(s2) + '. Either:';
         line('Pour off: ' + fmt(pour, 0) + ' ml of clear water');
         line('Or stir in: ' + weight(powder) + ' of dry glaze');
-        notes.push('Leave the glaze to settle overnight first, so the water you pour off is clear (Potclays).');
-        notes.push('The pour-off figure needs no guess about the powder. The stir-in figure assumes the powder is about 2.6 times as heavy as water, so check the SG after.');
+        notes.push('Leave the glaze to settle overnight first, so the water you pour off is clear ([Potclays](potclaysPowder)).');
+        notes.push('The pour-off figure needs no guess about the powder. The stir-in figure assumes the powder is about 2.6 times as heavy as water ([Digitalfire](dfKaolin) lists kaolin at 2.62), so check the SG after.');
         line(check100);
         bar.hidden = true;
         legend.hidden = true;
@@ -720,7 +757,7 @@
         announce('Pour off ' + fmt(pour, 0) + ' ml of water.');
       }
       notes.push(presetNote());
-      note.textContent = notes.join(' ');
+      rich(note, notes.join(' '));
     }
 
     // ---------- glaze for pots ----------
@@ -752,15 +789,15 @@
       line('Dry glaze powder: ' + weight(dry));
       line('Water: ' + litres(w));
       notes = notes.concat(target.notes);
-      if (kind.value === 'mug' && Math.abs(per - 150) < 0.001) notes.push('Potclays\' rule of thumb is about 0.15 L of glaze per mug.');
-      else if (kind.value !== 'own' && Math.abs(per - pot.ml) < 0.001) notes.push('Our estimate for this pot, scaled from Potclays\' 0.15 L per mug by the area glazed inside and out.');
+      if (kind.value === 'mug' && Math.abs(per - 150) < 0.001) notes.push('[Potclays\' rule of thumb](potclaysMug) is about 0.15 L of glaze per mug.');
+      else if (kind.value !== 'own' && Math.abs(per - pot.ml) < 0.001) notes.push('Our estimate for this pot, scaled from [Potclays\' 0.15 L per mug](potclaysMug) by the area glazed inside and out.');
       else notes.push('At your own figure per pot.');
       notes.push('At SG ' + sgText(s) + ', 1 kg of powder makes about ' + fmt(vol / dry, 2) + ' L of glaze.');
       showSplit(dry / DENSITY, w, 'Water');
       var perL = (s - 1) * DENSITY / (DENSITY - 1) * 1000;
-      explain.textContent = 'Each litre of glaze at SG ' + sgText(s) + ' holds about ' + fmt(perL, 0) + ' g of powder and '
-        + fmt(s * 1000 - perL, 0) + ' ml of water. Potclays\' figure of 1.54 L per kg of powder is for SG 1.4, and this maths gives the same.';
-      note.textContent = notes.join(' ');
+      rich(explain, 'Each litre of glaze at SG ' + sgText(s) + ' holds about ' + fmt(perL, 0) + ' g of powder and '
+        + fmt(s * 1000 - perL, 0) + ' ml of water. [Potclays\' figure](potclaysPowder) of 1.54 L per kg of powder is for SG 1.4, and this maths gives the same.');
+      rich(note, notes.join(' '));
       announce('Mix about ' + litres(vol) + ' of glaze from ' + weight(dry) + ' of powder.');
     }
 

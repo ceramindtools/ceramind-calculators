@@ -50,10 +50,21 @@
 
   var DENSITY = 2.6;   // dry glaze materials, g per ml
   var PRESET_SG = { dipping: 1.45, brushing: 1.5, spraying: 1.35 };
+  // Source pages. Notes link a source by writing [anchor text](key); rich() turns that into a real link.
+  var SRC = {
+    dfSG: 'https://digitalfire.com/glossary/specific+gravity',
+    dfKaolin: 'https://digitalfire.com/material/kaolin',
+    dfFeldspar: 'https://digitalfire.com/material/potash+feldspar',
+    spectrum: 'https://www.sheffield-pottery.com/pages/usage-and-tips-for-spectrum-glazes',
+    graham: 'https://digitalfire.com/4sight/datasheets/GlazeSprayingForCraftPotter.pdf',
+    potclaysPowder: 'https://www.potclays.co.uk/powdered-glazes-colours-frits/',
+    potclaysMug: 'https://www.potclays.co.uk/glaze-questions/how-much-powder-glaze/',
+    slip: 'https://en.wikipedia.org/wiki/Slip_casting'
+  };
   var PRESET_NOTES = {
-    dipping: 'Dipping: Digitalfire gives 1.40 for a dip of 5 seconds and 1.50 for a dip of 1 second, and finds home-made glazes work best around 1.45.',
-    brushing: 'Brushing glazes usually sit between 1.45 and 1.60 (Spectrum). Powdered glaze also needs a brushing medium to brush well (Potclays).',
-    spraying: 'Spraying: Roger Graham\'s guide for craft potters sprays most glazes at 1.35 to 1.40.'
+    dipping: 'Dipping: [Digitalfire](dfSG) gives 1.40 for a dip of 5 seconds and 1.50 for a dip of 1 second, and finds home-made glazes work best around 1.45.',
+    brushing: 'Brushing glazes usually sit between 1.45 and 1.60 ([Spectrum](spectrum)). Powdered glaze also needs a brushing medium to brush well ([Potclays](potclaysPowder)).',
+    spraying: 'Spraying: [Roger Graham\'s guide for craft potters](graham) sprays most glazes at 1.35 to 1.40.'
   };
   // ml of mixed glaze per pot. Mug: Potclays. The rest: scaled from the mug by glazed area (our estimate).
   var POTS = {
@@ -222,7 +233,7 @@
       + '    <label class="cm-label" for="' + f('sg') + '">Target SG</label>'
       + '    <input type="number" id="' + f('sg') + '" data-role="sg" min="1" max="2" step="0.01" value="1.45" inputmode="decimal">'
       + '  </div>'
-      + '  <p class="cm-gm-note" data-show="water pots">SG is how heavy the glaze is next to water: weigh 100 ml of glaze and divide the grams by 100. Water is 1.00.</p>'
+      + '  <p class="cm-gm-note" data-show="water pots">SG is how heavy the glaze is next to water: weigh 100 ml of glaze and divide the grams by 100 (<a href="' + SRC.potclaysPowder + '" target="_blank" rel="noopener">Potclays</a>). Water is 1.00.</p>'
       + '  <p class="cm-gm-note" data-show="pots">The other pots are scaled from the mug by the area glazed. Leave enough in the bucket to dip your tallest pot.</p>'
       // ---- picture and results
       + '  <div class="cm-gm-vis" data-role="vis">'
@@ -360,6 +371,32 @@
       if (cls) li.className = cls;
       li.textContent = text;
       list.appendChild(li);
+      return li;
+    }
+
+    // Text with [anchor](key) source links -> text nodes and <a> elements (never innerHTML).
+    var LINK_RE = /\[([^\]]+)\]\((\w+)\)/g;
+    function rich(el, text) {
+      el.textContent = '';
+      var last = 0;
+      var m;
+      LINK_RE.lastIndex = 0;
+      while ((m = LINK_RE.exec(text))) {
+        if (!SRC.hasOwnProperty(m[2])) continue;
+        el.appendChild(document.createTextNode(text.slice(last, m.index)));
+        var a = document.createElement('a');
+        a.href = SRC[m[2]];
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = m[1];
+        el.appendChild(a);
+        last = LINK_RE.lastIndex;
+      }
+      el.appendChild(document.createTextNode(text.slice(last)));
+    }
+
+    function plain(text) {
+      return text.replace(LINK_RE, function (all, t, k) { return SRC.hasOwnProperty(k) ? t : all; });
     }
 
     function announce(text) {
@@ -381,10 +418,10 @@
     }
 
     function fail(text) {
-      line(text, 'cm-results-empty');
+      rich(line('', 'cm-results-empty'), text);
       note.textContent = '';
       vis.hidden = true;
-      announce(text);
+      announce(plain(text));
     }
 
     // ---------- ingredient rows ----------
@@ -464,9 +501,9 @@
         notes.push('Read ' + typed(el) + ' as grams per 10 ml: SG ' + sgText(s) + '.');
       }
       if (s <= 1) return { error: who + ' must be above 1.00. Water on its own is 1.00, and glaze is water plus powder.' };
-      if (s > 2) return { error: who + ' must be 2.0 or less. Glazes sit between about 1.25 and 1.70, and even casting slip is only about 1.8. Enter it like 1.45 (100 ml weighing 145 g).' };
-      if (s < 1.2) notes.push('SG ' + sgText(s) + ' is very thin for a glaze: brushing glazes go down to about 1.25 (Digitalfire). Check that\'s what you meant.');
-      if (s > 1.7) notes.push('SG ' + sgText(s) + ' is thicker than dipping glazes go (up to 1.70, Spectrum) and close to casting slip (about 1.8), which needs a deflocculant to stay runny.');
+      if (s > 2) return { error: who + ' must be 2.0 or less. Glazes sit between about 1.25 ([Digitalfire](dfSG)) and 1.70 ([Spectrum](spectrum)), and even [casting slip](slip) is only about 1.8. Enter it like 1.45 (100 ml weighing 145 g).' };
+      if (s < 1.2) notes.push('SG ' + sgText(s) + ' is very thin for a glaze: brushing glazes go down to about 1.25 ([Digitalfire](dfSG)). Check that\'s what you meant.');
+      if (s > 1.7) notes.push('SG ' + sgText(s) + ' is thicker than dipping glazes go (up to 1.70, [Spectrum](spectrum)) and close to [casting slip](slip) (about 1.8), which needs a deflocculant to stay runny.');
       return { sg: s, notes: notes };
     }
 
@@ -581,7 +618,7 @@
         ? 'A recipe\'s base adds up to 100. Colourants and other additions are a % of that base and sit on top of it, so the recipe adds up to ' + pctText(baseSum + addSum) + '%.'
         : 'A recipe\'s base adds up to 100. Add any colourants as additions: they sit on top of the 100.';
       vis.hidden = false;
-      note.textContent = notes.join(' ');
+      rich(note, notes.join(' '));
       announce('Weigh out ' + grams(total) + ' in all.');
     }
 
@@ -611,11 +648,11 @@
         notes.push(presetNote());
         notes.push('Powders vary, so add most of the water, sieve, check the SG, then top up using "A mixed bucket".');
         showSplit(powderMl, w, 'Water');
-        explain.textContent = 'Glaze powder is about 2.6 times as heavy as water, so ' + fmt(dry, 0) + ' g of it fills about '
+        rich(explain, 'Glaze powder is about 2.6 times as heavy as water (Digitalfire lists [kaolin at 2.62](dfKaolin) and [potash feldspar at 2.56](dfFeldspar)), so ' + fmt(dry, 0) + ' g of it fills about '
           + fmt(powderMl, 0) + ' ml. SG ' + sgText(s) + ' means a litre of glaze weighs ' + fmt(s * 1000, 0) + ' g. With '
           + fmt(w, 0) + ' ml of water you have ' + fmt(dry + w, 0) + ' g in ' + fmt(vol, 0) + ' ml, and '
-          + fmt(dry + w, 0) + ' ÷ ' + fmt(vol, 0) + ' = ' + sgText(s) + '.';
-        note.textContent = notes.join(' ');
+          + fmt(dry + w, 0) + ' ÷ ' + fmt(vol, 0) + ' = ' + sgText(s) + '.');
+        rich(note, notes.join(' '));
         announce('Add ' + fmt(w, 0) + ' ml of water.');
         return;
       }
@@ -660,8 +697,8 @@
         title.textContent = 'Too thin for SG ' + sgText(s2) + '. Either:';
         line('Pour off: ' + fmt(pour, 0) + ' ml of clear water');
         line('Or stir in: ' + weight(powder) + ' of dry glaze');
-        notes.push('Leave the glaze to settle overnight first, so the water you pour off is clear (Potclays).');
-        notes.push('The pour-off figure needs no guess about the powder. The stir-in figure assumes the powder is about 2.6 times as heavy as water, so check the SG after.');
+        notes.push('Leave the glaze to settle overnight first, so the water you pour off is clear ([Potclays](potclaysPowder)).');
+        notes.push('The pour-off figure needs no guess about the powder. The stir-in figure assumes the powder is about 2.6 times as heavy as water ([Digitalfire](dfKaolin) lists kaolin at 2.62), so check the SG after.');
         line(check100);
         bar.hidden = true;
         legend.hidden = true;
@@ -672,7 +709,7 @@
         announce('Pour off ' + fmt(pour, 0) + ' ml of water.');
       }
       notes.push(presetNote());
-      note.textContent = notes.join(' ');
+      rich(note, notes.join(' '));
     }
 
     // ---------- glaze for pots ----------
@@ -704,15 +741,15 @@
       line('Dry glaze powder: ' + weight(dry));
       line('Water: ' + litres(w));
       notes = notes.concat(target.notes);
-      if (kind.value === 'mug' && Math.abs(per - 150) < 0.001) notes.push('Potclays\' rule of thumb is about 0.15 L of glaze per mug.');
-      else if (kind.value !== 'own' && Math.abs(per - pot.ml) < 0.001) notes.push('Our estimate for this pot, scaled from Potclays\' 0.15 L per mug by the area glazed inside and out.');
+      if (kind.value === 'mug' && Math.abs(per - 150) < 0.001) notes.push('[Potclays\' rule of thumb](potclaysMug) is about 0.15 L of glaze per mug.');
+      else if (kind.value !== 'own' && Math.abs(per - pot.ml) < 0.001) notes.push('Our estimate for this pot, scaled from [Potclays\' 0.15 L per mug](potclaysMug) by the area glazed inside and out.');
       else notes.push('At your own figure per pot.');
       notes.push('At SG ' + sgText(s) + ', 1 kg of powder makes about ' + fmt(vol / dry, 2) + ' L of glaze.');
       showSplit(dry / DENSITY, w, 'Water');
       var perL = (s - 1) * DENSITY / (DENSITY - 1) * 1000;
-      explain.textContent = 'Each litre of glaze at SG ' + sgText(s) + ' holds about ' + fmt(perL, 0) + ' g of powder and '
-        + fmt(s * 1000 - perL, 0) + ' ml of water. Potclays\' figure of 1.54 L per kg of powder is for SG 1.4, and this maths gives the same.';
-      note.textContent = notes.join(' ');
+      rich(explain, 'Each litre of glaze at SG ' + sgText(s) + ' holds about ' + fmt(perL, 0) + ' g of powder and '
+        + fmt(s * 1000 - perL, 0) + ' ml of water. [Potclays\' figure](potclaysPowder) of 1.54 L per kg of powder is for SG 1.4, and this maths gives the same.');
+      rich(note, notes.join(' '));
       announce('Mix about ' + litres(vol) + ' of glaze from ' + weight(dry) + ' of powder.');
     }
 
