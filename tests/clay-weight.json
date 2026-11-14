@@ -12,7 +12,11 @@
     "About 400 g ends up in the wet pot",
     "15% allowance covers throwing slurry and trimming",
     "walls 6 mm, base 6 mm, 11% shrinkage",
-    "Capacity is to the brim"
+    "Capacity is to the brim",
+    "Our throwing allowances are set so the results match Lakeside Pottery's throwing chart.",
+    "wet clay at 1.95 g per cm³ (from Digitalfire's water content figures).",
+    "The stoneware preset sits in the 10–15% range Valentine Clays gives.",
+    "Dwayne Sackey weighs out 3½ oz (about 100 g) for a mug handle."
    ]
   },
   {
@@ -92,6 +96,9 @@
    "expect": [
     "Weigh out: 500 g",
     "10% allowance covers offcuts and joins"
+   ],
+   "absent": [
+    "Lakeside Pottery's throwing chart"
    ]
   },
   {
@@ -684,7 +691,8 @@
    "expect": [
     "Weigh out: 470 g",
     "Wet size: 9.2 cm wide, 11.2 cm tall",
-    "13% shrinkage"
+    "13% shrinkage",
+    "The porcelain preset sits in the 10–15% range Valentine Clays gives."
    ]
   },
   {
@@ -699,6 +707,9 @@
    "expect": [
     "Weigh out: 460 g",
     "Wet size: 9.1 cm wide, 11.1 cm tall"
+   ],
+   "absent": [
+    "preset sits"
    ]
   },
   {

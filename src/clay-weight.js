@@ -52,6 +52,16 @@
   var HANDLE_G = 100;          // one pulled mug handle
   var HAND_ALLOW = 10;         // handbuilding allowance %
   var PRESET_SHRINK = ['7', '11', '13'];
+  var PRESET_RANGE = { '7': ['earthenware', '5–10%'], '11': ['stoneware', '10–15%'], '13': ['porcelain', '10–15%'] };
+
+  // Source pages linked from the calculator's own text (quotes in Website/Calculators/Clay Weight/sources.md)
+  var SRC = {
+    lakeside: 'https://www.lakesidepottery.com/HTML%20Text/Tips/weights-of-clay-needed-for-ware-size.pdf',
+    digitalfire: 'https://digitalfire.com/test/clwc',
+    valentine: 'https://valentineclays.co.uk/pages/shrinkage-rates',
+    sheffield: 'https://www.sheffield-pottery.com/blogs/ceramic-arts-blog/pottery-101-answers-to-the-questions-every-new-potter-asks',
+    sackey: 'https://ceramicartsnetwork.org/pottery-making-illustrated/pottery-making-illustrated-article/fluidity-in-form-and-surface'
+  };
   var NB = '\u00a0';           // keeps a number on the same line as its unit
 
   // Default finished (fired) size, wet wall and base after trimming, and the throwing allowance, per form.
@@ -389,10 +399,34 @@
       });
     }
 
+    // Text with source links: a string, or a list of strings and { t: text, href: url } parts, built as DOM nodes.
+    function src(t, key) { return { t: t, href: SRC[key] }; }
+    function put(el, text) {
+      (typeof text === 'string' ? [text] : text).forEach(function (part) {
+        if (typeof part === 'string') { el.appendChild(document.createTextNode(part)); return; }
+        var a = document.createElement('a');
+        a.href = part.href;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = part.t;
+        el.appendChild(a);
+      });
+    }
+    function plain(text) {
+      return typeof text === 'string' ? text : text.map(function (p) { return typeof p === 'string' ? p : p.t; }).join('');
+    }
+    function putNotes(list) {
+      note.textContent = '';
+      list.forEach(function (n, i) {
+        if (i) note.appendChild(document.createTextNode(' '));
+        put(note, n);
+      });
+    }
+
     function line(text, cls) {
       var li = document.createElement('li');
       if (cls) li.className = cls;
-      li.textContent = text;
+      put(li, text);
       list.appendChild(li);
     }
 
@@ -430,10 +464,13 @@
       q('[data-label="cap"]').textContent = 'Capacity (' + CAP_NAME[capUnit] + ')';
       ukBtn.hidden = true;
       allowLabel.textContent = method === 'hand' ? 'Offcut allowance %' : 'Throwing allowance %';
-      hint.textContent = (shape === 'vase' ? 'Width is the widest point, outside. ' : 'Width is outside, at the rim. ')
+      hint.textContent = '';
+      put(hint, [(shape === 'vase' ? 'Width is the widest point, outside. ' : 'Width is outside, at the rim. ')
         + 'Sizes are the finished, fired pot; wall and base are the wet pot\'s thickness '
-        + (method === 'hand' ? 'as you build it (your slab). Pinching with no offcuts? Set the allowance to 0.'
-          : 'after trimming. Still learning? Lakeside Pottery suggests about 25% more clay.');
+        + (method === 'hand' ? 'as you build it (your slab). ' : 'after trimming. '),
+        src('Sheffield Pottery', 'sheffield'), ' suggests ' + (units === 'metric' ? '6–10 mm' : '1/4–3/8 in') + ' walls for pots you\'ll use. ']
+        .concat(method === 'hand' ? ['Pinching with no offcuts? Set the allowance to 0.']
+          : ['Still learning? ', src('Lakeside Pottery', 'lakeside'), ' suggests about 25% more clay.']));
 
       var notes = [];
       var imp = units === 'imperial';
@@ -442,7 +479,7 @@
       // and the range checks run on the converted figure: over 16% warns, 30% or more is refused.
       var s = parseFloat(shrink.value);
       if (s > 0 && s < 1) { notes.push('Read ' + shrink.value + ' as ' + fmt(s * 100, 0) + '% shrinkage.'); s = s * 100; }
-      var highShrink = fmt(s, s % 1 ? 1 : 0) + '% is unusually high: most clays shrink about 5–15%, so check your figure.';
+      var highShrink = [fmt(s, s % 1 ? 1 : 0) + '% is unusually high: ', src('most clays shrink about 5–15%', 'valentine'), ', so check your figure.'];
       var badShrink = !isNaN(s) && s >= 30;
       if (s > 16 && !badShrink) notes.push(highShrink);
 
@@ -503,9 +540,9 @@
 
       list.innerHTML = '';
       function stop(text) {
-        announce(text);
+        announce(plain(text));
         line(text, 'cm-results-empty');
-        note.textContent = notes.join(' ');
+        putNotes(notes);
         visualPct.textContent = isNaN(s) || badShrink ? 'Shrinks as it dries and fires' : fmt(s, s % 1 ? 1 : 0) + '% smaller once fired';
         clearPic();
         last = null;
@@ -550,11 +587,19 @@
 
       notes.push('About ' + grams(potG) + ' ends up in the wet pot, and the ' + fmt(a, a % 1 ? 1 : 0) + '% allowance covers '
         + (method === 'hand' ? 'offcuts and joins.' : 'throwing slurry and trimming.'));
-      notes.push('Worked out for ' + F.text + ': walls ' + thick(t) + ', base ' + thick(b) + ', '
-        + fmt(s, s % 1 ? 1 : 0) + '% shrinkage, wet clay at 1.95 g per cm³.'
-        + (firedCap === null ? '' : ' Capacity is to the brim.'));
+      if (method === 'throw' && a === allowDefault()) {
+        notes.push(['Our throwing allowances are set so the results match ', src('Lakeside Pottery\'s throwing chart', 'lakeside'), '.']);
+      }
+      notes.push(['Worked out for ' + F.text + ': walls ' + thick(t) + ', base ' + thick(b) + ', '
+        + fmt(s, s % 1 ? 1 : 0) + '% shrinkage, wet clay at 1.95 g per cm³ (from ', src('Digitalfire', 'digitalfire'),
+        '\'s water content figures).' + (firedCap === null ? '' : ' Capacity is to the brim.')]);
+      var preset = PRESET_RANGE[clay.value];
+      if (preset && String(s) === clay.value) {
+        notes.push(['The ' + preset[0] + ' preset sits in the ' + preset[1] + ' range ', src('Valentine Clays', 'valentine'), ' gives.']);
+      }
+      if (formSel.value === 'mug') notes.push([src('Dwayne Sackey', 'sackey'), ' weighs out 3½ oz (about 100 g) for a mug handle.']);
       if (s === 0) notes.push('With 0% shrinkage, the fired sizes are the wet sizes.');
-      note.textContent = notes.join(' ');
+      putNotes(notes);
 
       // Picture: the wet pot fills the box; the fired one is drawn inside it at its real size.
       var scale = 80 / Math.max(Dw, Hw);
