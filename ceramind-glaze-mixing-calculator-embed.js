@@ -152,6 +152,12 @@
     + '  border-radius: 8px; padding: 0.7rem 0.8rem; margin-top: 0.6rem; font-size: 0.8rem; line-height: 1.45; color: var(--cm-ink); }'
     + '.cm-calc .cm-gm-check p { margin: 0 0 0.5rem; }'
     + '.cm-calc .cm-gm-check .cm-gm-btns { display: flex; flex-wrap: wrap; gap: 0.4rem; }'
+    + '.cm-calc .cm-gm-more { display: inline-flex; align-items: center; gap: 0.35rem; margin: 0 0 1rem; padding: 0.2rem 0; border: 0; background: none;'
+    + '  font-family: inherit; font-size: 0.82rem; font-weight: 600; color: var(--cm-brand); text-decoration: none; cursor: pointer; }'
+    + '.cm-calc .cm-gm-more-text { text-decoration: underline; text-underline-offset: 2px; }'
+    + '.cm-calc .cm-gm-more:focus-visible { outline: 2px solid var(--cm-brand); outline-offset: 2px; }'
+    + '.cm-calc .cm-gm-more-sign { display: inline-block; width: 1rem; text-align: center; text-decoration: none; }'
+    + '.cm-calc .cm-gm-panel { border-left: 3px solid var(--cm-sand); padding: 0.1rem 0 0.1rem 0.8rem; margin: -0.4rem 0 1rem; }'
     + '.cm-calc .cm-gm-vis { background: var(--cm-bg); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1.1rem; }'
     + '.cm-calc .cm-gm-bar { position: relative; display: flex; height: 16px; margin: 0.35rem 0 0.65rem; }'
     + '.cm-calc .cm-gm-seg { height: 100%; flex: 0 0 auto; }'
@@ -202,13 +208,7 @@
       + '    <label class="cm-label" for="' + f('batch') + '">Batch size (g)</label>'
       + '    <input type="number" id="' + f('batch') + '" data-role="batch" min="0" step="any" value="1000" inputmode="decimal">'
       + '  </div>'
-      + '  <div class="cm-row" data-show="batch">'
-      + '    <span class="cm-label" id="' + f('basis') + '">Batch size is</span>'
-      + '    <div class="cm-unit-toggle" role="group" aria-labelledby="' + f('basis') + '">'
-      + '      <button type="button" class="cm-unit-btn is-active" data-basis="base" aria-pressed="true">Base only</button>'
-      + '      <button type="button" class="cm-unit-btn" data-basis="total" aria-pressed="false">Base + additions</button>'
-      + '    </div>'
-      + '  </div>'
+      + '  <p class="cm-gm-note" data-show="batch">This is the base. Additions go on top of the batch size.</p>'
       + '  <div class="cm-gm-list" data-show="batch">'
       + '    <div class="cm-gm-head" aria-hidden="true"><span class="cm-gm-h">Base recipe</span><span class="cm-gm-col">%</span><span></span></div>'
       + '    <div data-list="base"></div>'
@@ -235,24 +235,8 @@
       + '  </div>'
       // ---- water to add
       + '  <div class="cm-row" data-show="water">'
-      + '    <span class="cm-label" id="' + f('from') + '">Start from</span>'
-      + '    <div class="cm-unit-toggle" role="group" aria-labelledby="' + f('from') + '">'
-      + '      <button type="button" class="cm-unit-btn is-active" data-from="dry" aria-pressed="true">Dry powder</button>'
-      + '      <button type="button" class="cm-unit-btn" data-from="bucket" aria-pressed="false">A mixed bucket</button>'
-      + '    </div>'
-      + '  </div>'
-      + '  <div class="cm-row" data-show="dry">'
       + '    <label class="cm-label" for="' + f('dry') + '">Dry glaze (g)</label>'
       + '    <input type="number" id="' + f('dry') + '" data-role="dry" min="0" step="any" value="1000" inputmode="decimal">'
-      + '  </div>'
-      + '  <div class="cm-row" data-show="bucket">'
-      + '    <label class="cm-label" for="' + f('wet') + '">Glaze weight (kg)</label>'
-      + '    <input type="number" id="' + f('wet') + '" data-role="wet" min="0" step="any" inputmode="decimal" placeholder="e.g. 5">'
-      + '  </div>'
-      + '  <p class="cm-gm-note" data-show="bucket">Weigh the full bucket, then take off what the empty bucket weighs.</p>'
-      + '  <div class="cm-row" data-show="bucket">'
-      + '    <label class="cm-label" for="' + f('now') + '">SG now</label>'
-      + '    <input type="number" id="' + f('now') + '" data-role="now" min="1" max="2" step="0.01" inputmode="decimal" placeholder="e.g. 1.55">'
       + '  </div>'
       // ---- glaze for pots
       + '  <div class="cm-row" data-show="pots">'
@@ -283,6 +267,20 @@
       + '  </div>'
       + '  <p class="cm-gm-note" data-show="water pots">SG is how heavy the glaze is next to water: weigh 100 ml of glaze and divide the grams by 100 (<a href="' + SRC.potclaysPowder + '" target="_blank" rel="noopener">Potclays</a>). Water is 1.00.</p>'
       + '  <p class="cm-gm-note" data-show="pots">The other pots are scaled from the mug by the area glazed. Leave enough in the bucket to dip your tallest pot.</p>'
+      + '  <button type="button" class="cm-gm-more" data-show="water" data-role="more" aria-expanded="false" aria-controls="' + f('more') + '">'
+      + '<span class="cm-gm-more-sign" aria-hidden="true">+</span><span class="cm-gm-more-text">More options</span></button>'
+      + '  <div class="cm-gm-panel" id="' + f('more') + '" data-show="bucket">'
+      + '    <p class="cm-gm-note">Already mixed a bucket? Put in its weight and the SG it is now, and we\'ll work out the water to add or pour off.</p>'
+      + '  <div class="cm-row" data-show="bucket">'
+      + '    <label class="cm-label" for="' + f('wet') + '">Glaze weight (kg)</label>'
+      + '    <input type="number" id="' + f('wet') + '" data-role="wet" min="0" step="any" inputmode="decimal" placeholder="e.g. 5">'
+      + '  </div>'
+      + '  <p class="cm-gm-note" data-show="bucket">Weigh the full bucket, then take off what the empty bucket weighs.</p>'
+      + '  <div class="cm-row" data-show="bucket">'
+      + '    <label class="cm-label" for="' + f('now') + '">SG now</label>'
+      + '    <input type="number" id="' + f('now') + '" data-role="now" min="1" max="2" step="0.01" inputmode="decimal" placeholder="e.g. 1.55">'
+      + '  </div>'
+      + '  </div>'
       // ---- picture and results
       + '  <div class="cm-gm-vis" data-role="vis">'
       + '    <div class="cm-gm-bar" data-role="bar" aria-hidden="true"></div>'
@@ -324,8 +322,7 @@
     root.innerHTML = template(id);
 
     var mode = 'batch';
-    var basis = 'base';
-    var from = 'dry';
+    var more = false;   // "More options": thin a bucket that's already mixed
     var rowSeq = 0;
     var moveRow = null;
     var srTimer;
@@ -631,7 +628,7 @@
 
       // Always work from the base scaled to 100: a base typed as parts (4/3/2/1) or one that is a little off
       // still gives the right glaze. Additions are a % of that base weight.
-      var baseW = basis === 'base' ? size : size / (1 + addSum / 100);
+      var baseW = size;   // the batch size is the base; additions go on top
       var per = baseW / baseSum;
       base.forEach(function (r) { line(r.name + ': ' + grams(r.pct * per)); });
       var used = adds.filter(function (r) { return r.pct > 0; });
@@ -646,10 +643,8 @@
         notes.push('Your base adds up to ' + pctText(baseSum) + ', not 100, so we read it as parts out of ' + pctText(baseSum) + ' and scaled it to 100%.');
         if (moveRow) notes.push(moveRow.name + ' may belong in the additions.');
       }
-      if (used.length && basis === 'base') {
+      if (used.length) {
         notes.push('The ' + pctText(addSum) + '% of additions goes on top of the ' + grams(baseW) + ' base, so the batch weighs ' + grams(total) + '.');
-      } else if (used.length) {
-        notes.push('The additions are counted inside your ' + grams(size) + ', so the base is ' + grams(baseW) + ' and the additions ' + grams(addSum / 100 * baseW) + '.');
       }
 
       // picture: the base (scaled to 100) up to the 100% line, additions past it
@@ -673,7 +668,9 @@
     // ---------- water to add ----------
     function renderWater(notes) {
       var target = readSG(sgIn, 'The target SG');
-      if (from === 'dry') {
+      // The bucket answer only takes over once something is typed into the "More options" boxes.
+      var bucket = more && (wetIn.value.trim() !== '' || nowIn.value.trim() !== '');
+      if (!bucket) {
         title.textContent = 'Mix with:';
         var dry = num(dryIn);
         if (dry < 10) {
@@ -694,7 +691,7 @@
         line('Check: 100 ml should weigh ' + fmt(s * 100, Math.round(s * 1000) % 10 ? 1 : 0) + ' g');
         notes = notes.concat(target.notes);
         notes.push(presetNote());
-        notes.push('Powders vary, so add most of the water, sieve, check the SG, then top up using "A mixed bucket".');
+        notes.push('Powders vary, so add most of the water, sieve, check the SG, then top up using "More options".');
         showSplit(powderMl, w, 'Water');
         rich(explain, 'Glaze powder is about 2.6 times as heavy as water (Digitalfire lists [kaolin at 2.62](dfKaolin) and [potash feldspar at 2.56](dfFeldspar)), so ' + fmt(dry, 0) + ' g of it fills about '
           + fmt(powderMl, 0) + ' ml. SG ' + sgText(s) + ' means a litre of glaze weighs ' + fmt(s * 1000, 0) + ' g. With '
@@ -724,6 +721,7 @@
       var s2 = target.sg;
       var v1 = m / s1;
       notes = notes.concat(now.notes, target.notes);
+      notes.push('Worked out from your mixed bucket, not the dry glaze weight.');
       var check100 = 'Check: 100 ml should weigh ' + fmt(s2 * 100, Math.round(s2 * 1000) % 10 ? 1 : 0) + ' g';
       if (Math.abs(s1 - s2) < 0.005) {
         line('No change: it\'s already at SG ' + sgText(s2) + '.');
@@ -803,7 +801,7 @@
 
     function render() {
       var state = [mode];
-      if (mode === 'water') state.push(from);
+      if (mode === 'water' && more) state.push('bucket');
       qa('[data-show]').forEach(function (el) {
         el.hidden = !el.getAttribute('data-show').split(' ').some(function (t) { return state.indexOf(t) >= 0; });
       });
@@ -828,24 +826,13 @@
       });
     });
 
-    qa('[data-basis]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var next = btn.getAttribute('data-basis');
-        if (next === basis) return;
-        basis = next;
-        setPressed(qa('[data-basis]'), 'data-basis', basis);
-        render();
-      });
-    });
-
-    qa('[data-from]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var next = btn.getAttribute('data-from');
-        if (next === from) return;
-        from = next;
-        setPressed(qa('[data-from]'), 'data-from', from);
-        render();
-      });
+    var moreBtn = q('[data-role="more"]');
+    moreBtn.addEventListener('click', function () {
+      more = !more;
+      moreBtn.setAttribute('aria-expanded', more ? 'true' : 'false');
+      moreBtn.querySelector('.cm-gm-more-sign').textContent = more ? '\u2212' : '+';
+      render();
+      if (more) wetIn.focus();
     });
 
     qa('[data-add]').forEach(function (btn) {

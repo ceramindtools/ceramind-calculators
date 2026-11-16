@@ -19,43 +19,8 @@
    ]
   },
   {
-   "name": "batch size counts the additions too: 1,000 / 105 per %",
+   "name": "500 g of base",
    "do": [
-    [
-     "click",
-     "[data-basis=total]"
-    ]
-   ],
-   "expect": [
-    "Potash feldspar: 381 g",
-    "Silica: 286 g",
-    "Whiting: 190 g",
-    "China clay: 95.2 g",
-    "Red iron oxide (5%): 47.6 g",
-    "Total to weigh: 1,000 g",
-    "counted inside your 1,000 g, so the base is 952 g and the additions 47.6 g"
-   ]
-  },
-  {
-   "name": "clicking the selected toggle changes nothing",
-   "do": [
-    [
-     "click",
-     "[data-basis=total]"
-    ]
-   ],
-   "expect": [
-    "Potash feldspar: 381 g",
-    "Total to weigh: 1,000 g"
-   ]
-  },
-  {
-   "name": "base only, 500 g",
-   "do": [
-    [
-     "click",
-     "[data-basis=base]"
-    ],
     [
      "fill",
      "[data-role=batch]",
@@ -333,29 +298,8 @@
    ]
   },
   {
-   "name": "parts recipe with the batch counting the additions",
-   "do": [
-    [
-     "click",
-     "[data-basis=total]"
-    ]
-   ],
-   "expect": [
-    "Potash feldspar: 381 g",
-    "Silica: 286 g",
-    "Whiting: 190 g",
-    "China clay: 95.2 g",
-    "Red iron oxide (5%): 47.6 g",
-    "Total to weigh: 1,000 g"
-   ]
-  },
-  {
    "name": "scaling the parts recipe leaves the 5% addition alone",
    "do": [
-    [
-     "click",
-     "[data-basis=base]"
-    ],
     [
      "click",
      "[data-role=scale]"
@@ -600,7 +544,7 @@
    ]
   },
   {
-   "name": "mixed bucket starts by asking for weight and SG",
+   "name": "More options opens the bucket boxes; empty, the dry-powder answer stays",
    "do": [
     [
      "fill",
@@ -614,11 +558,29 @@
     ],
     [
      "click",
-     "[data-from=bucket]"
+     "[data-role=more]"
     ]
    ],
    "expect": [
-    "Enter the weight of your glaze and its SG now."
+    "MIX WITH:",
+    "Water: 983 ml (983 g)",
+    "Makes about: 1.37 L of glaze"
+   ],
+   "absent": [
+    "mixed bucket, not"
+   ]
+  },
+  {
+   "name": "bucket weight alone asks for its SG now",
+   "do": [
+    [
+     "fill",
+     "[data-role=wet]",
+     "5"
+    ]
+   ],
+   "expect": [
+    "Enter its SG now."
    ]
   },
   {
@@ -639,7 +601,8 @@
     "TO REACH SG 1.45:",
     "Add water: 717 ml (717 g)",
     "Makes about: 3.94 L of glaze",
-    "Check: 100 ml should weigh 145 g"
+    "Check: 100 ml should weigh 145 g",
+    "Worked out from your mixed bucket, not the dry glaze weight."
    ]
   },
   {
@@ -705,11 +668,59 @@
    ]
   },
   {
-   "name": "back to dry powder keeps 1,000 g",
+   "name": "closing More options goes back to dry powder, 1,000 g kept",
    "do": [
     [
      "click",
-     "[data-from=dry]"
+     "[data-role=more]"
+    ]
+   ],
+   "expect": [
+    "MIX WITH:",
+    "Water: 983 ml (983 g)",
+    "\"More options\""
+   ],
+   "absent": [
+    "mixed bucket, not"
+   ]
+  },
+  {
+   "name": "opening it again keeps the bucket values",
+   "do": [
+    [
+     "click",
+     "[data-role=more]"
+    ]
+   ],
+   "expect": [
+    "The SG now must be above 1.00."
+   ]
+  },
+  {
+   "name": "the 1,050 g K32 batch still gives 1,032 ml after closing",
+   "do": [
+    [
+     "click",
+     "[data-role=more]"
+    ],
+    [
+     "fill",
+     "[data-role=dry]",
+     "1050"
+    ]
+   ],
+   "expect": [
+    "Water: 1,032 ml (1,032 g)",
+    "Makes about: 1.44 L of glaze"
+   ]
+  },
+  {
+   "name": "back to 1,000 g",
+   "do": [
+    [
+     "fill",
+     "[data-role=dry]",
+     "1000"
     ]
    ],
    "expect": [
