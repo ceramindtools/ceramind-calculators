@@ -235,7 +235,7 @@
     return ''
       + '<div class="cm-card">'
       + '  <h3 class="cm-title">Firing Schedule Calculator</h3>'
-      + '  <p class="cm-sub">Pick your firing and get a typical starting schedule in °C: each ramp and hold, the total firing time and when it ends.</p>'
+      + '  <p class="cm-sub">Pick your firing and get a typical starting schedule in °C, with each ramp and hold and the total firing time.</p>'
       + '  <div class="cm-row">'
       + '    <label class="cm-label" for="' + f('firing') + '">Firing</label>'
       + '    <select id="' + f('firing') + '" data-role="firing">'
