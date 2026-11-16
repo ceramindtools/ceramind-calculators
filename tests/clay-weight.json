@@ -3,16 +3,19 @@
  "_how": "Answers worked out by hand before running. Wet width = fired / (1 - s). Mug: wet capacity = ml / (1 - s)^3, inner radius = wet width/2 - wall, inner height = wet capacity / (pi r^2), wet height = that + base, clay = pi R^2 H - wet capacity, grams = clay x 1.95, weigh out = grams x (1 + allowance). Bowl: cap volume pi h (3a^2 + h^2) / 6, outside minus inside. Plate: pi r0^2 base + pi (R + r0) H sqrt2 wall, with r0 = R - H. Walls, base and allowance are the per-pot defaults. Weigh-out rounds to 10 g.",
  "cases": [
   {
-   "name": "MUG 350 ml @ 8 cm, stoneware 11%, 6/6 mm, 15%: wet 9.0 x 11.0, clay 202.8 cm3 = 395.5 g, x1.15 = 454.9 -> 450 g",
+   "name": "MUG 350 ml @ 8 cm: clay 202.8 cm3 = 395.5 g, x1.15 = 454.9 -> 450 g, + 100 g handle = 554.9 -> 550 g; 1 cm below the rim: fired inner r 3.466, area 37.74 x (9.274 - 1) = 312.3 -> 310 ml",
    "expect": [
     "Weigh out: 450 g",
     "Wet size: 9.0 cm wide, 11.0 cm tall",
     "Fired: 8.0 cm wide, 9.8 cm tall, holds 350 ml",
-    "Handle: about 100 g more",
-    "Adds 15% for throwing and trimming (calibrated to Lakeside Pottery's chart). Handle weight from Dwayne Sackey."
+    "Weigh out: 450 g for the mug + about 100 g for the handle = 550 g in all",
+    "Holds about 310 ml to 1 cm below the rim",
+    "Adds 15% for throwing and trimming (calibrated to Lakeside Pottery's chart)."
    ],
    "absent": [
-    "Use UK fl oz"
+    "Use UK fl oz",
+    "For 1",
+    "bag"
    ]
   },
   {
@@ -122,9 +125,8 @@
     "Weigh out: 1 lb 2 oz (520 g)",
     "Wet size: 4.0 in wide, 4.3 in tall",
     "Fired: 3.5 in wide, 3.8 in tall, holds 15.2 US fl oz",
-    "Handle: about 3½ oz more",
     "Use UK fl oz instead",
-    "Handle weight from Dwayne Sackey."
+    "Weigh out: 1 lb 2 oz (520 g) for the mug + about 3½ oz for the handle = 1 lb 6 oz (620 g) in all"
    ],
    "absent": [
     " cm wide"
@@ -224,7 +226,7 @@
    ],
    "absent": [
     "Read",
-    "3 oz"
+    "Weigh out: 3 oz"
    ]
   },
   {
@@ -526,6 +528,153 @@
    ]
   },
   {
+   "name": "HOW MANY 6 mugs: 6 x 550 g = 3,300 g = 3.3 kg; 3,329 g / 12,500 g = 0.27 of a bag -> about a quarter",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "6"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g for the mug + about 100 g for the handle = 550 g in all",
+    "For 6 mugs: 6 × 550 g = 3.3 kg",
+    "That's about a quarter of a 12.5 kg bag."
+   ]
+  },
+  {
+   "name": "HOW MANY 6 in in·lb: 554.9 g = 19.6 -> 20 oz = 1 lb 4 oz; 6 x 20 oz = 120 oz = 7.5 lb (3,401.9 g = 3.4 kg)",
+   "do": [
+    [
+     "click",
+     "[data-units=imperial]"
+    ]
+   ],
+   "expect": [
+    "For 6 mugs: 6 × 1 lb 4 oz = 7.5 lb (3.4 kg)",
+    "That's about a quarter of a 12.5 kg (27.6 lb) bag."
+   ]
+  },
+  {
+   "name": "HOW MANY 2.5 read as 3: 3 x 550 = 1,650 g = 1.7 kg; 0.133 of a bag -> an eighth",
+   "do": [
+    [
+     "click",
+     "[data-units=metric]"
+    ],
+    [
+     "fill",
+     "[data-role=count]",
+     "2.5"
+    ]
+   ],
+   "expect": [
+    "Read 2.5 as 3 mugs.",
+    "For 3 mugs: 3 × 550 g = 1.7 kg",
+    "That's about an eighth of a 12.5 kg bag."
+   ]
+  },
+  {
+   "name": "HOW MANY 30: 30 x 550 = 16,500 g = 16.5 kg; 1.33 bags -> about 1½",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "30"
+    ]
+   ],
+   "expect": [
+    "For 30 mugs: 30 × 550 g = 16.5 kg",
+    "That's about 1½ bags of 12.5 kg."
+   ]
+  },
+  {
+   "name": "HOW MANY 22: 0.98 of a bag -> about one bag",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "22"
+    ]
+   ],
+   "expect": [
+    "For 22 mugs: 22 × 550 g = 12.1 kg",
+    "That's about one 12.5 kg bag."
+   ]
+  },
+  {
+   "name": "HOW MANY 0",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "0"
+    ]
+   ],
+   "expect": [
+    "Make that at least 1 pot."
+   ],
+   "absent": [
+    "Weigh out"
+   ]
+  },
+  {
+   "name": "HOW MANY negative",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "-2"
+    ]
+   ],
+   "expect": [
+    "The number of pots can't be negative."
+   ]
+  },
+  {
+   "name": "HOW MANY huge",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "5000"
+    ]
+   ],
+   "expect": [
+    "That's more than 1,000 pots: check the number."
+   ]
+  },
+  {
+   "name": "HOW MANY blank",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your number of pots."
+   ]
+  },
+  {
+   "name": "HOW MANY back to 1: single-pot results only",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "1"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g for the mug + about 100 g for the handle = 550 g in all"
+   ],
+   "absent": [
+    "For 1",
+    "bag"
+   ]
+  },
+  {
    "name": "negative width",
    "do": [
     [
@@ -742,11 +891,11 @@
     "Weigh out: 740 g",
     "Wet size: 16.9 cm wide, 7.9 cm tall",
     "Fired: 15.0 cm wide, 7.0 cm tall, holds 585 ml",
-    "Adds 25% for throwing and trimming (calibrated to Lakeside Pottery's chart)."
+    "Adds 25% for throwing and trimming (calibrated to Lakeside Pottery's chart).",
+    "Holds about 445 ml to 1 cm below the rim"
    ],
    "absent": [
-    "Handle",
-    "Sackey"
+    "for the handle"
    ]
   },
   {
@@ -779,7 +928,9 @@
    ],
    "absent": [
     "holds",
-    "Handle"
+    "for the handle",
+    "below the rim",
+    "for the handle"
    ]
   },
   {
@@ -871,7 +1022,8 @@
    "expect": [
     "Weigh out: 1,370 g",
     "Wet size: 13.5 cm wide, 20.8 cm tall",
-    "Fired: 12.0 cm wide, 18.5 cm tall, holds 1 litre"
+    "Fired: 12.0 cm wide, 18.5 cm tall, holds 1 litre",
+    "Holds about 990 ml to 1 cm below the rim"
    ]
   },
   {
@@ -886,7 +1038,8 @@
    "expect": [
     "Weigh out: 1,340 g",
     "Wet size: 12.4 cm wide, 16.4 cm tall",
-    "Fired: 11.0 cm wide, 14.6 cm tall, holds 1 litre"
+    "Fired: 11.0 cm wide, 14.6 cm tall, holds 1 litre",
+    "Holds about 930 ml to 1 cm below the rim"
    ]
   },
   {
@@ -933,8 +1086,7 @@
     "Fired: 7.5 cm wide, 7.0 cm tall, holds 210 ml"
    ],
    "absent": [
-    "Handle",
-    "Sackey"
+    "for the handle"
    ]
   },
   {

@@ -39,6 +39,10 @@
  *   Nov/Dec 2021).
  * - Capacity: ml with cm·g, US fl oz with in·lb; one tap switches to UK fl oz. In the ml box, under 1 is read as
  *   litres and 1 to 40 as US fl oz (one tap re-reads it as UK fl oz).
+ * - "Holds about X to 1 cm below the rim": the fired inside filled to 10 mm under the fired rim, the same way as
+ *   our Slab Mug Calculator (1 cm fired = 1 / (1 - shrinkage) cm on the wet pot).
+ * - Bags: UK clay comes in 12.5 kg bags (Potclays St Thomas range, Valentine Clays, Bath Potters, Potterycrafts;
+ *   product URLs in sources.md).
  * - Capacity is to the brim. Sumi von Dassow (Pottery Making Illustrated, Nov/Dec 2021): a freshly thrown pot
  *   holds about 1.5 times the finished volume, which is (1 - shrinkage)^3 at about 12.5%.
  */
@@ -106,6 +110,8 @@
   var G_PER_OZ = 28.3495;
   var HANDLE_G = 100;          // one pulled mug handle
   var HAND_ALLOW = 10;         // handbuilding allowance %
+  var BAG_KG = 12.5;           // a standard UK bag of clay
+  var MAX_POTS = 1000;
 
   // Source pages linked from the calculator's own text (quotes in Website/Calculators/Clay Weight/sources.md)
   var SRC = {
@@ -120,12 +126,12 @@
   // Default finished (fired) size, wet thickness of walls and base after trimming (mm), and the throwing
   // allowance %, per pot.
   var FORMS = {
-    mug:      { shape: 'cyl',   cap: 350,  d: 8,   h: 10,  t: 6, allow: 15 },
-    cup:      { shape: 'cyl',   cap: 200,  d: 7.5, h: 7,   t: 6, allow: 15 },
-    bowl:     { shape: 'bowl',  cap: 500,  d: 15,  h: 7,   t: 8, allow: 25 },
-    plate:    { shape: 'plate', cap: 0,    d: 27,  h: 2.5, t: 9, allow: 30 },
-    vase:     { shape: 'vase',  cap: 1000, d: 12,  h: 18,  t: 8, allow: 25 },
-    cylinder: { shape: 'cyl',   cap: 1000, d: 11,  h: 15,  t: 8, allow: 25 }
+    mug:      { shape: 'cyl',   cap: 350,  d: 8,   h: 10,  t: 6, allow: 15, one: 'mug', many: 'mugs' },
+    cup:      { shape: 'cyl',   cap: 200,  d: 7.5, h: 7,   t: 6, allow: 15, one: 'cup', many: 'cups' },
+    bowl:     { shape: 'bowl',  cap: 500,  d: 15,  h: 7,   t: 8, allow: 25, one: 'bowl', many: 'bowls' },
+    plate:    { shape: 'plate', cap: 0,    d: 27,  h: 2.5, t: 9, allow: 30, one: 'plate', many: 'plates' },
+    vase:     { shape: 'vase',  cap: 1000, d: 12,  h: 18,  t: 8, allow: 25, one: 'vase', many: 'vases' },
+    cylinder: { shape: 'cyl',   cap: 1000, d: 11,  h: 15,  t: 8, allow: 25, one: 'cylinder', many: 'cylinders' }
   };
 
   var CSS = ''
@@ -134,6 +140,9 @@
     + '.cm-calc .cm-ground { stroke: var(--cm-accent); stroke-width: 1; }'
     + '.cm-calc .cm-dims { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 0.9rem; }'
     + '.cm-calc .cm-results-list li:first-child:not(.cm-results-empty) { font-size: 1.3rem; line-height: 1.3; }'
+    + '.cm-calc .cm-results-list li.cm-li-sub { font-size: 0.85rem; font-weight: 400; line-height: 1.45; opacity: 0.92; }'
+    + '.cm-calc .cm-results-list li.cm-li-gap { margin-top: 0.45rem; }'
+    + '.cm-calc .cm-results-list li.cm-li-mug:first-child { font-size: 1.1rem; line-height: 1.35; }'
     + '.cm-calc .cm-link-btn { display: inline-block; margin: 0.5rem 0 0; padding: 0; border: 0; background: none; color: #fff;'
     + '  font: inherit; font-size: 0.78rem; font-weight: 600; text-decoration: underline; cursor: pointer; }'
     + '.cm-calc .cm-link-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }';
@@ -181,12 +190,19 @@
       + '      <label class="cm-dim-label" for="' + f('h') + '" data-label="h">Height (cm)</label>'
       + '      <input type="number" class="cm-dim-input" id="' + f('h') + '" data-field="h" min="0" step="any" inputmode="decimal">'
       + '    </div>'
+      + '  </div>'
+      + '  <p class="cm-hint" data-role="hint"></p>'
+      + '  <div class="cm-dims">'
       + '    <div class="cm-dim">'
       + '      <label class="cm-dim-label" for="' + f('t') + '" data-label="t">Thickness (mm)</label>'
       + '      <input type="number" class="cm-dim-input" id="' + f('t') + '" data-field="t" min="0" step="any" inputmode="decimal">'
       + '    </div>'
+      + '    <div class="cm-dim">'
+      + '      <label class="cm-dim-label" for="' + f('count') + '">How many</label>'
+      + '      <input type="number" class="cm-dim-input" id="' + f('count') + '" data-role="count" min="1" step="1" value="1" inputmode="numeric">'
+      + '    </div>'
       + '  </div>'
-      + '  <p class="cm-hint" data-role="hint"></p>'
+      + '  <p class="cm-hint" data-role="thick-hint"></p>'
       + '  <div class="cm-row">'
       + '    <label class="cm-label" for="' + f('shrink') + '">Shrinkage %</label>'
       + '    <input type="number" id="' + f('shrink') + '" data-role="shrink" min="0" max="30" step="0.5" value="11" inputmode="decimal">'
@@ -338,6 +354,8 @@
     var formSel = q('[data-role="form"]');
     var shrink = q('[data-role="shrink"]');
     var hint = q('[data-role="hint"]');
+    var thickHint = q('[data-role="thick-hint"]');
+    var count = q('[data-role="count"]');
     var fired = q('.cm-pot-fired');
     var wet = q('.cm-pot-wet');
     var visualPct = q('[data-role="visual-pct"]');
@@ -396,6 +414,50 @@
         return l.toLocaleString('en-GB', { maximumFractionDigits: 2 }) + NB + (l === 1 ? 'litre' : 'litres');
       }
       return (exact || ml < 100 ? Math.round(ml) : Math.round(ml / 5) * 5) + NB + 'ml';
+    }
+
+    // Fired ml held to 1 cm below the fired rim: the wet inside filled to 1 / k cm under its top, times k^3.
+    function belowRim(shape, inn, k) {
+      var r = inn.r, d = inn.h - 1 / k, v;
+      if (d <= 0) return 0;
+      if (shape === 'cyl') v = Math.PI * r * r * d;
+      else if (shape === 'vase') { var c = inn.h / 2; v = Math.PI * r * r * d * d * (3 * c - d) / (3 * c * c); }
+      else {
+        // bowl: part of a sphere of radius rs (a half sphere with a collar once deeper than it is wide)
+        var rs = inn.h <= r ? (r * r + inn.h * inn.h) / (2 * inn.h) : r;
+        v = inn.h > r && d > r ? 2 / 3 * Math.PI * r * r * r + Math.PI * r * r * (d - r) : Math.PI * d * d * (3 * rs - d) / 3;
+      }
+      return v * k * k * k;
+    }
+
+    // "6 × 550 g = 3.3 kg", or in in·lb "6 × 1 lb 4 oz = 7.5 lb (3.4 kg)", from the rounded weight of one pot.
+    function kg(g) { return fmt(Math.round(g / 100) / 10, 1) + NB + 'kg'; }
+    function batchText(g, n) {
+      if (units === 'metric') {
+        var each = Math.round(g / 10) * 10, all = each * n;
+        return grams(g) + ' = ' + (all < 1000 ? all.toLocaleString('en-GB') + NB + 'g' : kg(all));
+      }
+      var oz = Math.round(g / G_PER_OZ), lb = Math.floor(oz / 16), allOz = oz * n;
+      var eachText = lb ? lb + NB + 'lb ' + (oz - lb * 16) + NB + 'oz' : oz + NB + 'oz';
+      return eachText + ' = ' + (allOz < 16 ? allOz + NB + 'oz' : fmt(Math.round(allOz / 1.6) / 10, 1) + NB + 'lb') + ' (' + kg(allOz * G_PER_OZ) + ')';
+    }
+
+    // How much of a 12.5 kg bag, in words.
+    function bags(g) {
+      var f = g / (BAG_KG * 1000);
+      var bag = BAG_KG + NB + 'kg' + (units === 'imperial' ? ' (' + fmt(BAG_KG * 2.20462, 1) + NB + 'lb)' : '') + ' bag';
+      if (f >= 1.25) {
+        var halves = Math.round(f * 2) / 2, whole = Math.floor(halves);
+        return 'about ' + whole + (halves % 1 ? '½' : '') + ' bags of ' + BAG_KG + NB + 'kg'
+          + (units === 'imperial' ? ' (' + fmt(BAG_KG * 2.20462, 1) + NB + 'lb)' : '');
+      }
+      if (f >= 0.875) return 'about one ' + bag;
+      if (f < 0.05) return 'less than a tenth of a ' + bag;
+      var parts = [[0.1, 'a tenth'], [0.125, 'an eighth'], [0.2, 'a fifth'], [0.25, 'a quarter'], [1 / 3, 'a third'],
+        [0.5, 'half'], [2 / 3, 'two-thirds'], [0.75, 'three-quarters']];
+      var best = parts[0];
+      parts.forEach(function (p) { if (Math.abs(p[0] - f) < Math.abs(best[0] - f)) best = p; });
+      return 'about ' + best[1] + ' of a ' + bag;
     }
 
     function setPressed(btns, attr, value) {
@@ -467,11 +529,11 @@
       q('[data-label="d"]').textContent = 'Width (' + (imp ? 'in' : 'cm') + ')';
       q('[data-label="h"]').textContent = 'Height (' + (imp ? 'in' : 'cm') + ')';
       q('[data-label="t"]').textContent = 'Thickness (' + (imp ? 'in' : 'mm') + ')';
-      hint.textContent = '';
-      put(hint, [(shape === 'vase' ? 'Width is outside, at the widest point. ' : 'Width is outside, at the rim. ')
-        + 'Sizes are for the finished, fired pot' + (vessel ? '; capacity is to the brim. ' : '. ')
-        + (method === 'hand' ? 'Thickness is your slab, for walls and base. ' : 'Thickness is the wet walls and base after trimming. '),
-        src('Sheffield Pottery', 'sheffield'), ' suggests ' + (imp ? '1/4 to 3/8 in' : '6 to 10 mm') + '.']);
+      hint.textContent = (shape === 'vase' ? 'Outside width at the widest point' : 'Outside width at the rim')
+        + ', fired size' + (vessel ? ', capacity to the brim.' : '.');
+      thickHint.textContent = '';
+      put(thickHint, [(method === 'hand' ? 'Wet slab thickness. ' : 'Wet thickness after trimming. '),
+        src('Sheffield Pottery', 'sheffield'), ' suggests ' + (imp ? '1/4–3/8 in' : '6–10 mm') + '.']);
 
       var notes = [];
 
@@ -531,9 +593,18 @@
       }
       var b = t;
 
+      // How many: whole pots, 1 to 1,000. A decimal is rounded (at least 1) with a note.
+      var cRaw = parseFloat(count.value);
+      var n = cRaw;
+      if (cRaw > 0 && cRaw % 1) {
+        n = Math.max(1, Math.round(cRaw));
+        notes.push('Read ' + count.value + ' as ' + n + ' ' + (n === 1 ? F.one : F.many) + '.');
+      }
+
       var negative = [];
       [[s, 'Shrinkage'], [useCap ? cs : NaN, 'The capacity'],
-        [useCap ? NaN : parseFloat(fields.h.value), 'The height'], [parseFloat(fields.d.value), 'The width'], [ts, 'The thickness']
+        [useCap ? NaN : parseFloat(fields.h.value), 'The height'], [parseFloat(fields.d.value), 'The width'], [ts, 'The thickness'],
+        [cRaw, 'The number of pots']
       ].forEach(function (c) { if (c[0] < 0) negative.push(c[1] + ' can\'t be negative.'); });
 
       var missing = [];
@@ -541,6 +612,7 @@
       if (!(D > 0)) missing.push('width');
       if (!(t > 0)) missing.push('thickness');
       if (!(s >= 0)) missing.push('shrinkage');
+      if (isNaN(cRaw)) missing.push('number of pots');
 
       list.innerHTML = '';
       function stop(text) {
@@ -557,6 +629,8 @@
         return stop('Enter your ' + (missing.length ? missing.join(', ') + ' and ' : '') + lastOne + '.');
       }
       if (badShrink) return stop(highShrink);
+      if (cRaw === 0) return stop('Make that at least 1 pot.');
+      if (n > MAX_POTS) return stop('That\'s more than ' + MAX_POTS.toLocaleString('en-GB') + ' pots: check the number.');
 
       var k = 1 - s / 100;
       var Dw = D / k;
@@ -586,16 +660,29 @@
       var firedH = Hw * k;
       var mug = formSel.value === 'mug';
 
-      line('Weigh out: ' + grams(totalG));
+      // A mug's handle is weighed out separately, so it's shown and added to the total.
+      var eachG = totalG + (mug ? HANDLE_G : 0);
+      if (mug) {
+        line(['Weigh out: ' + grams(totalG) + ' for the mug + ', src('about ' + (imp ? '3½' + NB + 'oz' : HANDLE_G + NB + 'g'), 'sackey'),
+          ' for the handle = ' + grams(eachG) + ' in all'], 'cm-li-mug');
+      } else {
+        line('Weigh out: ' + grams(totalG));
+      }
       line('Wet size: ' + len(Dw) + ' wide, ' + len(Hw) + ' tall');
       line('Fired: ' + len(D) + ' wide, ' + len(firedH) + ' tall' + (firedCap === null ? '' : ', holds ' + capText(firedCap, useCap)));
-      if (mug) line('Handle: about ' + (imp ? '3½' + NB + 'oz' : HANDLE_G + NB + 'g') + ' more');
+      if (shape !== 'plate') {
+        var below = belowRim(shape, inn, k);
+        line(below > 0 ? 'Holds about ' + capText(below) + ' to 1 cm below the rim' : 'Too shallow to fill to 1 cm below the rim', 'cm-li-sub');
+      }
+      if (n > 1) {
+        line('For ' + n + ' ' + F.many + ': ' + n + ' × ' + batchText(eachG, n), 'cm-li-gap');
+        line('That\'s ' + bags(eachG * n) + '.', 'cm-li-sub');
+      }
 
-      // One line on what's assumed, with its sources.
+      // One line on what's assumed, with its source.
       if (s === 0) notes.push('With 0% shrinkage, the fired sizes are the wet sizes.');
       notes.push(method === 'hand' ? 'Adds ' + a + '% for offcuts.'
         : ['Adds ' + a + '% for throwing and trimming (calibrated to ', src('Lakeside Pottery\'s chart', 'lakeside'), ').']);
-      if (mug) notes.push(['Handle weight from ', src('Dwayne Sackey', 'sackey'), '.']);
       putNotes(notes);
 
       // Picture: the wet pot fills the box; the fired one is drawn inside it at its real size.
@@ -605,7 +692,7 @@
       visualPct.textContent = s === 0 ? 'No shrinkage entered' : fmt(s, s % 1 ? 1 : 0) + '% smaller once fired';
 
       last = { firedH: firedH, firedCap: firedCap };
-      announce('Weigh out about ' + grams(totalG) + ' of clay.');
+      announce('Weigh out about ' + grams(eachG) + ' of clay' + (n > 1 ? ' for each ' + F.one + ', ' + batchText(eachG, n).split('= ').pop() + ' for ' + n : '') + '.');
     }
 
     qa('[data-method]').forEach(function (btn) {
@@ -663,6 +750,7 @@
     });
 
     shrink.addEventListener('input', render);
+    count.addEventListener('input', render);
 
     Object.keys(fields).forEach(function (name) {
       fields[name].addEventListener('input', function () {
