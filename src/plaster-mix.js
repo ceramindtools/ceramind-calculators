@@ -24,14 +24,18 @@
  *   at 45, Ultracal 30 115 lb/cu ft at 38), so it holds for low ratios like Crystacal R too.
  *   Cross-check: Derek Au (plaster.glazy.org) poured 15 kg No. 1 Pottery Plaster + 10.5 kg water and measured
  *   15,860 cm3, i.e. 1.057 litres per kg. This formula gives 1.072 litres per kg at 70, 1.4% more.
- * - Ratios (water per 100 plaster, by weight), from each maker's or seller's own page or datasheet:
- *   Potters Plaster (Saint-Gobain Formula, Potclays 3450 and Bath Potters) 100/68.
- *   Valentine Clays Potters Plaster: 1.3 kg plaster to 1 litre water (100:76.9, rounded to 77).
- *   Potterycrafts Potters Plaster P3335: 940 g plaster to 565 ml water (100:60.1, rounded to 60). UNVERIFIED:
- *   seen only in search extracts of their page, so it has no link.
- *   Fine Casting Plaster (Saint-Gobain Formula, Bath Potters) 100/70.
- *   Keramicast (Saint-Gobain Formula, Potclays 3451-01) 100/56.
- *   Crystacal R (Saint-Gobain Formula, Bath Potters) 100/35.
+ * - The menu lists the plasters sold by the shops that stock Ceramind tools (16 Nov 2026), each with the
+ *   water per 100 plaster (by weight) from that shop's own product page:
+ *   Bath Potters Supplies: Potters Plaster 100/68, Fine Casting Plaster 100/70, Keramicast 100/56,
+ *     Newcast 96 100/57, Crystacal R 100/35.
+ *   Corby Kilns: 3450 Potters Plaster "100 parts water to 120 parts plaster by weight" = 83.3 per 100 plaster.
+ *   Cromartie Hobbycraft: Fine Casting Plus (25 kg) "1/3 plaster to 2/3 water" and Cera-Mix (1 kg) "1kg plaster to
+ *     approximately 5 times water" - neither is a usable weight ratio, so both point people to Custom plaster.
+ *   Hot Clay: Potters Plaster 100/68, Fine Casting Plaster 100/70, Newcast Plaster 100/57.
+ *   Potclays: Potters Plaster 3450 100/68, Keramicast 3451-01 100/56.
+ *   Sedgefield Pottery Supplies: Potters Plaster, water to plaster 68% by weight = 100/68.
+ *   Ulster Ceramics: Fine Casting Plaster Plus 100/70.
+ * - Buy links add ref=ceramindtools (URL API, so ?ref= or &ref= as needed).
  * - Typed ratios ("Custom plaster"): under 1 is a fraction (0.7 = 70); 1 to 2 is kg of plaster per litre of water
  *   (1.3 = 76.9); anything else outside 20 to 100 is refused.
  * - Volume slips: over 100 litres, or under 5 ml, stops and asks (e.g. 2350 typed with litres selected).
@@ -57,17 +61,53 @@
   var MIN_ML = 5;          // under 5 ml: stop and ask (2.35 typed with ml selected)
 
   var USG = 'https://www.theceramicshop.com/technical_info/Plaster/No1PotteryPlaster-DataSheet.pdf';
-  // Each preset: water per 100 plaster, and the small read-only line under the menu that names (and links) its source.
-  var PLASTERS = {
-    potclays: { ratio: 68, before: 'Mixes at 100:68 (', link: 'Potclays', url: 'https://www.potclays.co.uk/potters-plaster', after: ')' },
-    valentine: { ratio: 77, before: 'Mixes at 1.3 kg to 1 litre, about 100:77 (', link: 'Valentine Clays',
-      url: 'https://valentineclays.co.uk/cdn/shop/files/Potters_Plaster_Technical_Data_Sheet.pdf', after: ')' },
-    potterycrafts: { ratio: 60, before: 'Mixes at 940 g to 565 ml, about 100:60 (Potterycrafts)' },
-    finecast: { ratio: 70, before: 'Mixes at 100:70 (', link: 'Bath Potters', url: 'https://bathpotters.co.uk/fine-casting-plaster/p1184', after: ')' },
-    keramicast: { ratio: 56, before: 'Mixes at 100:56 (', link: 'Potclays', url: 'https://www.potclays.co.uk/keramicast-high-density-plaster', after: ')' },
-    crystacal: { ratio: 35, before: 'Mixes at 100:35 (', link: 'Bath Potters', url: 'https://bathpotters.co.uk/crystacal-r-plaster/p1012', after: ')' },
-    custom: {}
-  };
+  // The shops that stock Ceramind tools and the plasters they sell. ratio = water per 100 plaster from the shop's own
+  // product page; mix = how that page words it, when it isn't 100:x; ratio 0 = the page gives no usable weight ratio.
+  // label = short menu text that fits a 320 px phone; name and pack = as the shop lists them (used in the buy link).
+  var SHOPS = [
+    { shop: 'Bath Potters Supplies', items: [
+      { k: 'bp-potters', label: 'Potters Plaster (1-25 kg)', name: 'Potters Plaster', pack: '1 to 25 kg', ratio: 68, url: 'https://www.bathpotters.co.uk/potters-plaster/p2290' },
+      { k: 'bp-finecast', label: 'Fine Casting (1-25 kg)', name: 'Fine Casting Plaster', pack: '1 to 25 kg', ratio: 70, url: 'https://www.bathpotters.co.uk/fine-casting-plaster/p1184' },
+      { k: 'bp-keramicast', label: 'Keramicast (1-25 kg)', name: 'Keramicast Plaster', pack: '1 to 25 kg', ratio: 56, url: 'https://www.bathpotters.co.uk/keramicast-plaster/p1741' },
+      { k: 'bp-newcast', label: 'Newcast 96 (1-25 kg)', name: 'Newcast 96 Mould Making Plaster', pack: '1 to 25 kg', ratio: 57, url: 'https://www.bathpotters.co.uk/newcast-96-mould-making-plaster/p1961' },
+      { k: 'bp-crystacal', label: 'Crystacal R (1-25 kg)', name: 'Crystacal R Plaster', pack: '1 to 25 kg', ratio: 35, url: 'https://www.bathpotters.co.uk/crystacal-r-plaster/p1012' }] },
+    { shop: 'Corby Kilns', items: [
+      { k: 'ck-potters-25', label: '3450 Potters Plaster (25 kg)', name: '3450 Potters Plaster', pack: '25 kg', ratio: 100 / 1.2, mix: '120 plaster to 100 water, about 100:83', url: 'https://corbykilns.co.uk/product/3450-potters-plaster-25-kg/' },
+      { k: 'ck-potters-12', label: '3450 Potters (12.5 kg)', name: '3450 Potters Plaster', pack: '12.5 kg', ratio: 100 / 1.2, mix: '120 plaster to 100 water, about 100:83', url: 'https://corbykilns.co.uk/product/3450-potters-plaster-12-5-kg/' }] },
+    { shop: 'Cromartie Hobbycraft', items: [
+      { k: 'cr-finecastplus', label: 'Fine Casting Plus (25 kg)', name: 'Fine Casting Plus', pack: '25 kg', ratio: 0, url: 'https://www.cromartiehobbycraft.co.uk/Catalogue/Throwing-Clay-Modelling-Clay-and-Pottery-Casting-Slip/Potters-Plaster-Alginate-Plaster-of-Paris/Potters-Plaster-Fine-Casting-Plus-25kg-CH2045' },
+      { k: 'cr-ceramix', label: 'Cera-Mix Plaster (1 kg)', name: 'Cera-Mix Standard Casting Plaster', pack: '1 kg', ratio: 0, url: 'https://www.cromartiehobbycraft.co.uk/Catalogue/Throwing-Clay-Modelling-Clay-and-Pottery-Casting-Slip/Potters-Plaster-Alginate-Plaster-of-Paris/Cera-Mix-Standard-Casting-Plaster-1kg-CH786500' }] },
+    { shop: 'Hot Clay', items: [
+      { k: 'hc-potters', label: 'Potters Plaster (2.5/25 kg)', name: 'Potters Plaster', pack: '2.5 or 25 kg', ratio: 68, url: 'https://www.hot-clay.com/products/potters-plaster' },
+      { k: 'hc-finecast', label: 'Fine Casting (2.5/25 kg)', name: 'Fine Casting Plaster', pack: '2.5 or 25 kg', ratio: 70, url: 'https://www.hot-clay.com/products/fine-casting-plaster' },
+      { k: 'hc-newcast', label: 'Newcast (2.5/25 kg)', name: 'Newcast Plaster', pack: '2.5 or 25 kg', ratio: 57, url: 'https://www.hot-clay.com/products/newcast-plaster' }] },
+    { shop: 'Potclays', items: [
+      { k: 'pc-potters', label: 'Potters Plaster 3450 (25 kg)', name: 'Potters Plaster 3450', pack: '25 kg', ratio: 68, url: 'https://www.potclays.co.uk/oxides-basic-materials-basic-materials/potters-plaster/' },
+      { k: 'pc-keramicast', label: 'Keramicast 3451-01 (25 kg)', name: 'Keramicast High Density Plaster', pack: '25 kg', ratio: 56, url: 'https://www.potclays.co.uk/bisque-pottery/keramicast-high-density-plaster/' }] },
+    { shop: 'Sedgefield Pottery Supplies', items: [
+      { k: 'sp-potters', label: 'Potters Plaster (5-200 kg)', name: 'Potters Plaster', pack: '5 to 200 kg', ratio: 68, url: 'https://sedgefieldpottery.co.uk/product/potters-plaster/' }] },
+    { shop: 'Ulster Ceramics', items: [
+      { k: 'uc-finecastplus', label: 'Fine Casting Plus (5/25 kg)', name: 'Fine Casting Plaster Plus', pack: '5 or 25 kg', ratio: 70, url: 'https://www.ulsterceramicspotterysupplies.co.uk/products/fine-casting-plaster-25kgs-copy' }] }
+  ];
+  var DEFAULT = 'pc-potters';   // Potclays Potters Plaster at 100:68 (the F13 blog figures use it)
+  var PLASTERS = { custom: {} };
+  SHOPS.forEach(function (g) {
+    g.items.forEach(function (it) {
+      it.shop = g.shop;
+      PLASTERS[it.k] = it;
+    });
+  });
+
+  function refLink(url) {
+    // Add ref=ceramindtools, keeping any query string the page already has.
+    try {
+      var u = new URL(url);
+      u.searchParams.set('ref', 'ceramindtools');
+      return u.toString();
+    } catch (e) {
+      return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'ref=ceramindtools';
+    }
+  }
 
   var CSS = ''
     + '.cm-calc .cm-plaster-info { margin-top: -0.45rem; }'
@@ -76,6 +116,9 @@
     + '.cm-calc .cm-vol-input input[type="number"] { flex: 1 1 auto; min-width: 0; max-width: none; }'
     + '.cm-calc .cm-vol-hint { margin: 0 0 1.1rem; }'
     + '.cm-calc .cm-ratio-hint { margin-top: -0.45rem; }'
+    + '.cm-calc .cm-buy { margin: -0.4rem 0 1.1rem; font-size: 0.85rem; font-weight: 600; line-height: 1.4; }'
+    + '.cm-calc select.cm-plaster-select { max-width: 260px; }'
+    + '@media (max-width: 480px) { .cm-calc select.cm-plaster-select { max-width: none; } }'
     + '@media (max-width: 480px) { .cm-calc .cm-vol-input { max-width: none; } }';
 
   var uid = 0;
@@ -99,17 +142,12 @@
       + '  <p class="cm-hint cm-vol-hint">Not sure? Fill the mould or box with water from a measuring jug. For a box, length × width × height in cm ÷ 1,000 = litres.</p>'
       + '  <div class="cm-row">'
       + '    <label class="cm-label" for="' + f('plaster') + '">Plaster</label>'
-      + '    <select id="' + f('plaster') + '" data-role="plaster">'
-      + '      <optgroup label="Potters plaster">'
-      + '        <option value="potclays" selected>Potclays · 100:68</option>'
-      + '        <option value="valentine">Valentine Clays · 100:77</option>'
-      + '        <option value="potterycrafts">Potterycrafts · 100:60</option>'
-      + '      </optgroup>'
-      + '      <optgroup label="Other plasters">'
-      + '        <option value="finecast">Fine Casting · 100:70</option>'
-      + '        <option value="keramicast">Keramicast · 100:56</option>'
-      + '        <option value="crystacal">Crystacal R · 100:35</option>'
-      + '      </optgroup>'
+      + '    <select id="' + f('plaster') + '" class="cm-plaster-select" data-role="plaster">'
+      + SHOPS.map(function (g) {
+          return '<optgroup label="' + g.shop + '">' + g.items.map(function (it) {
+            return '<option value="' + it.k + '"' + (it.k === DEFAULT ? ' selected' : '') + '>' + it.label + '</option>';
+          }).join('') + '</optgroup>';
+        }).join('')
       + '      <option value="custom">Custom plaster</option>'
       + '    </select>'
       + '  </div>'
@@ -128,6 +166,7 @@
       + '    <ul class="cm-results-list"></ul>'
       + '    <p class="cm-results-note" data-role="note"></p>'
       + '  </div>'
+      + '  <p class="cm-buy" data-role="buy"></p>'
       + '  <p class="cm-sr" aria-live="polite" aria-atomic="true" data-role="sr"></p>'
       + '  <p class="cm-disclaimer">A guide to help you plan a pour, not a guarantee. Plasters vary, so check the ratio on your own bag and weigh the plaster and water. Ceramind Tools can\'t accept responsibility for decisions based on these results.</p>'
       + '  <p class="cm-credit">Powered by <a href="https://www.ceramindtools.com" target="_blank" rel="noopener">Ceramind® Tools</a></p>'
@@ -180,6 +219,7 @@
     var volIn = q('[data-role="vol"]');
     var plaster = q('[data-role="plaster"]');
     var info = q('[data-role="info"]');
+    var buy = q('[data-role="buy"]');
     var ratio = q('[data-role="ratio"]');
     var extraIn = q('[data-role="extra"]');
     var list = q('.cm-results-list');
@@ -256,14 +296,23 @@
       qa('[data-custom]').forEach(function (el) { el.hidden = !custom; });
       info.hidden = custom;
       var preset = PLASTERS[plaster.value];
-      if (!custom) textWithLink(info, preset.before, preset.link, preset.url, preset.after);
+      buy.hidden = custom;
+      if (!custom) {
+        textWithLink(info, preset.ratio ? 'Mixes at ' + (preset.mix || '100:' + ratioText(preset.ratio)) + ' (' : 'No weight ratio given (',
+          preset.shop, preset.url, preset.ratio ? ')' : '). Choose Custom plaster and use the ratio on your bag.');
+        textWithLink(buy, '', 'Buy ' + preset.name + ' (' + preset.pack + ') from ' + preset.shop + ' →', refLink(preset.url), '');
+      }
 
       var notes = [];
 
       // Water per 100 plaster. Presets use their own figure; "Custom plaster" reads what was typed.
       // Under 1 is a fraction (0.7 = 70). 1 to 2 is kg of plaster per litre of water (1.3 = 100 / 1.3 = 76.9).
-      var c = preset.ratio || num(ratio);
-      if (!preset.ratio) {
+      if (!custom && !preset.ratio) {
+        stop('Choose Custom plaster and enter the ratio from your bag.');
+        return;
+      }
+      var c = custom ? num(ratio) : preset.ratio;
+      if (custom) {
         if (c < 1) {
           notes.push('Read ' + ratio.value + ' as ' + ratioText(c * 100) + '.');
           c = c * 100;
@@ -339,17 +388,7 @@
     plaster.addEventListener('change', function () {
       // Picking "Custom plaster" starts from the last preset's figure, so the box is never empty.
       var preset = PLASTERS[plaster.value];
-      if (preset.ratio) ratio.value = preset.ratio;
-      render();
-    });
-
-    // A typed ratio that matches a preset picks that preset. This waits for the finished value (change, not input),
-    // so typing 70.5 never jumps to Fine Casting at "70" and hides the box mid-number.
-    ratio.addEventListener('change', function () {
-      var v = parseFloat(ratio.value);
-      Object.keys(PLASTERS).forEach(function (k) {
-        if (PLASTERS[k].ratio === v && plaster.value === 'custom') plaster.value = k;
-      });
+      if (preset.ratio) ratio.value = ratioText(preset.ratio);
       render();
     });
 
