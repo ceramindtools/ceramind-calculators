@@ -279,7 +279,7 @@
       + '    <li>Fire a self-supporting witness cone where you can see it, and adjust the top temperature to match how it bends.</li>'
       + '  </ul>'
       + '  <p class="cm-hint cm-cost" data-role="cost"></p>'
-      + '  <p class="cm-disclaimer">These are typical starting schedules from published sources, not a guarantee. The wrong schedule can crack, bloat or blister ware, so your clay and glaze maker\'s own schedule always comes first. Ceramind Tools can\'t accept responsibility for firings based on these results.</p>'
+      + '  <p class="cm-disclaimer">These are typical starting schedules from published sources, not a guarantee. The wrong schedule can crack, bloat or blister ware. Ceramind Tools can\'t accept responsibility for firings based on these results.</p>'
       + '  <p class="cm-credit">Powered by <a href="https://www.ceramindtools.com" target="_blank" rel="noopener">Ceramind® Tools</a></p>'
       + '</div>';
   }
