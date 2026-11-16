@@ -634,7 +634,7 @@
       // One line on what's assumed, with its source.
       if (s === 0) notes.push('With 0% shrinkage, the fired sizes are the wet sizes.');
       notes.push(method === 'hand' ? 'Adds ' + a + '% for offcuts.'
-        : ['Adds ' + a + '% for throwing and trimming (calibrated to ', src('Lakeside Pottery\'s chart', 'lakeside'), ').']);
+        : ['Adds ' + a + '% for throwing and trimming (set to match ', src('Lakeside Pottery\'s chart', 'lakeside'), ').']);
       putNotes(notes);
 
       // Picture: the wet pot fills the box; the fired one is drawn inside it at its real size.
