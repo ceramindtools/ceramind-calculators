@@ -8,9 +8,10 @@
  *
  * Built by build.py from src/clay-weight.js + src/base.css + src/shared.js. Edit those, then run build.py.
  *
- * Asks only what a potter knows: thrown or handbuilt, the pot, its size (capacity, or width x height) and the
- * clay's shrinkage (11% to start, with typical ranges from Valentine Clays under the box).
- * Walls, base and the allowance are per-pot defaults, explained in one line under the results.
+ * Asks only what a potter knows: thrown or handbuilt, the pot, its size (capacity, or width x height), one
+ * thickness for walls and base (pre-filled per pot until the potter types their own), and the clay's shrinkage
+ * (11% to start, with typical ranges from Valentine Clays under the box). The allowance is per pot, explained in
+ * one line under the results.
  *
  * How it works: the finished (fired) size is scaled up by 1 / (1 - shrinkage) to the wet size. The clay in the
  * wet pot is the outside solid minus the inside solid, with the wall and base thickness of the wet pot after
@@ -27,7 +28,8 @@
  * - Walls: "1/4" to 3/8" walls on functional ware" (6-10 mm; Sheffield Pottery, Pottery 101, 2026; the
  *   TheStudioManager chart aims for the same). 1/4 inch right below the rim and a 1/4 inch base on untrimmed
  *   small and medium pots (Vince Pitelka, Clay: A Studio Handbook). Larger pots need thicker walls (Lakeside).
- *   Defaults: mugs and cups 6 mm walls and base; bowls, vases and cylinders 8 mm; plates 8 mm walls, 10 mm base.
+ *   Default thickness (walls and base): mugs and cups 6 mm; bowls, vases and cylinders 8 mm; plates 9 mm (one
+ *   figure between the 8 mm wall and 10 mm base used before, keeping the Lakeside gap at -0.5% with the same 30%).
  * - Throwing allowance (slurry, the wire cut and trimming): mugs and cups 15%, bowls, vases and cylinders 25%,
  *   plates 30%. Calibrated so the results land on Lakeside Pottery's 27-form chart, "Weights of Clay Needed For
  *   Ware Sizes" (20 comparable forms, average gap 6.3%).
@@ -67,14 +69,15 @@
   };
   var NB = ' ';           // keeps a number on the same line as its unit
 
-  // Default finished (fired) size, wet wall and base after trimming (mm), and the throwing allowance %, per pot.
+  // Default finished (fired) size, wet thickness of walls and base after trimming (mm), and the throwing
+  // allowance %, per pot.
   var FORMS = {
-    mug:      { shape: 'cyl',   cap: 350,  d: 8,   h: 10,  wall: 6, base: 6,  allow: 15 },
-    cup:      { shape: 'cyl',   cap: 200,  d: 7.5, h: 7,   wall: 6, base: 6,  allow: 15 },
-    bowl:     { shape: 'bowl',  cap: 500,  d: 15,  h: 7,   wall: 8, base: 8,  allow: 25 },
-    plate:    { shape: 'plate', cap: 0,    d: 27,  h: 2.5, wall: 8, base: 10, allow: 30 },
-    vase:     { shape: 'vase',  cap: 1000, d: 12,  h: 18,  wall: 8, base: 8,  allow: 25 },
-    cylinder: { shape: 'cyl',   cap: 1000, d: 11,  h: 15,  wall: 8, base: 8,  allow: 25 }
+    mug:      { shape: 'cyl',   cap: 350,  d: 8,   h: 10,  t: 6, allow: 15 },
+    cup:      { shape: 'cyl',   cap: 200,  d: 7.5, h: 7,   t: 6, allow: 15 },
+    bowl:     { shape: 'bowl',  cap: 500,  d: 15,  h: 7,   t: 8, allow: 25 },
+    plate:    { shape: 'plate', cap: 0,    d: 27,  h: 2.5, t: 9, allow: 30 },
+    vase:     { shape: 'vase',  cap: 1000, d: 12,  h: 18,  t: 8, allow: 25 },
+    cylinder: { shape: 'cyl',   cap: 1000, d: 11,  h: 15,  t: 8, allow: 25 }
   };
 
   var CSS = ''
@@ -129,6 +132,10 @@
       + '    <div class="cm-dim" data-show="height">'
       + '      <label class="cm-dim-label" for="' + f('h') + '" data-label="h">Height (cm)</label>'
       + '      <input type="number" class="cm-dim-input" id="' + f('h') + '" data-field="h" min="0" step="any" inputmode="decimal">'
+      + '    </div>'
+      + '    <div class="cm-dim">'
+      + '      <label class="cm-dim-label" for="' + f('t') + '" data-label="t">Thickness (mm)</label>'
+      + '      <input type="number" class="cm-dim-input" id="' + f('t') + '" data-field="t" min="0" step="any" inputmode="decimal">'
       + '    </div>'
       + '  </div>'
       + '  <p class="cm-hint" data-role="hint"></p>'
@@ -272,9 +279,10 @@
     var capUnit = 'ml';          // ml with cm·g, US fl oz with in·lb; UK fl oz by one tap
     var by = 'cap';
     var last = null;             // last good result, for carrying sizes across the Size switch
+    var ownThick = false;        // true once the potter types a thickness that isn't the pot's default
     var srTimer;
 
-    // The sizes in metric (ml, cm). Inputs show them in the chosen units; typing updates them.
+    // The sizes in metric (ml, cm, thickness in mm). Inputs show them in the chosen units; typing updates them.
     var val = {};
 
     function q(sel) { return root.querySelector(sel); }
@@ -295,6 +303,7 @@
     // metric value x factor = the value shown in the box
     function factor(name) {
       if (name === 'cap') return 1 / ML_PER[capUnit];
+      if (name === 't') return units === 'metric' ? 1 : 1 / 25.4;
       return units === 'metric' ? 1 : 1 / 2.54;
     }
     function places(name) {
@@ -331,10 +340,6 @@
       return units === 'metric' ? fmt(cm, 1) + NB + 'cm' : fmt(cm / 2.54, 1) + NB + 'in';
     }
 
-    function thick(mm) {
-      return units === 'metric' ? fmt(mm, mm % 1 ? 1 : 0) + NB + 'mm' : fmt(mm / 25.4, 2) + NB + 'in';
-    }
-
     // exact: the user's own capacity, shown as typed rather than rounded to 5 ml
     function capText(ml, exact) {
       if (capUnit !== 'ml') return fmt(ml / ML_PER[capUnit], 1) + NB + CAP_NAME[capUnit].replace(/ /g, NB);
@@ -343,14 +348,6 @@
         return l.toLocaleString('en-GB', { maximumFractionDigits: 2 }) + NB + (l === 1 ? 'litre' : 'litres');
       }
       return (exact || ml < 100 ? Math.round(ml) : Math.round(ml / 5) * 5) + NB + 'ml';
-    }
-
-    // "an 8 mm", "an 11%", "an 18%"; "a" otherwise
-    function an(n) {
-      var d = String(Math.floor(Math.abs(n)));
-      if (d.charAt(0) === '8') return 'an';
-      if (d.length % 3 === 2 && (d.slice(0, 2) === '11' || d.slice(0, 2) === '18')) return 'an';
-      return 'a';
     }
 
     function setPressed(btns, attr, value) {
@@ -399,8 +396,8 @@
 
     function loadForm() {
       var F = FORMS[formSel.value];
-      val = { cap: F.cap || NaN, d: F.d, h: F.h };
-      ['cap', 'd', 'h'].forEach(show);
+      val = { cap: F.cap || NaN, d: F.d, h: F.h, t: ownThick ? val.t : F.t };
+      ['cap', 'd', 'h', 't'].forEach(show);
       last = null;
     }
 
@@ -421,9 +418,12 @@
       q('[data-label="cap"]').textContent = 'Capacity (' + CAP_NAME[capUnit] + ')';
       q('[data-label="d"]').textContent = 'Width (' + (imp ? 'in' : 'cm') + ')';
       q('[data-label="h"]').textContent = 'Height (' + (imp ? 'in' : 'cm') + ')';
+      q('[data-label="t"]').textContent = 'Thickness (' + (imp ? 'in' : 'mm') + ')';
       hint.textContent = '';
       put(hint, [(shape === 'vase' ? 'Width is outside, at the widest point. ' : 'Width is outside, at the rim. ')
-        + 'Sizes are for the finished, fired pot' + (vessel ? '; capacity is to the brim.' : '.')]);
+        + 'Sizes are for the finished, fired pot' + (vessel ? '; capacity is to the brim. ' : '. ')
+        + (method === 'hand' ? 'Thickness is your slab, for walls and base. ' : 'Thickness is the wet walls and base after trimming. '),
+        src('Sheffield Pottery', 'sheffield'), ' suggests ' + (imp ? '1/4 to 3/8 in' : '6 to 10 mm') + '.']);
 
       var notes = [];
 
@@ -435,8 +435,7 @@
       var badShrink = !isNaN(s) && s >= 30;
       if (s > 16 && !badShrink) notes.push(highShrink);
 
-      // Walls, base and allowance are the pot's defaults (mm and %).
-      var t = F.wall, b = F.base;
+      // The allowance is the pot's own (%).
       var a = method === 'hand' ? HAND_ALLOW : F.allow;
 
       // Catch unit slips on the shown values, store the corrected value (so a unit click converts the right
@@ -474,15 +473,25 @@
       }
       D = sizeSlip('d', D);
       if (!useCap) H = sizeSlip('h', H);
+      // Thickness (mm), one figure for walls and base: cm typed in the mm box, or mm typed in the inch box.
+      var t = val.t;
+      var ts = parseFloat(fields.t.value);
+      if (ts > 0) {
+        if (!imp && ts < 1.5) { notes.push('Read ' + fields.t.value + ' as ' + fields.t.value + ' cm (' + fmt(ts * 10, 0) + ' mm).'); t = ts * 10; }
+        else if (imp && ts >= 1) { notes.push('Read ' + fields.t.value + ' as ' + fields.t.value + ' mm (' + fmt(ts / 25.4, 2) + ' in).'); t = ts; }
+        val.t = t;
+      }
+      var b = t;
 
       var negative = [];
       [[s, 'Shrinkage'], [useCap ? cs : NaN, 'The capacity'],
-        [useCap ? NaN : parseFloat(fields.h.value), 'The height'], [parseFloat(fields.d.value), 'The width']
+        [useCap ? NaN : parseFloat(fields.h.value), 'The height'], [parseFloat(fields.d.value), 'The width'], [ts, 'The thickness']
       ].forEach(function (c) { if (c[0] < 0) negative.push(c[1] + ' can\'t be negative.'); });
 
       var missing = [];
       if (useCap) { if (!(cap > 0)) missing.push('capacity'); } else if (!(H > 0)) missing.push('height');
       if (!(D > 0)) missing.push('width');
+      if (!(t > 0)) missing.push('thickness');
       if (!(s >= 0)) missing.push('shrinkage');
 
       list.innerHTML = '';
@@ -504,21 +513,22 @@
       var k = 1 - s / 100;
       var Dw = D / k;
       var tc = t / 10, bc = b / 10;               // mm -> cm
+      var narrow = 'That\'s too narrow for this thickness: check the width and thickness.';
       var Hw, wetCap = null;
       if (useCap) {
         wetCap = cap / (k * k * k);
-        if (Dw / 2 - tc <= 0) return stop('That\'s too narrow for a pot: check the width.');
+        if (Dw / 2 - tc <= 0) return stop(narrow);
         Hw = heightFor(shape, Dw, tc, bc, wetCap);
       } else {
         Hw = H / k;
       }
       if (shape === 'plate') {
         if (Hw >= Dw / 2) return stop('That\'s deep for a plate. For anything deeper than half its width, pick Bowl.');
-        if (bc >= Hw) return stop('That\'s too shallow for a plate: check the height.');
+        if (bc >= Hw) return stop('That\'s too shallow for this thickness: check the height and thickness.');
       } else {
         var inn = inside(shape, Dw, Hw, tc, bc);
-        if (inn.r <= 0) return stop('That\'s too narrow for a pot: check the width.');
-        if (inn.h <= 0) return stop('That\'s too short for a pot: check the height.');
+        if (inn.r <= 0) return stop(narrow);
+        if (inn.h <= 0) return stop('That\'s too short for this thickness: check the height and thickness.');
         if (!useCap) wetCap = insideVol(shape, inn.r, inn.h);
       }
 
@@ -535,12 +545,9 @@
 
       // One line on what's assumed, with its sources.
       if (s === 0) notes.push('With 0% shrinkage, the fired sizes are the wet sizes.');
-      notes.push(['Assumes ' + (t === b ? thick(t) + ' walls and base' : thick(t) + ' walls and ' + an(b) + ' ' + thick(b) + ' base') + ' (',
-        src('Sheffield Pottery', 'sheffield'), '), '
-        + a + '% extra for ' + (method === 'hand' ? 'offcuts' : 'throwing and trimming (calibrated to ')]
-        .concat(method === 'hand' ? [] : [src('Lakeside Pottery\'s chart', 'lakeside'), ')'])
-        .concat([mug ? ', ' : ' and ', 'wet clay at 1.95 g per cm³ (', src('Digitalfire', 'digitalfire'), ')'])
-        .concat(mug ? [' and ', src('Dwayne Sackey', 'sackey'), '\'s ' + (imp ? '3½' + NB + 'oz' : HANDLE_G + NB + 'g') + ' handle.'] : ['.']));
+      notes.push(method === 'hand' ? 'Adds ' + a + '% for offcuts.'
+        : ['Adds ' + a + '% for throwing and trimming (calibrated to ', src('Lakeside Pottery\'s chart', 'lakeside'), ').']);
+      if (mug) notes.push(['Handle weight from ', src('Dwayne Sackey', 'sackey'), '.']);
       putNotes(notes);
 
       // Picture: the wet pot fills the box; the fired one is drawn inside it at its real size.
@@ -571,7 +578,7 @@
         units = next;
         capUnit = units === 'metric' ? 'ml' : 'usoz';
         setPressed(qa('[data-units]'), 'data-units', units);
-        ['cap', 'd', 'h'].forEach(show);
+        ['cap', 'd', 'h', 't'].forEach(show);
         render();
       });
     });
@@ -613,6 +620,8 @@
       fields[name].addEventListener('input', function () {
         readField(name);
         render();
+        // Typing the pot's default back (or clearing the box) lets the next pot pre-fill its own default again.
+        if (name === 't') ownThick = val.t > 0 && Math.abs(val.t - FORMS[formSel.value].t) > 0.05;
       });
     });
 

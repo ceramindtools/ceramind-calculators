@@ -9,7 +9,7 @@
     "Wet size: 9.0 cm wide, 11.0 cm tall",
     "Fired: 8.0 cm wide, 9.8 cm tall, holds 350 ml",
     "Handle: about 100 g more",
-    "Assumes 6 mm walls and base (Sheffield Pottery), 15% extra for throwing and trimming (calibrated to Lakeside Pottery's chart), wet clay at 1.95 g per cm³ (Digitalfire) and Dwayne Sackey's 100 g handle."
+    "Adds 15% for throwing and trimming (calibrated to Lakeside Pottery's chart). Handle weight from Dwayne Sackey."
    ],
    "absent": [
     "Use UK fl oz"
@@ -91,7 +91,7 @@
    ],
    "expect": [
     "Weigh out: 500 g",
-    "10% extra for offcuts, wet clay"
+    "Adds 10% for offcuts."
    ],
    "absent": [
     "Lakeside"
@@ -107,7 +107,7 @@
    ],
    "expect": [
     "Weigh out: 520 g",
-    "15% extra for throwing and trimming"
+    "Adds 15% for throwing and trimming"
    ]
   },
   {
@@ -123,9 +123,8 @@
     "Wet size: 4.0 in wide, 4.3 in tall",
     "Fired: 3.5 in wide, 3.8 in tall, holds 15.2 US fl oz",
     "Handle: about 3½ oz more",
-    "Assumes 0.24 in walls and base",
-    "Dwayne Sackey's 3½ oz handle",
-    "Use UK fl oz instead"
+    "Use UK fl oz instead",
+    "Handle weight from Dwayne Sackey."
    ],
    "absent": [
     " cm wide"
@@ -406,6 +405,127 @@
    ]
   },
   {
+   "name": "THICKNESS pre-fills 6 mm for a mug",
+   "expect": [
+    "Weigh out: 450 g"
+   ]
+  },
+  {
+   "name": "THICKNESS 7 mm: 350 ml @ 8 cm, clay 244.5 cm3 = 476.8 g, x1.15 = 548.3 -> 550 g; wet 9.0 x 11.7",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "7"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 550 g",
+    "Wet size: 9.0 cm wide, 11.7 cm tall",
+    "Fired: 8.0 cm wide, 10.4 cm tall"
+   ]
+  },
+  {
+   "name": "THICKNESS in·lb shows 0.28 in, same pot: 548.3 g = 19.3 oz -> 1 lb 3 oz",
+   "do": [
+    [
+     "click",
+     "[data-units=imperial]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1 lb 3 oz (550 g)"
+   ],
+   "absent": [
+    "Read"
+   ]
+  },
+  {
+   "name": "THICKNESS 7 typed in the inch box is read as mm",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "7"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1 lb 3 oz (550 g)",
+    "Read 7 as 7 mm (0.28 in)."
+   ]
+  },
+  {
+   "name": "THICKNESS back to cm·g keeps 7 mm",
+   "do": [
+    [
+     "click",
+     "[data-units=metric]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 550 g"
+   ],
+   "absent": [
+    "Read"
+   ]
+  },
+  {
+   "name": "THICKNESS 0.7 in the mm box is read as cm",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "0.7"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 550 g",
+    "Read 0.7 as 0.7 cm (7 mm)."
+   ]
+  },
+  {
+   "name": "THICKNESS negative",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "-3"
+    ]
+   ],
+   "expect": [
+    "The thickness can't be negative."
+   ],
+   "absent": [
+    "Weigh out"
+   ]
+  },
+  {
+   "name": "THICKNESS blank",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your thickness."
+   ]
+  },
+  {
+   "name": "THICKNESS default 6 typed back: 450 g",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "6"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g"
+   ]
+  },
+  {
    "name": "negative width",
    "do": [
     [
@@ -431,7 +551,7 @@
     ]
    ],
    "expect": [
-    "That's too narrow for a pot: check the width."
+    "That's too narrow for this thickness: check the width and thickness."
    ],
    "absent": [
     "Weigh out"
@@ -622,7 +742,7 @@
     "Weigh out: 740 g",
     "Wet size: 16.9 cm wide, 7.9 cm tall",
     "Fired: 15.0 cm wide, 7.0 cm tall, holds 585 ml",
-    "Assumes 8 mm walls and base (Sheffield Pottery), 25% extra for throwing and trimming (calibrated to Lakeside Pottery's chart) and wet clay at 1.95 g per cm³ (Digitalfire)."
+    "Adds 25% for throwing and trimming (calibrated to Lakeside Pottery's chart)."
    ],
    "absent": [
     "Handle",
@@ -643,7 +763,7 @@
    ]
   },
   {
-   "name": "PLATE 27 x 2.5 cm, 8 mm wall, 10 mm base, 30%: 754.7 cm3 = 1471.8 g, x1.30 = 1913.3 -> 1,910 g",
+   "name": "PLATE 27 x 2.5 cm, one 9 mm thickness, 30%: base 431.9 + rim 309.2 = 741.1 cm3 = 1445.2 g, x1.30 = 1878.7 -> 1,880 g",
    "do": [
     [
      "select",
@@ -652,11 +772,10 @@
     ]
    ],
    "expect": [
-    "Weigh out: 1,910 g",
+    "Weigh out: 1,880 g",
     "Wet size: 30.3 cm wide, 2.8 cm tall",
     "Fired: 27.0 cm wide, 2.5 cm tall",
-    "Assumes 8 mm walls and a 10 mm base",
-    "30% extra"
+    "Adds 30% for throwing and trimming"
    ],
    "absent": [
     "holds",
@@ -664,7 +783,7 @@
    ]
   },
   {
-   "name": "plate handbuilt 10%: 1471.8 x 1.1 = 1618.9 -> 1,620 g",
+   "name": "plate handbuilt 10%: 1445.2 x 1.1 = 1589.7 -> 1,590 g",
    "do": [
     [
      "click",
@@ -672,11 +791,11 @@
     ]
    ],
    "expect": [
-    "Weigh out: 1,620 g"
+    "Weigh out: 1,590 g"
    ]
   },
   {
-   "name": "plate thrown, in·lb: 1913.3 g = 67.5 oz -> 4 lb 3 oz",
+   "name": "plate thrown, in·lb: 1878.7 g = 66.3 oz -> 4 lb 2 oz; 9 mm shows as 0.35 in",
    "do": [
     [
      "click",
@@ -688,12 +807,11 @@
     ]
    ],
    "expect": [
-    "Weigh out: 4 lb 3 oz (1,910 g)",
-    "Assumes 0.31 in walls and a 0.39 in base"
+    "Weigh out: 4 lb 2 oz (1,880 g)"
    ]
   },
   {
-   "name": "plate porcelain 13%: 1540.2 g x1.3 = 2002.3 -> 2,000 g",
+   "name": "plate 13%: 1512.4 g x1.3 = 1966.1 -> 1,970 g",
    "do": [
     [
      "click",
@@ -706,7 +824,7 @@
     ]
    ],
    "expect": [
-    "Weigh out: 2,000 g",
+    "Weigh out: 1,970 g",
     "Wet size: 31.0 cm wide, 2.9 cm tall"
    ]
   },
@@ -738,7 +856,7 @@
     ]
    ],
    "expect": [
-    "Weigh out: 1,910 g"
+    "Weigh out: 1,880 g"
    ]
   },
   {
@@ -817,6 +935,61 @@
    "absent": [
     "Handle",
     "Sackey"
+   ]
+  },
+  {
+   "name": "OWN THICKNESS 5 mm on the cup: 7.5 x 7 cm, 119.6 cm3 = 233.2 g, x1.15 = 268.2 -> 270 g; holds 225 ml",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "5"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 270 g",
+    "holds 225 ml"
+   ]
+  },
+  {
+   "name": "OWN THICKNESS is kept when switching to a mug: 8 x 10 cm at 5 mm, 174.9 cm3 = 341.0 g, x1.15 = 392.2 -> 390 g",
+   "do": [
+    [
+     "select",
+     "[data-role=form]",
+     "mug"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 390 g",
+    "Fired: 8.0 cm wide, 10.0 cm tall, holds 380 ml"
+   ]
+  },
+  {
+   "name": "typing the mug default 6 back: 8 x 10 cm, 206.3 cm3 = 402.2 g, x1.15 = 462.5 -> 460 g",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "6"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 460 g",
+    "holds 355 ml"
+   ]
+  },
+  {
+   "name": "now a default again, so the plate pre-fills 9 mm: 1,880 g",
+   "do": [
+    [
+     "select",
+     "[data-role=form]",
+     "plate"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1,880 g"
    ]
   }
  ]
