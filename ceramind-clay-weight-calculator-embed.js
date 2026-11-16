@@ -8,6 +8,10 @@
  *
  * Built by build.py from src/clay-weight.js + src/base.css + src/shared.js. Edit those, then run build.py.
  *
+ * Asks only what a potter knows: thrown or handbuilt, the pot, its size (capacity, or width x height) and the
+ * clay's shrinkage (11% to start, with typical ranges from Valentine Clays under the box).
+ * Walls, base and the allowance are per-pot defaults, explained in one line under the results.
+ *
  * How it works: the finished (fired) size is scaled up by 1 / (1 - shrinkage) to the wet size. The clay in the
  * wet pot is the outside solid minus the inside solid, with the wall and base thickness of the wet pot after
  * trimming. Grams = that volume x the density of wet clay, then the allowance is added on top.
@@ -18,7 +22,7 @@
  *   stiffness, 19.5-22.5% of the wet weight (digitalfire.com/test/clwc), and 2.6 g/cm3 for the clay minerals
  *   (Webmineral: kaolinite 2.60; quartz 2.65): 1 / (0.79 / 2.6 + 0.21 / 1) = 1.95. Lakeside Pottery also
  *   puts an average clay at about 20% water.
- * - Shrinkage presets 7 / 11 / 13%, the same as our Clay Shrinkage Calculator. Valentine Clays: earthenware
+ * - Shrinkage starts at 11% (stoneware; our Clay Shrinkage Calculator uses the same). Valentine Clays: earthenware
  *   5-10%, stoneware and porcelain 10-15% or more. Lakeside Pottery's chart assumes 11-14%.
  * - Walls: "1/4" to 3/8" walls on functional ware" (6-10 mm; Sheffield Pottery, Pottery 101, 2026; the
  *   TheStudioManager chart aims for the same). 1/4 inch right below the rim and a 1/4 inch base on untrimmed
@@ -26,12 +30,13 @@
  *   Defaults: mugs and cups 6 mm walls and base; bowls, vases and cylinders 8 mm; plates 8 mm walls, 10 mm base.
  * - Throwing allowance (slurry, the wire cut and trimming): mugs and cups 15%, bowls, vases and cylinders 25%,
  *   plates 30%. Calibrated so the results land on Lakeside Pottery's 27-form chart, "Weights of Clay Needed For
- *   Ware Sizes" (20 comparable forms, average gap 6%). Lakeside suggests beginners add about 25%.
+ *   Ware Sizes" (20 comparable forms, average gap 6.3%).
  * - Handbuilding allowance: 10%, our own working figure for slab offcuts. A round base cut from a square slab
  *   leaves 1 - pi/4 = 21% of that square as scrap, but most of it is re-wedged.
  * - Mug handle: about 100 g. Dwayne Sackey weighs out 3 1/2 ounces for a handle (Pottery Making Illustrated,
  *   Nov/Dec 2021).
- * - Capacity slips in the ml box: under 1 is read as litres, 1 to 40 as US fl oz (one tap re-reads it as UK fl oz).
+ * - Capacity: ml with cm·g, US fl oz with in·lb; one tap switches to UK fl oz. In the ml box, under 1 is read as
+ *   litres and 1 to 40 as US fl oz (one tap re-reads it as UK fl oz).
  * - Capacity is to the brim. Sumi von Dassow (Pottery Making Illustrated, Nov/Dec 2021): a freshly thrown pot
  *   holds about 1.5 times the finished volume, which is (1 - shrinkage)^3 at about 12.5%.
  */
@@ -99,8 +104,6 @@
   var G_PER_OZ = 28.3495;
   var HANDLE_G = 100;          // one pulled mug handle
   var HAND_ALLOW = 10;         // handbuilding allowance %
-  var PRESET_SHRINK = ['7', '11', '13'];
-  var PRESET_RANGE = { '7': ['earthenware', '5–10%'], '11': ['stoneware', '10–15%'], '13': ['porcelain', '10–15%'] };
 
   // Source pages linked from the calculator's own text (quotes in Website/Calculators/Clay Weight/sources.md)
   var SRC = {
@@ -110,16 +113,16 @@
     sheffield: 'https://www.sheffield-pottery.com/blogs/ceramic-arts-blog/pottery-101-answers-to-the-questions-every-new-potter-asks',
     sackey: 'https://ceramicartsnetwork.org/pottery-making-illustrated/pottery-making-illustrated-article/fluidity-in-form-and-surface'
   };
-  var NB = '\u00a0';           // keeps a number on the same line as its unit
+  var NB = ' ';           // keeps a number on the same line as its unit
 
-  // Default finished (fired) size, wet wall and base after trimming, and the throwing allowance, per form.
+  // Default finished (fired) size, wet wall and base after trimming (mm), and the throwing allowance %, per pot.
   var FORMS = {
-    mug:      { shape: 'cyl',   cap: 350,  d: 8,   h: 10,  wall: 6, base: 6,  allow: 15, text: 'a straight-sided mug' },
-    cup:      { shape: 'cyl',   cap: 200,  d: 7.5, h: 7,   wall: 6, base: 6,  allow: 15, text: 'a straight-sided cup' },
-    bowl:     { shape: 'bowl',  cap: 500,  d: 15,  h: 7,   wall: 8, base: 8,  allow: 25, text: 'a round-bottomed bowl' },
-    plate:    { shape: 'plate', cap: 0,    d: 27,  h: 2.5, wall: 8, base: 10, allow: 30, text: 'a flat plate with a rim rising at 45°' },
-    vase:     { shape: 'vase',  cap: 1000, d: 12,  h: 18,  wall: 8, base: 8,  allow: 25, text: 'a rounded, egg-shaped vase' },
-    cylinder: { shape: 'cyl',   cap: 1000, d: 11,  h: 15,  wall: 8, base: 8,  allow: 25, text: 'a straight-sided cylinder' }
+    mug:      { shape: 'cyl',   cap: 350,  d: 8,   h: 10,  wall: 6, base: 6,  allow: 15 },
+    cup:      { shape: 'cyl',   cap: 200,  d: 7.5, h: 7,   wall: 6, base: 6,  allow: 15 },
+    bowl:     { shape: 'bowl',  cap: 500,  d: 15,  h: 7,   wall: 8, base: 8,  allow: 25 },
+    plate:    { shape: 'plate', cap: 0,    d: 27,  h: 2.5, wall: 8, base: 10, allow: 30 },
+    vase:     { shape: 'vase',  cap: 1000, d: 12,  h: 18,  wall: 8, base: 8,  allow: 25 },
+    cylinder: { shape: 'cyl',   cap: 1000, d: 11,  h: 15,  wall: 8, base: 8,  allow: 25 }
   };
 
   var CSS = ''
@@ -155,39 +158,11 @@
       + '      <option value="cylinder">Cylinder, straight</option>'
       + '    </select>'
       + '  </div>'
-      + '  <div class="cm-row">'
-      + '    <label class="cm-label" for="' + f('clay') + '">Clay body</label>'
-      + '    <select id="' + f('clay') + '" data-role="clay">'
-      + '      <option value="7">Earthenware · about 7%</option>'
-      + '      <option value="11" selected>Stoneware · about 11%</option>'
-      + '      <option value="13">Porcelain · about 13%</option>'
-      + '      <option value="own">My own clay</option>'
-      + '    </select>'
-      + '  </div>'
-      + '  <div class="cm-row">'
-      + '    <label class="cm-label" for="' + f('shrink') + '">Shrinkage %</label>'
-      + '    <input type="number" id="' + f('shrink') + '" data-role="shrink" min="0" max="30" step="0.5" value="11" inputmode="decimal">'
-      + '  </div>'
-      + '  <div class="cm-row">'
-      + '    <span class="cm-label">Units</span>'
-      + '    <div class="cm-unit-toggle" role="group" aria-label="Units">'
-      + '      <button type="button" class="cm-unit-btn is-active" data-units="metric" aria-pressed="true">cm · g</button>'
-      + '      <button type="button" class="cm-unit-btn" data-units="imperial" aria-pressed="false">in · lb</button>'
-      + '    </div>'
-      + '  </div>'
       + '  <div class="cm-row" data-vessel>'
-      + '    <span class="cm-label">Size by</span>'
+      + '    <span class="cm-label">Size</span>'
       + '    <div class="cm-unit-toggle" role="group" aria-label="Size by">'
       + '      <button type="button" class="cm-unit-btn is-active" data-by="cap" aria-pressed="true">Capacity</button>'
-      + '      <button type="button" class="cm-unit-btn" data-by="height" aria-pressed="false">Height</button>'
-      + '    </div>'
-      + '  </div>'
-      + '  <div class="cm-row" data-vessel>'
-      + '    <span class="cm-label">Capacity in</span>'
-      + '    <div class="cm-unit-toggle" role="group" aria-label="Capacity units">'
-      + '      <button type="button" class="cm-unit-btn is-active" data-cap-unit="ml" aria-pressed="true">ml</button>'
-      + '      <button type="button" class="cm-unit-btn" data-cap-unit="usoz" aria-pressed="false">US fl oz</button>'
-      + '      <button type="button" class="cm-unit-btn" data-cap-unit="ukoz" aria-pressed="false">UK fl oz</button>'
+      + '      <button type="button" class="cm-unit-btn" data-by="height" aria-pressed="false">Width × height</button>'
       + '    </div>'
       + '  </div>'
       + '  <div class="cm-dims">'
@@ -203,20 +178,20 @@
       + '      <label class="cm-dim-label" for="' + f('h') + '" data-label="h">Height (cm)</label>'
       + '      <input type="number" class="cm-dim-input" id="' + f('h') + '" data-field="h" min="0" step="any" inputmode="decimal">'
       + '    </div>'
-      + '    <div class="cm-dim">'
-      + '      <label class="cm-dim-label" for="' + f('wall') + '" data-label="wall">Wall (mm)</label>'
-      + '      <input type="number" class="cm-dim-input" id="' + f('wall') + '" data-field="wall" min="0" step="any" inputmode="decimal">'
-      + '    </div>'
-      + '    <div class="cm-dim">'
-      + '      <label class="cm-dim-label" for="' + f('base') + '" data-label="base">Base (mm)</label>'
-      + '      <input type="number" class="cm-dim-input" id="' + f('base') + '" data-field="base" min="0" step="any" inputmode="decimal">'
-      + '    </div>'
-      + '  </div>'
-      + '  <div class="cm-row">'
-      + '    <label class="cm-label" for="' + f('allow') + '" data-role="allow-label">Throwing allowance %</label>'
-      + '    <input type="number" id="' + f('allow') + '" data-role="allow" min="0" max="100" step="1" inputmode="decimal">'
       + '  </div>'
       + '  <p class="cm-hint" data-role="hint"></p>'
+      + '  <div class="cm-row">'
+      + '    <label class="cm-label" for="' + f('shrink') + '">Shrinkage %</label>'
+      + '    <input type="number" id="' + f('shrink') + '" data-role="shrink" min="0" max="30" step="0.5" value="11" inputmode="decimal">'
+      + '  </div>'
+      + '  <p class="cm-hint" data-role="shrink-hint"></p>'
+      + '  <div class="cm-row">'
+      + '    <span class="cm-label">Units</span>'
+      + '    <div class="cm-unit-toggle" role="group" aria-label="Units">'
+      + '      <button type="button" class="cm-unit-btn is-active" data-units="metric" aria-pressed="true">cm · g</button>'
+      + '      <button type="button" class="cm-unit-btn" data-units="imperial" aria-pressed="false">in · lb</button>'
+      + '    </div>'
+      + '  </div>'
       + '  <div class="cm-visual">'
       + '    <svg viewBox="0 0 100 100" class="cm-svg" aria-hidden="true">'
       + '      <line class="cm-ground" x1="4" y1="92.5" x2="96" y2="92.5"></line>'
@@ -233,7 +208,7 @@
       + '    <p class="cm-results-title">For this pot:</p>'
       + '    <ul class="cm-results-list"></ul>'
       + '    <p class="cm-results-note" data-role="note"></p>'
-      + '    <button type="button" class="cm-link-btn" data-role="ukoz" hidden>Use UK fl oz instead</button>'
+      + '    <button type="button" class="cm-link-btn" data-role="cap-unit" hidden></button>'
       + '  </div>'
       + '  <p class="cm-sr" aria-live="polite" aria-atomic="true" data-role="sr"></p>'
       + '  <p class="cm-disclaimer">This is an estimate to help you plan, not a guarantee. Clay bodies, throwing styles and trimming all differ, so weigh your first pot, note what it came out at and adjust. Ceramind Tools can\'t accept responsibility for decisions based on these results.</p>'
@@ -342,62 +317,49 @@
 
     var method = 'throw';
     var units = 'metric';
-    var capUnit = 'ml';
+    var capUnit = 'ml';          // ml with cm·g, US fl oz with in·lb; UK fl oz by one tap
     var by = 'cap';
-    var ownAllow = { throw: null, hand: null };   // the user's own allowance per method, as typed
-    var last = null;                              // last good result, for carrying sizes across the Size by toggle
+    var last = null;             // last good result, for carrying sizes across the Size switch
     var srTimer;
 
-    // The sizes in metric (ml, cm, mm). Inputs show them in the chosen units; typing updates them.
+    // The sizes in metric (ml, cm). Inputs show them in the chosen units; typing updates them.
     var val = {};
 
     function q(sel) { return root.querySelector(sel); }
     function qa(sel) { return root.querySelectorAll(sel); }
     var formSel = q('[data-role="form"]');
-    var clay = q('[data-role="clay"]');
     var shrink = q('[data-role="shrink"]');
-    var allow = q('[data-role="allow"]');
     var hint = q('[data-role="hint"]');
-    var allowLabel = q('[data-role="allow-label"]');
     var fired = q('.cm-pot-fired');
     var wet = q('.cm-pot-wet');
     var visualPct = q('[data-role="visual-pct"]');
     var list = q('.cm-results-list');
     var note = q('[data-role="note"]');
     var sr = q('[data-role="sr"]');
-    var ukBtn = q('[data-role="ukoz"]');
+    var capBtn = q('[data-role="cap-unit"]');
     var fields = {};
     qa('[data-field]').forEach(function (el) { fields[el.getAttribute('data-field')] = el; });
-
-    // metric value -> shown value, per field
-    var TO_IMP = { d: 1 / 2.54, h: 1 / 2.54, wall: 1 / 25.4, base: 1 / 25.4 };
-    var DP = { metric: { d: 1, h: 1, wall: 1, base: 1 }, imperial: { d: 2, h: 2, wall: 2, base: 2 } };
-    var LABELS = {
-      metric: { d: 'Width (cm)', h: 'Height (cm)', wall: 'Wall (mm)', base: 'Base (mm)' },
-      imperial: { d: 'Width (in)', h: 'Height (in)', wall: 'Wall (in)', base: 'Base (in)' }
-    };
 
     // metric value x factor = the value shown in the box
     function factor(name) {
       if (name === 'cap') return 1 / ML_PER[capUnit];
-      return units === 'metric' ? 1 : TO_IMP[name];
+      return units === 'metric' ? 1 : 1 / 2.54;
     }
     function places(name) {
-      return name === 'cap' ? (capUnit === 'ml' ? 0 : 1) : DP[units][name];
+      if (name === 'cap') return capUnit === 'ml' ? 0 : 1;
+      return units === 'metric' ? 1 : 2;
     }
 
     function round(n, dp) { var m = Math.pow(10, dp); return Math.round(n * m) / m; }
 
     function show(name) {
       var v = val[name];
-      if (isNaN(v)) { fields[name].value = ''; return; }
-      fields[name].value = String(round(v * factor(name), places(name)));
+      fields[name].value = isNaN(v) ? '' : String(round(v * factor(name), places(name)));
     }
 
     function readField(name) {
       var n = parseFloat(fields[name].value);
-      if (isNaN(n)) { val[name] = NaN; return; }
-      val[name] = n / factor(name);
+      val[name] = isNaN(n) ? NaN : n / factor(name);
     }
 
     function fmt(n, dp) {
@@ -431,7 +393,7 @@
       return (exact || ml < 100 ? Math.round(ml) : Math.round(ml / 5) * 5) + NB + 'ml';
     }
 
-    // "an 8%", "an 11%", "an 18%", "an 80%"; "a" otherwise
+    // "an 8 mm", "an 11%", "an 18%"; "a" otherwise
     function an(n) {
       var d = String(Math.floor(Math.abs(n)));
       if (d.charAt(0) === '8') return 'an';
@@ -463,9 +425,9 @@
     function plain(text) {
       return typeof text === 'string' ? text : text.map(function (p) { return typeof p === 'string' ? p : p.t; }).join('');
     }
-    function putNotes(list) {
+    function putNotes(items) {
       note.textContent = '';
-      list.forEach(function (n, i) {
+      items.forEach(function (n, i) {
         if (i) note.appendChild(document.createTextNode(' '));
         put(note, n);
       });
@@ -483,15 +445,10 @@
       srTimer = setTimeout(function () { sr.textContent = text; }, 700);
     }
 
-    function allowDefault() {
-      return method === 'hand' ? HAND_ALLOW : FORMS[formSel.value].allow;
-    }
-
     function loadForm() {
       var F = FORMS[formSel.value];
-      val = { cap: F.cap || NaN, d: F.d, h: F.h, wall: F.wall, base: F.base };
-      ['cap', 'd', 'h', 'wall', 'base'].forEach(show);
-      if (ownAllow[method] === null) allow.value = allowDefault();
+      val = { cap: F.cap || NaN, d: F.d, h: F.h };
+      ['cap', 'd', 'h'].forEach(show);
       last = null;
     }
 
@@ -505,50 +462,55 @@
       var shape = F.shape;
       var vessel = shape !== 'plate';
       var useCap = vessel && by === 'cap';
+      var imp = units === 'imperial';
       qa('[data-vessel]').forEach(function (el) { el.hidden = !vessel; });
       q('[data-show="cap"]').hidden = !useCap;
       q('[data-show="height"]').hidden = useCap;
-      ['d', 'h', 'wall', 'base'].forEach(function (k) { q('[data-label="' + k + '"]').textContent = LABELS[units][k]; });
       q('[data-label="cap"]').textContent = 'Capacity (' + CAP_NAME[capUnit] + ')';
-      ukBtn.hidden = true;
-      allowLabel.textContent = method === 'hand' ? 'Offcut allowance %' : 'Throwing allowance %';
+      q('[data-label="d"]').textContent = 'Width (' + (imp ? 'in' : 'cm') + ')';
+      q('[data-label="h"]').textContent = 'Height (' + (imp ? 'in' : 'cm') + ')';
       hint.textContent = '';
-      put(hint, [(shape === 'vase' ? 'Width is the widest point, outside. ' : 'Width is outside, at the rim. ')
-        + 'Sizes are the finished, fired pot; wall and base are the wet pot\'s thickness '
-        + (method === 'hand' ? 'as you build it (your slab). ' : 'after trimming. '),
-        src('Sheffield Pottery', 'sheffield'), ' suggests ' + (units === 'metric' ? '6–10 mm' : '1/4–3/8 in') + ' walls for pots you\'ll use. ']
-        .concat(method === 'hand' ? ['Pinching with no offcuts? Set the allowance to 0.']
-          : ['Still learning? ', src('Lakeside Pottery', 'lakeside'), ' suggests about 25% more clay.']));
+      put(hint, [(shape === 'vase' ? 'Width is outside, at the widest point. ' : 'Width is outside, at the rim. ')
+        + 'Sizes are for the finished, fired pot' + (vessel ? '; capacity is to the brim.' : '.')]);
 
       var notes = [];
-      var imp = units === 'imperial';
 
       // Shrinkage: 0 is allowed (sizes are then the wet sizes); under 1 is read as a fraction (0.12 = 12%),
-      // and the range checks run on the converted figure: over 16% warns, 30% or more is refused.
+      // then over 16% warns and 30% or more is refused.
       var s = parseFloat(shrink.value);
       if (s > 0 && s < 1) { notes.push('Read ' + shrink.value + ' as ' + fmt(s * 100, 0) + '% shrinkage.'); s = s * 100; }
       var highShrink = [fmt(s, s % 1 ? 1 : 0) + '% is unusually high: ', src('most clays shrink about 5–15%', 'valentine'), ', so check your figure.'];
       var badShrink = !isNaN(s) && s >= 30;
       if (s > 16 && !badShrink) notes.push(highShrink);
 
-      var a = parseFloat(allow.value);
-      if (a > 0 && a < 1) { notes.push('Read ' + allow.value + ' as ' + an(a * 100) + ' ' + fmt(a * 100, 0) + '% allowance.'); a = a * 100; }
-      if (a > 100) { notes.push('An allowance over 100% would more than double the clay, so 100% is used.'); a = 100; }
+      // Walls, base and allowance are the pot's defaults (mm and %).
+      var t = F.wall, b = F.base;
+      var a = method === 'hand' ? HAND_ALLOW : F.allow;
 
-      // Catch unit slips on the shown values, then work in metric.
-      var cap = val.cap, D = val.d, H = val.h, t = val.wall, b = val.base;
+      // Catch unit slips on the shown values, store the corrected value (so a unit click converts the right
+      // amount), then work in metric.
+      var cap = val.cap, D = val.d, H = val.h;
       var cs = parseFloat(fields.cap.value);
-      // A caught slip is stored as the corrected value, so a later unit click converts the right amount.
+      var capAction = null;
       if (useCap && cs > 0) {
         var typed = fields.cap.value;
         if (capUnit === 'ml' && cs < 1) { cap = cs * 1000; notes.push('Read ' + typed + ' as ' + typed + ' litres (' + fmt(cap, 0) + ' ml).'); }
         else if (capUnit === 'ml' && cs <= 40) {
           cap = cs * ML_PER.usoz;
           notes.push('Read ' + typed + ' as ' + typed + ' US fl oz (' + fmt(cap, 0) + ' ml).');
-          ukBtn.hidden = false;
+          capAction = 'ukoz';
         }
         else if (capUnit !== 'ml' && cs >= 150) { cap = cs; notes.push('Read ' + typed + ' as ' + typed + ' ml (' + fmt(cs / ML_PER[capUnit], 1) + ' ' + CAP_NAME[capUnit] + ').'); }
         val.cap = cap;
+      }
+      if (useCap && !capAction) {
+        if (capUnit === 'ukoz') capAction = imp ? 'usoz' : 'ml';
+        else if (capUnit === 'usoz') capAction = 'ukoz';
+      }
+      capBtn.hidden = !capAction;
+      if (capAction) {
+        capBtn.setAttribute('data-to', capAction);
+        capBtn.textContent = 'Use ' + CAP_NAME[capAction] + ' instead';
       }
       function sizeSlip(name, cm) {
         var shown = parseFloat(fields[name].value);
@@ -558,33 +520,18 @@
         val[name] = cm;
         return cm;
       }
-      function thickSlip(name, mm) {
-        var shown = parseFloat(fields[name].value);
-        if (isNaN(shown) || shown <= 0) return mm;
-        if (!imp && shown < 1.5) { notes.push('Read ' + fields[name].value + ' as ' + fields[name].value + ' cm (' + fmt(shown * 10, 0) + ' mm).'); mm = shown * 10; }
-        else if (imp && shown >= 1) { notes.push('Read ' + fields[name].value + ' as ' + fields[name].value + ' mm (' + fmt(shown / 25.4, 2) + ' in).'); mm = shown; }
-        val[name] = mm;
-        return mm;
-      }
       D = sizeSlip('d', D);
       if (!useCap) H = sizeSlip('h', H);
-      t = thickSlip('wall', t);
-      b = thickSlip('base', b);
-
-      var missing = [];
-      function need(ok, name) { if (!ok) missing.push(name); }
-      if (useCap) need(cap > 0, 'capacity'); else need(H > 0, 'height');
-      need(D > 0, 'width');
-      need(t > 0, 'wall thickness');
-      need(b > 0, 'base thickness');
-      need(s >= 0, 'shrinkage');
-      need(a >= 0, 'allowance');
 
       var negative = [];
-      [['shrink', s, 'Shrinkage'], ['allow', a, 'The allowance'], ['cap', useCap ? cs : NaN, 'The capacity'],
-        ['h', useCap ? NaN : parseFloat(fields.h.value), 'The height'], ['d', parseFloat(fields.d.value), 'The width'],
-        ['wall', parseFloat(fields.wall.value), 'The wall thickness'], ['base', parseFloat(fields.base.value), 'The base thickness']
-      ].forEach(function (c) { if (c[1] < 0) negative.push(c[2] + ' can\'t be negative.'); });
+      [[s, 'Shrinkage'], [useCap ? cs : NaN, 'The capacity'],
+        [useCap ? NaN : parseFloat(fields.h.value), 'The height'], [parseFloat(fields.d.value), 'The width']
+      ].forEach(function (c) { if (c[0] < 0) negative.push(c[1] + ' can\'t be negative.'); });
+
+      var missing = [];
+      if (useCap) { if (!(cap > 0)) missing.push('capacity'); } else if (!(H > 0)) missing.push('height');
+      if (!(D > 0)) missing.push('width');
+      if (!(s >= 0)) missing.push('shrinkage');
 
       list.innerHTML = '';
       function stop(text) {
@@ -608,18 +555,18 @@
       var Hw, wetCap = null;
       if (useCap) {
         wetCap = cap / (k * k * k);
-        if (Dw / 2 - tc <= 0) return stop('The walls are too thick for a pot this narrow. Check the width and wall.');
+        if (Dw / 2 - tc <= 0) return stop('That\'s too narrow for a pot: check the width.');
         Hw = heightFor(shape, Dw, tc, bc, wetCap);
       } else {
         Hw = H / k;
       }
       if (shape === 'plate') {
         if (Hw >= Dw / 2) return stop('That\'s deep for a plate. For anything deeper than half its width, pick Bowl.');
-        if (bc >= Hw) return stop('The base is as thick as the plate is tall. Check the height and base.');
+        if (bc >= Hw) return stop('That\'s too shallow for a plate: check the height.');
       } else {
         var inn = inside(shape, Dw, Hw, tc, bc);
-        if (inn.r <= 0) return stop('The walls are too thick for a pot this narrow. Check the width and wall.');
-        if (inn.h <= 0) return stop('The base is as thick as the pot is tall. Check the height and base.');
+        if (inn.r <= 0) return stop('That\'s too narrow for a pot: check the width.');
+        if (inn.h <= 0) return stop('That\'s too short for a pot: check the height.');
         if (!useCap) wetCap = insideVol(shape, inn.r, inn.h);
       }
 
@@ -627,26 +574,21 @@
       var totalG = potG * (1 + a / 100);
       var firedCap = wetCap === null ? null : wetCap * k * k * k;
       var firedH = Hw * k;
+      var mug = formSel.value === 'mug';
 
       line('Weigh out: ' + grams(totalG));
       line('Wet size: ' + len(Dw) + ' wide, ' + len(Hw) + ' tall');
       line('Fired: ' + len(D) + ' wide, ' + len(firedH) + ' tall' + (firedCap === null ? '' : ', holds ' + capText(firedCap, useCap)));
-      if (formSel.value === 'mug') line('Handle: about ' + (imp ? '3½' + NB + 'oz' : HANDLE_G + NB + 'g') + ' more');
+      if (mug) line('Handle: about ' + (imp ? '3½' + NB + 'oz' : HANDLE_G + NB + 'g') + ' more');
 
-      notes.push('About ' + grams(potG) + ' ends up in the wet pot, and the ' + fmt(a, a % 1 ? 1 : 0) + '% allowance covers '
-        + (method === 'hand' ? 'offcuts and joins.' : 'throwing slurry and trimming.'));
-      if (method === 'throw' && a === allowDefault()) {
-        notes.push(['Our throwing allowances are set so the results match ', src('Lakeside Pottery\'s throwing chart', 'lakeside'), '.']);
-      }
-      notes.push(['Worked out for ' + F.text + ': walls ' + thick(t) + ', base ' + thick(b) + ', '
-        + fmt(s, s % 1 ? 1 : 0) + '% shrinkage, wet clay at 1.95 g per cm³ (from ', src('Digitalfire', 'digitalfire'),
-        '\'s water content figures).' + (firedCap === null ? '' : ' Capacity is to the brim.')]);
-      var preset = PRESET_RANGE[clay.value];
-      if (preset && String(s) === clay.value) {
-        notes.push(['The ' + preset[0] + ' preset sits in the ' + preset[1] + ' range ', src('Valentine Clays', 'valentine'), ' gives.']);
-      }
-      if (formSel.value === 'mug') notes.push([src('Dwayne Sackey', 'sackey'), ' weighs out 3½ oz (about 100 g) for a mug handle.']);
+      // One line on what's assumed, with its sources.
       if (s === 0) notes.push('With 0% shrinkage, the fired sizes are the wet sizes.');
+      notes.push(['Assumes ' + (t === b ? thick(t) + ' walls and base' : thick(t) + ' walls and ' + an(b) + ' ' + thick(b) + ' base') + ' (',
+        src('Sheffield Pottery', 'sheffield'), '), '
+        + a + '% extra for ' + (method === 'hand' ? 'offcuts' : 'throwing and trimming (calibrated to ')]
+        .concat(method === 'hand' ? [] : [src('Lakeside Pottery\'s chart', 'lakeside'), ')'])
+        .concat([mug ? ', ' : ' and ', 'wet clay at 1.95 g per cm³ (', src('Digitalfire', 'digitalfire'), ')'])
+        .concat(mug ? [' and ', src('Dwayne Sackey', 'sackey'), '\'s ' + (imp ? '3½' + NB + 'oz' : HANDLE_G + NB + 'g') + ' handle.'] : ['.']));
       putNotes(notes);
 
       // Picture: the wet pot fills the box; the fired one is drawn inside it at its real size.
@@ -665,42 +607,30 @@
         if (next === method) return;
         method = next;
         setPressed(qa('[data-method]'), 'data-method', method);
-        allow.value = ownAllow[method] !== null ? ownAllow[method] : allowDefault();
         render();
       });
     });
 
+    // cm·g goes with ml, in·lb with US fl oz. The sizes are kept and shown in the new units.
     qa('[data-units]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var next = btn.getAttribute('data-units');
         if (next === units) return;
         units = next;
+        capUnit = units === 'metric' ? 'ml' : 'usoz';
         setPressed(qa('[data-units]'), 'data-units', units);
-        if (units === 'imperial' && capUnit === 'ml') capUnit = 'usoz';
-        if (units === 'metric' && capUnit !== 'ml') capUnit = 'ml';
-        setPressed(qa('[data-cap-unit]'), 'data-cap-unit', capUnit);
-        ['cap', 'd', 'h', 'wall', 'base'].forEach(show);
+        ['cap', 'd', 'h'].forEach(show);
         render();
       });
     });
 
-    qa('[data-cap-unit]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var next = btn.getAttribute('data-cap-unit');
-        if (next === capUnit) return;
-        capUnit = next;
-        setPressed(qa('[data-cap-unit]'), 'data-cap-unit', capUnit);
-        show('cap');
-        render();
-      });
-    });
-
-    // One tap: the number typed in the ml box was UK fl oz, not US.
-    ukBtn.addEventListener('click', function () {
+    // One tap under the results: ml <-> UK fl oz, or US <-> UK fl oz. Between US and UK the typed number is
+    // re-read in the other ounce; back to ml the amount is kept and converted.
+    capBtn.addEventListener('click', function () {
+      var to = capBtn.getAttribute('data-to');
       var typed = parseFloat(fields.cap.value);
-      capUnit = 'ukoz';
-      setPressed(qa('[data-cap-unit]'), 'data-cap-unit', capUnit);
-      if (!isNaN(typed)) val.cap = typed * ML_PER.ukoz;
+      if (to !== 'ml' && !isNaN(typed)) val.cap = typed * ML_PER[to];
+      capUnit = to;
       show('cap');
       render();
     });
@@ -725,22 +655,7 @@
       render();
     });
 
-    clay.addEventListener('change', function () {
-      if (clay.value !== 'own') shrink.value = clay.value;
-      render();
-    });
-
-    shrink.addEventListener('input', function () {
-      var v = String(parseFloat(shrink.value));
-      clay.value = PRESET_SHRINK.indexOf(v) >= 0 ? v : 'own';
-      render();
-    });
-
-    allow.addEventListener('input', function () {
-      // Typing the default back counts as using the default, so a new pot gets its own default again.
-      ownAllow[method] = parseFloat(allow.value) === allowDefault() ? null : allow.value;
-      render();
-    });
+    shrink.addEventListener('input', render);
 
     Object.keys(fields).forEach(function (name) {
       fields[name].addEventListener('input', function () {
@@ -749,6 +664,8 @@
       });
     });
 
+    put(q('[data-role="shrink-hint"]'), ['Typical clays: earthenware about 5–10%, stoneware and porcelain about 10–15% (',
+      src('Valentine Clays', 'valentine'), ').']);
     loadForm();
     render();
   }
