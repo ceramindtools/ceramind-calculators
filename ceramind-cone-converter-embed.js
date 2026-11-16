@@ -262,6 +262,9 @@
       // and this widget's CSS cannot leak out — regardless of specificity,
       // !important, or ID-scoped selectors on either side.
       var shadow = root.attachShadow({ mode: "open" });
+      // The host box has no children of its own (the widget lives in the shadow root), so a theme rule like
+      // div:empty { display: none } would hide it. An inline style beats that rule.
+      root.style.display = "block";
       var styleEl = document.createElement("style");
       styleEl.textContent = CSS;
       shadow.appendChild(styleEl);
