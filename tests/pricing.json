@@ -1,0 +1,760 @@
+{
+ "root": ".ceramind-pricing-calculator",
+ "cases": [
+  {
+   "name": "default example mug: cost 10.24075, wholesale 17.92 -> £18, retail £36",
+   "expect": [
+    "Cost to make: £10.24",
+    "Wholesale: £18.00 (£7.76 profit)",
+    "Retail: £36.00 (2 × wholesale)",
+    "SELLING AT £36.00",
+    "Etsy: £5.16 in fees, £20.60 profit",
+    "Shopify: 97p in fees, £24.79 profit",
+    "Card reader (SumUp): 61p in fees, £25.15 profit",
+    "Etsy's fees include the 20% VAT"
+   ]
+  },
+  {
+   "name": "VAT registered: retail 43.20 -> £44 with VAT, Etsy fees without VAT",
+   "do": [
+    [
+     "click",
+     "[data-vat=yes]"
+    ]
+   ],
+   "expect": [
+    "Wholesale: £18.00 + VAT = £21.60 (£7.76 profit)",
+    "Retail: £44.00 with VAT (£36.67 + £7.33 VAT)",
+    "Etsy: £5.18 in fees, £21.24 profit",
+    "Shopify: £1.13 in fees, £25.30 profit",
+    "Card reader (SumUp): 74p in fees, £25.68 profit",
+    "rounded with VAT in"
+   ],
+   "absent": [
+    "Etsy's fees include"
+   ]
+  },
+  {
+   "name": "clicking Yes again changes nothing",
+   "do": [
+    [
+     "click",
+     "[data-vat=yes]"
+    ]
+   ],
+   "expect": [
+    "Retail: £44.00 with VAT",
+    "Etsy: £5.18 in fees"
+   ]
+  },
+  {
+   "name": "VAT off, open More options, Shopify Grow 1.7% + 25p",
+   "do": [
+    [
+     "click",
+     "[data-vat=no]"
+    ],
+    [
+     "click",
+     "[data-role=more]"
+    ],
+    [
+     "select",
+     "[data-role=shopify]",
+     "grow"
+    ]
+   ],
+   "expect": [
+    "Retail: £36.00 (2 × wholesale)",
+    "Shopify: 86p in fees, £24.90 profit"
+   ]
+  },
+  {
+   "name": "card reader preset Square 1.75%",
+   "do": [
+    [
+     "select",
+     "[data-role=reader]",
+     "square"
+    ]
+   ],
+   "expect": [
+    "Card reader (Square): 63p in fees, £25.13 profit"
+   ]
+  },
+  {
+   "name": "own card fee 2.5% switches the preset to my own",
+   "do": [
+    [
+     "fill",
+     "[data-role=readerpct]",
+     "2.5"
+    ]
+   ],
+   "expect": [
+    "Card reader: 90p in fees, £24.86 profit"
+   ],
+   "absent": [
+    "(Square)"
+   ]
+  },
+  {
+   "name": "typing 1.69 picks SumUp again",
+   "do": [
+    [
+     "fill",
+     "[data-role=readerpct]",
+     "1.69"
+    ]
+   ],
+   "expect": [
+    "Card reader (SumUp): 61p in fees, £25.15 profit"
+   ]
+  },
+  {
+   "name": "99.75p fee shows as £1.00, not 100p",
+   "do": [
+    [
+     "fill",
+     "[data-role=readerpct]",
+     "2.7708"
+    ]
+   ],
+   "expect": [
+    "Card reader: £1.00 in fees, £24.76 profit"
+   ],
+   "absent": [
+    "100p"
+   ]
+  },
+  {
+   "name": "blank card fee asks for it, other lines stay",
+   "do": [
+    [
+     "fill",
+     "[data-role=readerpct]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Card reader: enter its fee % to see this",
+    "Etsy: £5.16 in fees"
+   ]
+  },
+  {
+   "name": "back to SumUp and Shopify Basic",
+   "do": [
+    [
+     "select",
+     "[data-role=reader]",
+     "sumup"
+    ],
+    [
+     "select",
+     "[data-role=shopify]",
+     "basic"
+    ]
+   ],
+   "expect": [
+    "Card reader (SumUp): 61p in fees",
+    "Shopify: 97p in fees"
+   ]
+  },
+  {
+   "name": "no rounding",
+   "do": [
+    [
+     "select",
+     "[data-role=round]",
+     "0"
+    ]
+   ],
+   "expect": [
+    "Wholesale: £17.92 (£7.68 profit)",
+    "Retail: £35.84 (2 × wholesale)",
+    "Etsy: £5.14 in fees, £20.46 profit",
+    "Shopify: 97p in fees, £24.64 profit"
+   ]
+  },
+  {
+   "name": "round up to £5",
+   "do": [
+    [
+     "select",
+     "[data-role=round]",
+     "5"
+    ]
+   ],
+   "expect": [
+    "Wholesale: £20.00 (£9.76 profit)",
+    "Retail: £40.00 (2 × wholesale)",
+    "Etsy: £5.69 in fees, £24.07 profit"
+   ]
+  },
+  {
+   "name": "retail 2.5 x wholesale",
+   "do": [
+    [
+     "fill",
+     "[data-role=mult]",
+     "2.5"
+    ]
+   ],
+   "expect": [
+    "Retail: £50.00 (2.5 × wholesale)"
+   ]
+  },
+  {
+   "name": "back to 2 x and £1",
+   "do": [
+    [
+     "fill",
+     "[data-role=mult]",
+     "2"
+    ],
+    [
+     "select",
+     "[data-role=round]",
+     "1"
+    ]
+   ],
+   "expect": [
+    "Retail: £36.00 (2 × wholesale)"
+   ]
+  },
+  {
+   "name": "dollars keep the figures and use US fees",
+   "do": [
+    [
+     "click",
+     "[data-cur=usd]"
+    ]
+   ],
+   "expect": [
+    "Cost to make: $10.24",
+    "Wholesale: $18.00 ($7.76 profit)",
+    "Retail: $36.00 (2 × wholesale)",
+    "Etsy: $3.87 in fees, $21.89 profit",
+    "Shopify: $1.34 in fees, $24.42 profit",
+    "Card reader (Square): $1.09 in fees, $24.67 profit"
+   ],
+   "absent": [
+    "VAT",
+    "£"
+   ]
+  },
+  {
+   "name": "back to pounds restores SumUp",
+   "do": [
+    [
+     "click",
+     "[data-cur=gbp]"
+    ]
+   ],
+   "expect": [
+    "Retail: £36.00",
+    "Card reader (SumUp): 61p in fees",
+    "Etsy: £5.16 in fees"
+   ]
+  },
+  {
+   "name": "clicking £ again changes nothing",
+   "do": [
+    [
+     "click",
+     "[data-cur=gbp]"
+    ]
+   ],
+   "expect": [
+    "Retail: £36.00",
+    "Card reader (SumUp): 61p in fees"
+   ]
+  },
+  {
+   "name": "VAT never applies in dollars",
+   "do": [
+    [
+     "click",
+     "[data-vat=yes]"
+    ],
+    [
+     "click",
+     "[data-cur=usd]"
+    ]
+   ],
+   "expect": [
+    "Retail: $36.00 (2 × wholesale)"
+   ],
+   "absent": [
+    "VAT"
+   ]
+  },
+  {
+   "name": "pounds again keeps VAT on",
+   "do": [
+    [
+     "click",
+     "[data-cur=gbp]"
+    ]
+   ],
+   "expect": [
+    "Retail: £44.00 with VAT"
+   ]
+  },
+  {
+   "name": "blank hours named",
+   "do": [
+    [
+     "click",
+     "[data-vat=no]"
+    ],
+    [
+     "fill",
+     "[data-role=hours]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your hours on this piece."
+   ],
+   "absent": [
+    "Cost to make"
+   ]
+  },
+  {
+   "name": "blank clay and hours named",
+   "do": [
+    [
+     "fill",
+     "[data-role=clay]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your clay cost and hours on this piece."
+   ]
+  },
+  {
+   "name": "zero clay is allowed (reclaimed or dug clay): only hours missing",
+   "do": [
+    [
+     "fill",
+     "[data-role=clay]",
+     "0"
+    ]
+   ],
+   "expect": [
+    "Enter your hours on this piece."
+   ],
+   "absent": [
+    "clay cost"
+   ]
+  },
+  {
+   "name": "zero clay prices the rest: cost 9.72325, wholesale 17.0157 -> £18",
+   "do": [
+    [
+     "fill",
+     "[data-role=hours]",
+     "0.5"
+    ]
+   ],
+   "expect": [
+    "Cost to make: £9.72",
+    "Wholesale: £18.00 (£8.28 profit)"
+   ]
+  },
+  {
+   "name": "zero hourly rate is allowed, with a note: cost 2.9325",
+   "do": [
+    [
+     "fill",
+     "[data-role=clay]",
+     "0.45"
+    ],
+    [
+     "fill",
+     "[data-role=rate]",
+     "0"
+    ]
+   ],
+   "expect": [
+    "Cost to make: £2.93",
+    "Wholesale: £6.00 (£3.07 profit)",
+    "Retail: £12.00",
+    "With an hourly rate of 0, these prices don't pay you for your time."
+   ],
+   "absent": [
+    "National Living Wage"
+   ]
+  },
+  {
+   "name": "blank hourly rate is still missing",
+   "do": [
+    [
+     "fill",
+     "[data-role=rate]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your hourly rate."
+   ]
+  },
+  {
+   "name": "rate back to 12.71",
+   "do": [
+    [
+     "fill",
+     "[data-role=rate]",
+     "12.71"
+    ]
+   ],
+   "expect": [
+    "Cost to make: £10.24"
+   ]
+  },
+  {
+   "name": "filled back in",
+   "do": [
+    [
+     "fill",
+     "[data-role=clay]",
+     "0.45"
+    ],
+    [
+     "fill",
+     "[data-role=hours]",
+     "0.5"
+    ]
+   ],
+   "expect": [
+    "Cost to make: £10.24"
+   ]
+  },
+  {
+   "name": "clear the example",
+   "do": [
+    [
+     "click",
+     "[data-role=example]"
+    ]
+   ],
+   "expect": [
+    "Enter your clay cost and hours on this piece."
+   ]
+  },
+  {
+   "name": "put the example back",
+   "do": [
+    [
+     "click",
+     "[data-role=example]"
+    ]
+   ],
+   "expect": [
+    "Cost to make: £10.24",
+    "Retail: £36.00"
+   ]
+  },
+  {
+   "name": "clear, then type own figures: clay 2, glaze 0.50, 1 hour -> cost 17.4915",
+   "do": [
+    [
+     "click",
+     "[data-role=example]"
+    ],
+    [
+     "fill",
+     "[data-role=clay]",
+     "2"
+    ],
+    [
+     "fill",
+     "[data-role=glaze]",
+     "0.50"
+    ],
+    [
+     "fill",
+     "[data-role=hours]",
+     "1"
+    ]
+   ],
+   "expect": [
+    "Cost to make: £17.49",
+    "Wholesale: £31.00 (£13.51 profit)",
+    "Retail: £62.00 (2 × wholesale)"
+   ]
+  },
+  {
+   "name": "typing the example figures back brings the example back",
+   "do": [
+    [
+     "fill",
+     "[data-role=clay]",
+     "0.45"
+    ],
+    [
+     "fill",
+     "[data-role=glaze]",
+     "1.13"
+    ],
+    [
+     "fill",
+     "[data-role=bisque]",
+     "0.37"
+    ],
+    [
+     "fill",
+     "[data-role=glazefire]",
+     "0.60"
+    ],
+    [
+     "fill",
+     "[data-role=hours]",
+     "0.5"
+    ]
+   ],
+   "expect": [
+    "Cost to make: £10.24",
+    "Retail: £36.00"
+   ]
+  },
+  {
+   "name": "thousands get commas, and 1000 hours is flagged",
+   "do": [
+    [
+     "fill",
+     "[data-role=hours]",
+     "1000"
+    ]
+   ],
+   "expect": [
+    "Cost to make: £14,619.43",
+    "Wholesale: £25,585.00 (£10,965.57 profit)",
+    "Retail: £51,170.00",
+    "1,000 hours is over a day on one piece"
+   ]
+  },
+  {
+   "name": "rate below the National Living Wage is flagged",
+   "do": [
+    [
+     "fill",
+     "[data-role=hours]",
+     "0.5"
+    ],
+    [
+     "fill",
+     "[data-role=rate]",
+     "8"
+    ]
+   ],
+   "expect": [
+    "Cost to make: £7.53",
+    "£8.00 an hour is below the UK National Living Wage of £12.71"
+   ]
+  },
+  {
+   "name": "profit typed as 2 is read as 2%",
+   "do": [
+    [
+     "fill",
+     "[data-role=rate]",
+     "12.71"
+    ],
+    [
+     "fill",
+     "[data-role=profit]",
+     "2"
+    ]
+   ],
+   "expect": [
+    "Read 2 as 2% profit. To double your cost, type 100.",
+    "Wholesale: £11.00 (76p profit)",
+    "Retail: £22.00",
+    "Etsy: £3.32 in fees, £8.44 profit"
+   ]
+  },
+  {
+   "name": "multiplier typed as 100 is read as a 100% mark-up",
+   "do": [
+    [
+     "fill",
+     "[data-role=profit]",
+     "75"
+    ],
+    [
+     "fill",
+     "[data-role=mult]",
+     "100"
+    ]
+   ],
+   "expect": [
+    "Read 100 as a 100% mark-up: 2 × wholesale.",
+    "Retail: £36.00 (2 × wholesale)"
+   ]
+  },
+  {
+   "name": "multiplier under 1 is raised to 1",
+   "do": [
+    [
+     "fill",
+     "[data-role=mult]",
+     "0.5"
+    ]
+   ],
+   "expect": [
+    "Retail can't be less than wholesale, so 1 × is used.",
+    "Retail: £18.00 (1 × wholesale)",
+    "Etsy: £2.79 in fees, £4.97 profit"
+   ]
+  },
+  {
+   "name": "selling at cost makes a loss on Etsy",
+   "do": [
+    [
+     "fill",
+     "[data-role=mult]",
+     "1"
+    ],
+    [
+     "fill",
+     "[data-role=profit]",
+     "0"
+    ]
+   ],
+   "expect": [
+    "Wholesale: £11.00 (76p profit)",
+    "Etsy: £1.87 in fees, a loss of £1.11",
+    "Shopify: 47p in fees, 29p profit",
+    "Card reader (SumUp): 19p in fees, 57p profit"
+   ]
+  },
+  {
+   "name": "firing typed in pence is flagged",
+   "do": [
+    [
+     "fill",
+     "[data-role=mult]",
+     "2"
+    ],
+    [
+     "fill",
+     "[data-role=profit]",
+     "75"
+    ],
+    [
+     "fill",
+     "[data-role=bisque]",
+     "37"
+    ]
+   ],
+   "expect": [
+    "£37.00 to bisque one piece is more than a whole kiln load usually costs. For 37p, type 0.37.",
+    "Cost to make: £52.37"
+   ]
+  },
+  {
+   "name": "negative glaze read as 0",
+   "do": [
+    [
+     "fill",
+     "[data-role=bisque]",
+     "0.37"
+    ],
+    [
+     "fill",
+     "[data-role=glaze]",
+     "-1"
+    ]
+   ],
+   "expect": [
+    "Read -1 glaze as 0: costs can't be negative.",
+    "Cost to make: £8.94"
+   ]
+  },
+  {
+   "name": "overhead over 100% is flagged",
+   "do": [
+    [
+     "fill",
+     "[data-role=glaze]",
+     "1.13"
+    ],
+    [
+     "fill",
+     "[data-role=overhead]",
+     "150"
+    ]
+   ],
+   "expect": [
+    "An overhead of 150% is more than your costs: check it.",
+    "Cost to make: £22.26"
+   ]
+  },
+  {
+   "name": "card fee of 100% or more is impossible",
+   "do": [
+    [
+     "fill",
+     "[data-role=overhead]",
+     "15"
+    ],
+    [
+     "fill",
+     "[data-role=readerpct]",
+     "150"
+    ]
+   ],
+   "expect": [
+    "A card fee can't be 100% or more",
+    "Card reader: check its fee %",
+    "Cost to make: £10.24"
+   ]
+  },
+  {
+   "name": "blank overhead and profit named",
+   "do": [
+    [
+     "fill",
+     "[data-role=readerpct]",
+     "1.69"
+    ],
+    [
+     "fill",
+     "[data-role=overhead]",
+     ""
+    ],
+    [
+     "fill",
+     "[data-role=profit]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your overhead % and profit %."
+   ]
+  },
+  {
+   "name": "all back to the example",
+   "do": [
+    [
+     "fill",
+     "[data-role=overhead]",
+     "15"
+    ],
+    [
+     "fill",
+     "[data-role=profit]",
+     "75"
+    ]
+   ],
+   "expect": [
+    "Cost to make: £10.24",
+    "Etsy: £5.16 in fees, £20.60 profit",
+    "Card reader (SumUp): 61p in fees, £25.15 profit"
+   ]
+  }
+ ]
+}
