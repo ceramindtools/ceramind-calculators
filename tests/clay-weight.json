@@ -1,0 +1,1148 @@
+{
+ "root": ".ceramind-clay-weight-calculator",
+ "_how": "Answers worked out by hand before running. Wet width = fired / (1 - s). Mug: wet capacity = ml / (1 - s)^3, inner radius = wet width/2 - wall, inner height = wet capacity / (pi r^2), wet height = that + base, clay = pi R^2 H - wet capacity, grams = clay x 1.95, weigh out = grams x (1 + allowance). Bowl: cap volume pi h (3a^2 + h^2) / 6, outside minus inside. Plate: pi r0^2 base + pi (R + r0) H sqrt2 wall, with r0 = R - H. Walls, base and allowance are the per-pot defaults. Weigh-out rounds to 10 g.",
+ "cases": [
+  {
+   "name": "MUG 350 ml @ 8 cm: clay 202.8 cm3 = 395.5 g, x1.15 = 454.9 -> 450 g, + 100 g handle = 554.9 -> 550 g; 1 cm below the rim: fired inner r 3.466, area 37.74 x (9.274 - 1) = 312.3 -> 310 ml",
+   "expect": [
+    "Weigh out: 450 g",
+    "Wet size: 9.0 cm wide, 11.0 cm tall",
+    "Fired: 8.0 cm wide, 9.8 cm tall, holds 350 ml",
+    "Weigh out: 450 g for the mug + about 100 g for the handle = 550 g in all",
+    "Holds about 310 ml to 1 cm below the rim",
+    "Adds 15% for throwing and trimming (calibrated to Lakeside Pottery's chart)."
+   ],
+   "absent": [
+    "Use UK fl oz",
+    "For 1",
+    "bag"
+   ]
+  },
+  {
+   "name": "MUG 250 ml @ 7.5 cm: 314.0 g x1.15 = 361.1 -> 360 g",
+   "do": [
+    [
+     "fill",
+     "[data-field=cap]",
+     "250"
+    ],
+    [
+     "fill",
+     "[data-field=d]",
+     "7.5"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 360 g",
+    "Wet size: 8.4 cm wide, 9.2 cm tall",
+    "Fired: 7.5 cm wide, 8.2 cm tall, holds 250 ml"
+   ]
+  },
+  {
+   "name": "MUG 450 ml @ 9 cm: 451.7 g x1.15 = 519.5 -> 520 g",
+   "do": [
+    [
+     "fill",
+     "[data-field=cap]",
+     "450"
+    ],
+    [
+     "fill",
+     "[data-field=d]",
+     "9"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 520 g",
+    "Wet size: 10.1 cm wide, 10.8 cm tall",
+    "Fired: 9.0 cm wide, 9.6 cm tall, holds 450 ml"
+   ]
+  },
+  {
+   "name": "Width x height carries the 9.6 cm height: 450.1 g x1.15 = 517.7 -> 520 g, holds 448 -> 450 ml",
+   "do": [
+    [
+     "click",
+     "[data-by=height]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 520 g",
+    "Fired: 9.0 cm wide, 9.6 cm tall, holds 450 ml"
+   ]
+  },
+  {
+   "name": "back to capacity carries 450 ml",
+   "do": [
+    [
+     "click",
+     "[data-by=cap]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 520 g",
+    "holds 450 ml"
+   ]
+  },
+  {
+   "name": "handbuilt: 10%, 451.7 x 1.10 = 496.9 -> 500 g",
+   "do": [
+    [
+     "click",
+     "[data-method=hand]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 500 g",
+    "Adds 10% for offcuts."
+   ],
+   "absent": [
+    "Lakeside"
+   ]
+  },
+  {
+   "name": "thrown again",
+   "do": [
+    [
+     "click",
+     "[data-method=throw]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 520 g",
+    "Adds 15% for throwing and trimming"
+   ]
+  },
+  {
+   "name": "in·lb: same pot, 519.5 g = 18.3 oz -> 1 lb 2 oz; wet 3.98 x 4.26 in; holds 15.2 US fl oz",
+   "do": [
+    [
+     "click",
+     "[data-units=imperial]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1 lb 2 oz (520 g)",
+    "Wet size: 4.0 in wide, 4.3 in tall",
+    "Fired: 3.5 in wide, 3.8 in tall, holds 15.2 US fl oz",
+    "Use UK fl oz instead",
+    "Weigh out: 1 lb 2 oz (520 g) for the mug + about 3½ oz for the handle = 1 lb 6 oz (620 g) in all"
+   ],
+   "absent": [
+    " cm wide"
+   ]
+  },
+  {
+   "name": "in·lb 12 US fl oz @ 3.25 in: 354.9 ml @ 8.255 cm, 392.5 g x1.15 = 451.3 g = 15.9 oz -> 1 lb 0 oz",
+   "do": [
+    [
+     "fill",
+     "[data-field=cap]",
+     "12"
+    ],
+    [
+     "fill",
+     "[data-field=d]",
+     "3.25"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1 lb 0 oz (450 g)",
+    "Wet size: 3.7 in wide, 4.1 in tall",
+    "3.7 in tall, holds 12.0 US fl oz"
+   ]
+  },
+  {
+   "name": "UK fl oz by one tap re-reads 12 as UK: 341.0 ml @ 8.255 cm, 380.2 g x1.15 = 437.2 g = 15.4 oz -> 15 oz",
+   "do": [
+    [
+     "click",
+     "[data-role=cap-unit]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 15 oz (440 g)",
+    "holds 12.0 UK fl oz",
+    "Use US fl oz instead"
+   ]
+  },
+  {
+   "name": "and back to US fl oz",
+   "do": [
+    [
+     "click",
+     "[data-role=cap-unit]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1 lb 0 oz (450 g)",
+    "holds 12.0 US fl oz"
+   ]
+  },
+  {
+   "name": "back to cm·g keeps the 12 fl oz pot (355 ml)",
+   "do": [
+    [
+     "click",
+     "[data-units=metric]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g",
+    "Wet size: 9.3 cm wide, 10.4 cm tall",
+    "holds 355 ml"
+   ],
+   "absent": [
+    "Use "
+   ]
+  },
+  {
+   "name": "12 typed in the ml box is read as US fl oz, with a UK option",
+   "do": [
+    [
+     "fill",
+     "[data-field=cap]",
+     "12"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g",
+    "holds 355 ml",
+    "Read 12 as 12 US fl oz (355 ml).",
+    "Use UK fl oz instead"
+   ]
+  },
+  {
+   "name": "unit slip survives in·lb: 12 US fl oz, 1 lb 0 oz",
+   "do": [
+    [
+     "click",
+     "[data-units=imperial]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1 lb 0 oz (450 g)",
+    "holds 12.0 US fl oz"
+   ],
+   "absent": [
+    "Read",
+    "Weigh out: 3 oz"
+   ]
+  },
+  {
+   "name": "back to cm·g: 355 ml",
+   "do": [
+    [
+     "click",
+     "[data-units=metric]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g",
+    "holds 355 ml"
+   ]
+  },
+  {
+   "name": "one tap re-reads 12 as UK fl oz: 437.2 -> 440 g",
+   "do": [
+    [
+     "fill",
+     "[data-field=cap]",
+     "12"
+    ],
+    [
+     "click",
+     "[data-role=cap-unit]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 440 g",
+    "holds 12.0 UK fl oz",
+    "Use ml instead"
+   ],
+   "absent": [
+    "Read 12"
+   ]
+  },
+  {
+   "name": "back to ml converts it to 341 ml",
+   "do": [
+    [
+     "click",
+     "[data-role=cap-unit]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 440 g",
+    "holds 341 ml"
+   ]
+  },
+  {
+   "name": "3 in the ml box is US fl oz: 88.7 ml @ 8.255 cm = 181.0 g -> 180 g",
+   "do": [
+    [
+     "fill",
+     "[data-field=cap]",
+     "3"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 180 g",
+    "Read 3 as 3 US fl oz (89 ml)."
+   ]
+  },
+  {
+   "name": "0.35 in the ml box is litres: 350 ml @ 8.255 cm, 388.2 g x1.15 = 446.4 -> 450 g",
+   "do": [
+    [
+     "fill",
+     "[data-field=cap]",
+     "0.35"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g",
+    "Wet size: 9.3 cm wide, 10.3 cm tall",
+    "Read 0.35 as 0.35 litres (350 ml)."
+   ]
+  },
+  {
+   "name": "80 typed as cm width is read as mm",
+   "do": [
+    [
+     "fill",
+     "[data-field=cap]",
+     "350"
+    ],
+    [
+     "fill",
+     "[data-field=d]",
+     "80"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g",
+    "Fired: 8.0 cm wide, 9.8 cm tall",
+    "Read 80 as 80 mm (8.0 cm)."
+   ]
+  },
+  {
+   "name": "in·lb after the mm slip converts 8 cm, not 80: 454.9 g -> 1 lb 0 oz",
+   "do": [
+    [
+     "click",
+     "[data-units=imperial]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1 lb 0 oz (450 g)",
+    "Fired: 3.1 in wide, 3.9 in tall, holds 11.8 US fl oz"
+   ],
+   "absent": [
+    "Read",
+    "13.2 in"
+   ]
+  },
+  {
+   "name": "back to cm·g shows 8 cm",
+   "do": [
+    [
+     "click",
+     "[data-units=metric]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g",
+    "Fired: 8.0 cm wide, 9.8 cm tall, holds 350 ml"
+   ],
+   "absent": [
+    "Read 80"
+   ]
+  },
+  {
+   "name": "blank capacity names what's missing",
+   "do": [
+    [
+     "fill",
+     "[data-field=cap]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your capacity."
+   ],
+   "absent": [
+    "Weigh out"
+   ]
+  },
+  {
+   "name": "two things missing",
+   "do": [
+    [
+     "fill",
+     "[data-field=d]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your capacity and width."
+   ]
+  },
+  {
+   "name": "filled back in",
+   "do": [
+    [
+     "fill",
+     "[data-field=cap]",
+     "350"
+    ],
+    [
+     "fill",
+     "[data-field=d]",
+     "8"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g"
+   ]
+  },
+  {
+   "name": "THICKNESS pre-fills 6 mm for a mug",
+   "expect": [
+    "Weigh out: 450 g"
+   ]
+  },
+  {
+   "name": "THICKNESS 7 mm: 350 ml @ 8 cm, clay 244.5 cm3 = 476.8 g, x1.15 = 548.3 -> 550 g; wet 9.0 x 11.7",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "7"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 550 g",
+    "Wet size: 9.0 cm wide, 11.7 cm tall",
+    "Fired: 8.0 cm wide, 10.4 cm tall"
+   ]
+  },
+  {
+   "name": "THICKNESS in·lb shows 0.28 in, same pot: 548.3 g = 19.3 oz -> 1 lb 3 oz",
+   "do": [
+    [
+     "click",
+     "[data-units=imperial]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1 lb 3 oz (550 g)"
+   ],
+   "absent": [
+    "Read"
+   ]
+  },
+  {
+   "name": "THICKNESS 7 typed in the inch box is read as mm",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "7"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1 lb 3 oz (550 g)",
+    "Read 7 as 7 mm (0.28 in)."
+   ]
+  },
+  {
+   "name": "THICKNESS back to cm·g keeps 7 mm",
+   "do": [
+    [
+     "click",
+     "[data-units=metric]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 550 g"
+   ],
+   "absent": [
+    "Read"
+   ]
+  },
+  {
+   "name": "THICKNESS 0.7 in the mm box is read as cm",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "0.7"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 550 g",
+    "Read 0.7 as 0.7 cm (7 mm)."
+   ]
+  },
+  {
+   "name": "THICKNESS negative",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "-3"
+    ]
+   ],
+   "expect": [
+    "The thickness can't be negative."
+   ],
+   "absent": [
+    "Weigh out"
+   ]
+  },
+  {
+   "name": "THICKNESS blank",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your thickness."
+   ]
+  },
+  {
+   "name": "THICKNESS default 6 typed back: 450 g",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "6"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g"
+   ]
+  },
+  {
+   "name": "HOW MANY 6 mugs: 6 x 550 g = 3,300 g = 3.3 kg; 3,329 g / 12,500 g = 0.27 of a bag -> about a quarter",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "6"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g for the mug + about 100 g for the handle = 550 g in all",
+    "For 6 mugs: 6 × 550 g = 3.3 kg",
+    "That's about a quarter of a 12.5 kg bag."
+   ]
+  },
+  {
+   "name": "HOW MANY 6 in in·lb: 554.9 g = 19.6 -> 20 oz = 1 lb 4 oz; 6 x 20 oz = 120 oz = 7.5 lb (3,401.9 g = 3.4 kg)",
+   "do": [
+    [
+     "click",
+     "[data-units=imperial]"
+    ]
+   ],
+   "expect": [
+    "For 6 mugs: 6 × 1 lb 4 oz = 7.5 lb (3.4 kg)",
+    "That's about a quarter of a 12.5 kg (27.6 lb) bag."
+   ]
+  },
+  {
+   "name": "HOW MANY 2.5 read as 3: 3 x 550 = 1,650 g = 1.7 kg; 0.133 of a bag -> an eighth",
+   "do": [
+    [
+     "click",
+     "[data-units=metric]"
+    ],
+    [
+     "fill",
+     "[data-role=count]",
+     "2.5"
+    ]
+   ],
+   "expect": [
+    "Read 2.5 as 3 mugs.",
+    "For 3 mugs: 3 × 550 g = 1.7 kg",
+    "That's about an eighth of a 12.5 kg bag."
+   ]
+  },
+  {
+   "name": "HOW MANY 30: 30 x 550 = 16,500 g = 16.5 kg; 1.33 bags -> about 1½",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "30"
+    ]
+   ],
+   "expect": [
+    "For 30 mugs: 30 × 550 g = 16.5 kg",
+    "That's about 1½ bags of 12.5 kg."
+   ]
+  },
+  {
+   "name": "HOW MANY 22: 0.98 of a bag -> about one bag",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "22"
+    ]
+   ],
+   "expect": [
+    "For 22 mugs: 22 × 550 g = 12.1 kg",
+    "That's about one 12.5 kg bag."
+   ]
+  },
+  {
+   "name": "HOW MANY 0",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "0"
+    ]
+   ],
+   "expect": [
+    "Make that at least 1 pot."
+   ],
+   "absent": [
+    "Weigh out"
+   ]
+  },
+  {
+   "name": "HOW MANY negative",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "-2"
+    ]
+   ],
+   "expect": [
+    "The number of pots can't be negative."
+   ]
+  },
+  {
+   "name": "HOW MANY huge",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "5000"
+    ]
+   ],
+   "expect": [
+    "That's more than 1,000 pots: check the number."
+   ]
+  },
+  {
+   "name": "HOW MANY blank",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your number of pots."
+   ]
+  },
+  {
+   "name": "HOW MANY back to 1: single-pot results only",
+   "do": [
+    [
+     "fill",
+     "[data-role=count]",
+     "1"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g for the mug + about 100 g for the handle = 550 g in all"
+   ],
+   "absent": [
+    "For 1",
+    "bag"
+   ]
+  },
+  {
+   "name": "negative width",
+   "do": [
+    [
+     "fill",
+     "[data-field=d]",
+     "-8"
+    ]
+   ],
+   "expect": [
+    "The width can't be negative."
+   ],
+   "absent": [
+    "Enter your"
+   ]
+  },
+  {
+   "name": "too narrow",
+   "do": [
+    [
+     "fill",
+     "[data-field=d]",
+     "1"
+    ]
+   ],
+   "expect": [
+    "That's too narrow for this thickness: check the width and thickness."
+   ],
+   "absent": [
+    "Weigh out"
+   ]
+  },
+  {
+   "name": "width 8",
+   "do": [
+    [
+     "fill",
+     "[data-field=d]",
+     "8"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g"
+   ]
+  },
+  {
+   "name": "porcelain typed as 13%: 412.2 g x1.15 = 474.0 -> 470 g",
+   "do": [
+    [
+     "fill",
+     "[data-role=shrink]",
+     "13"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 470 g",
+    "Wet size: 9.2 cm wide, 11.2 cm tall"
+   ]
+  },
+  {
+   "name": "earthenware typed as 7%: 365.4 g x1.15 = 420.2 -> 420 g",
+   "do": [
+    [
+     "fill",
+     "[data-role=shrink]",
+     "7"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 420 g"
+   ]
+  },
+  {
+   "name": "own 12%: 403.7 g x1.15 = 464.3 -> 460 g",
+   "do": [
+    [
+     "fill",
+     "[data-role=shrink]",
+     "12"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 460 g",
+    "Wet size: 9.1 cm wide, 11.1 cm tall"
+   ]
+  },
+  {
+   "name": "0.12 read as 12%",
+   "do": [
+    [
+     "fill",
+     "[data-role=shrink]",
+     "0.12"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 460 g",
+    "Read 0.12 as 12% shrinkage."
+   ]
+  },
+  {
+   "name": "20% warns: 552.3 -> 550 g",
+   "do": [
+    [
+     "fill",
+     "[data-role=shrink]",
+     "20"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 550 g",
+    "20% is unusually high: most clays shrink about 5–15%, so check your figure."
+   ]
+  },
+  {
+   "name": "30% refused",
+   "do": [
+    [
+     "fill",
+     "[data-role=shrink]",
+     "30"
+    ]
+   ],
+   "expect": [
+    "30% is unusually high: most clays shrink about 5–15%, so check your figure."
+   ],
+   "absent": [
+    "Weigh out"
+   ]
+  },
+  {
+   "name": "negative shrinkage",
+   "do": [
+    [
+     "fill",
+     "[data-role=shrink]",
+     "-5"
+    ]
+   ],
+   "expect": [
+    "Shrinkage can't be negative."
+   ],
+   "absent": [
+    "Enter your"
+   ]
+  },
+  {
+   "name": "blank shrinkage",
+   "do": [
+    [
+     "fill",
+     "[data-role=shrink]",
+     ""
+    ]
+   ],
+   "expect": [
+    "Enter your shrinkage."
+   ]
+  },
+  {
+   "name": "0%: wet = fired, 320.9 g x1.15 = 369.1 -> 370 g",
+   "do": [
+    [
+     "fill",
+     "[data-role=shrink]",
+     "0"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 370 g",
+    "Wet size: 8.0 cm wide, 10.2 cm tall",
+    "With 0% shrinkage, the fired sizes are the wet sizes."
+   ]
+  },
+  {
+   "name": "11% again; clicking selected buttons changes nothing",
+   "do": [
+    [
+     "fill",
+     "[data-role=shrink]",
+     "11"
+    ],
+    [
+     "click",
+     "[data-units=metric]"
+    ],
+    [
+     "click",
+     "[data-method=throw]"
+    ],
+    [
+     "click",
+     "[data-by=cap]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 450 g",
+    "holds 350 ml"
+   ]
+  },
+  {
+   "name": "BOWL 15 x 7 cm, 8/8 mm, 25%: caps 1132.1 - 830.2 = 301.9 cm3 = 588.6 g, x1.25 = 735.8 -> 740 g; holds 585 ml",
+   "do": [
+    [
+     "click",
+     "[data-by=height]"
+    ],
+    [
+     "select",
+     "[data-role=form]",
+     "bowl"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 740 g",
+    "Wet size: 16.9 cm wide, 7.9 cm tall",
+    "Fired: 15.0 cm wide, 7.0 cm tall, holds 585 ml",
+    "Adds 25% for throwing and trimming (calibrated to Lakeside Pottery's chart).",
+    "Holds about 445 ml to 1 cm below the rim"
+   ],
+   "absent": [
+    "for the handle"
+   ]
+  },
+  {
+   "name": "bowl by capacity 585 ml solves back to 7.0 cm deep",
+   "do": [
+    [
+     "click",
+     "[data-by=cap]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 740 g",
+    "Fired: 15.0 cm wide, 7.0 cm tall, holds 585 ml"
+   ]
+  },
+  {
+   "name": "PLATE 27 x 2.5 cm, one 9 mm thickness, 30%: base 431.9 + rim 309.2 = 741.1 cm3 = 1445.2 g, x1.30 = 1878.7 -> 1,880 g",
+   "do": [
+    [
+     "select",
+     "[data-role=form]",
+     "plate"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1,880 g",
+    "Wet size: 30.3 cm wide, 2.8 cm tall",
+    "Fired: 27.0 cm wide, 2.5 cm tall",
+    "Adds 30% for throwing and trimming"
+   ],
+   "absent": [
+    "holds",
+    "for the handle",
+    "below the rim",
+    "for the handle"
+   ]
+  },
+  {
+   "name": "plate handbuilt 10%: 1445.2 x 1.1 = 1589.7 -> 1,590 g",
+   "do": [
+    [
+     "click",
+     "[data-method=hand]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1,590 g"
+   ]
+  },
+  {
+   "name": "plate thrown, in·lb: 1878.7 g = 66.3 oz -> 4 lb 2 oz; 9 mm shows as 0.35 in",
+   "do": [
+    [
+     "click",
+     "[data-method=throw]"
+    ],
+    [
+     "click",
+     "[data-units=imperial]"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 4 lb 2 oz (1,880 g)"
+   ]
+  },
+  {
+   "name": "plate 13%: 1512.4 g x1.3 = 1966.1 -> 1,970 g",
+   "do": [
+    [
+     "click",
+     "[data-units=metric]"
+    ],
+    [
+     "fill",
+     "[data-role=shrink]",
+     "13"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1,970 g",
+    "Wet size: 31.0 cm wide, 2.9 cm tall"
+   ]
+  },
+  {
+   "name": "plate 14 cm tall is a bowl",
+   "do": [
+    [
+     "fill",
+     "[data-role=shrink]",
+     "11"
+    ],
+    [
+     "fill",
+     "[data-field=h]",
+     "14"
+    ]
+   ],
+   "expect": [
+    "That's deep for a plate. For anything deeper than half its width, pick Bowl."
+   ]
+  },
+  {
+   "name": "plate back to 2.5 cm",
+   "do": [
+    [
+     "fill",
+     "[data-field=h]",
+     "2.5"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1,880 g"
+   ]
+  },
+  {
+   "name": "VASE 1 litre @ 12 cm: 560.0 cm3 = 1092.0 g, x1.25 = 1365.0 -> 1,370 g",
+   "do": [
+    [
+     "select",
+     "[data-role=form]",
+     "vase"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1,370 g",
+    "Wet size: 13.5 cm wide, 20.8 cm tall",
+    "Fired: 12.0 cm wide, 18.5 cm tall, holds 1 litre",
+    "Holds about 990 ml to 1 cm below the rim"
+   ]
+  },
+  {
+   "name": "CYLINDER 1 litre @ 11 cm: 549.2 cm3 = 1071.0 g, x1.25 = 1338.7 -> 1,340 g",
+   "do": [
+    [
+     "select",
+     "[data-role=form]",
+     "cylinder"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1,340 g",
+    "Wet size: 12.4 cm wide, 16.4 cm tall",
+    "Fired: 11.0 cm wide, 14.6 cm tall, holds 1 litre",
+    "Holds about 930 ml to 1 cm below the rim"
+   ]
+  },
+  {
+   "name": "BIG BOWL 30 x 14 cm: 1269.8 cm3 = 2476.1 g, x1.25 = 3095.1 -> 3,100 g; holds 5.49 litres",
+   "do": [
+    [
+     "select",
+     "[data-role=form]",
+     "bowl"
+    ],
+    [
+     "click",
+     "[data-by=height]"
+    ],
+    [
+     "fill",
+     "[data-field=d]",
+     "30"
+    ],
+    [
+     "fill",
+     "[data-field=h]",
+     "14"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 3,100 g",
+    "Wet size: 33.7 cm wide, 15.7 cm tall",
+    "holds 5.49 litres"
+   ]
+  },
+  {
+   "name": "CUP 7.5 x 7 cm: 140.7 cm3 = 274.3 g, x1.15 = 315.4 -> 320 g; holds 210 ml; no handle",
+   "do": [
+    [
+     "select",
+     "[data-role=form]",
+     "cup"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 320 g",
+    "Wet size: 8.4 cm wide, 7.9 cm tall",
+    "Fired: 7.5 cm wide, 7.0 cm tall, holds 210 ml"
+   ],
+   "absent": [
+    "for the handle"
+   ]
+  },
+  {
+   "name": "OWN THICKNESS 5 mm on the cup: 7.5 x 7 cm, 119.6 cm3 = 233.2 g, x1.15 = 268.2 -> 270 g; holds 225 ml",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "5"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 270 g",
+    "holds 225 ml"
+   ]
+  },
+  {
+   "name": "OWN THICKNESS is kept when switching to a mug: 8 x 10 cm at 5 mm, 174.9 cm3 = 341.0 g, x1.15 = 392.2 -> 390 g",
+   "do": [
+    [
+     "select",
+     "[data-role=form]",
+     "mug"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 390 g",
+    "Fired: 8.0 cm wide, 10.0 cm tall, holds 380 ml"
+   ]
+  },
+  {
+   "name": "typing the mug default 6 back: 8 x 10 cm, 206.3 cm3 = 402.2 g, x1.15 = 462.5 -> 460 g",
+   "do": [
+    [
+     "fill",
+     "[data-field=t]",
+     "6"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 460 g",
+    "holds 355 ml"
+   ]
+  },
+  {
+   "name": "now a default again, so the plate pre-fills 9 mm: 1,880 g",
+   "do": [
+    [
+     "select",
+     "[data-role=form]",
+     "plate"
+    ]
+   ],
+   "expect": [
+    "Weigh out: 1,880 g"
+   ]
+  }
+ ]
+}
