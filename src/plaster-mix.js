@@ -12,7 +12,7 @@
  * and the water (volume) to mix, plus extra for what sticks to the bucket. No shapes or sizes.
  *
  * The maths:
- *   mix (ml)       = volume to fill x 1.10            10% extra for what stays in the bucket and on the tools
+ *   mix (ml)       = volume to fill x (1 + extra/100) extra for what stays in the bucket and on the tools, default 10%
  *   plaster (g)    = mix / (C/100 + 1/2.69)           C = parts water per 100 parts plaster, by weight
  *   water (ml = g) = plaster x C/100
  *
@@ -35,7 +35,8 @@
  * - Typed ratios ("Custom plaster"): under 1 is a fraction (0.7 = 70); 1 to 2 is kg of plaster per litre of water
  *   (1.3 = 76.9); anything else outside 20 to 100 is refused.
  * - Volume slips: over 100 litres, or under 5 ml, stops and asks (e.g. 2350 typed with litres selected).
- * - 10% extra: our own allowance for plaster left in the bucket and on tools, not a maker's figure.
+ * - 10% extra (default, adjustable): our own allowance for plaster left in the bucket and on tools, not a maker's
+ *   figure. 0 is allowed; under 1 is read as a fraction (0.1 = 10%); over 50% gets a note.
  * Full list with quotes: Ceramind Tools/Website/Calculators/Plaster Mix/sources.md
  */
 (function () {
@@ -48,7 +49,8 @@
 /*@SHARED_JS@*/
 
   var PLASTER_SG = 2.69;   // g per ml of the plaster powder once wet (from USG's wet density, see above)
-  var EXTRA = 10;          // % extra for what stays in the bucket and on the tools
+  var EXTRA = 10;          // default % extra for what stays in the bucket and on the tools (people can change it)
+  var EXTRA_WARN = 50;     // above this, say it's a lot (still worked out)
   var TO_ML = { l: 1000, ml: 1 };
   var NB = ' ';       // keeps "2.35 litres" together when a line wraps
   var MAX_ML = 100000;     // over 100 litres (about 95 kg of plaster): stop and ask, it's almost always a unit slip
@@ -117,6 +119,10 @@
       + '    <input type="number" id="' + f('ratio') + '" data-role="ratio" min="0" step="1" value="68" inputmode="decimal">'
       + '  </div>'
       + '  <p class="cm-hint cm-ratio-hint" data-custom hidden>Your plaster\'s bag or datasheet gives this. It\'s often written 100:70, which means 70 g (ml) of water for every 100 g of plaster.</p>'
+      + '  <div class="cm-row">'
+      + '    <label class="cm-label" for="' + f('extra') + '">Extra for the bucket (%)</label>'
+      + '    <input type="number" id="' + f('extra') + '" data-role="extra" min="0" max="100" step="1" value="' + EXTRA + '" inputmode="decimal">'
+      + '  </div>'
       + '  <div class="cm-results">'
       + '    <p class="cm-results-title">Mix this:</p>'
       + '    <ul class="cm-results-list"></ul>'
@@ -175,6 +181,7 @@
     var plaster = q('[data-role="plaster"]');
     var info = q('[data-role="info"]');
     var ratio = q('[data-role="ratio"]');
+    var extraIn = q('[data-role="extra"]');
     var list = q('.cm-results-list');
     var note = q('[data-role="note"]');
     var sr = q('[data-role="sr"]');
@@ -266,10 +273,18 @@
         }
       }
 
+      // Extra for the bucket: 0 is fine; under 1 is a fraction (0.1 = 10%).
+      var e = parseFloat(extraIn.value);
+      if (e > 0 && e < 1) {
+        notes.push('Read ' + extraIn.value + ' as ' + ratioText(e * 100) + '%.');
+        e = e * 100;
+      }
+
       var v = num(volIn);
       var missing = [];
       if (isNaN(v)) missing.push('the volume to fill');
       if (isNaN(c)) missing.push('your water per 100 g of plaster');
+      if (isNaN(e) || e < 0) missing.push('the extra for the bucket (0 for none)');
       if (missing.length) {
         stop('Enter ' + joinAnd(missing) + '.');
         return;
@@ -292,7 +307,7 @@
         return;
       }
 
-      var mix = space * (1 + EXTRA / 100);
+      var mix = space * (1 + e / 100);
       var dry = mix / (c / 100 + 1 / PLASTER_SG);
       var water = dry * c / 100;
 
@@ -300,7 +315,9 @@
       line('Plaster: ' + grams(dry));
       line('Water: ' + waterText(water));
 
-      notes.push('Includes ' + EXTRA + '% extra for what stays in the bucket and on the tools. Based on ');
+      if (e > EXTRA_WARN) notes.push(ratioText(e) + '% extra is a lot. Check that\'s what you meant.');
+      notes.push((e > 0 ? 'Includes ' + ratioText(e) + '% extra for what stays in the bucket and on the tools.'
+        : 'No extra included for the bucket and tools.') + ' Based on ');
       textWithLink(note, notes.join(' '), 'USG plaster data', USG, '.');
       announce('Mix ' + grams(dry) + ' of plaster with ' + waterText(water) + ' of water.');
     }
@@ -336,7 +353,7 @@
       render();
     });
 
-    [volIn, ratio].forEach(function (el) {
+    [volIn, ratio, extraIn].forEach(function (el) {
       el.addEventListener('input', render);
     });
 

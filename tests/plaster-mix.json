@@ -28,6 +28,14 @@
     {"name": "wedging slab 30 litres: 33000 / 1.051747 = 31.4 kg plaster, 21.3 litres water", "do": [["click", "[data-unit=l]"], ["fill", "[data-role=vol]", "30"]], "expect": ["Plaster: 31.4 kg", "Water: 21.3 litres"]},
     {"name": "half a litre: 550 / 1.051747 = 522.9 g, water 355.6 ml", "do": [["fill", "[data-role=vol]", "0.5"]], "expect": ["Plaster: 523 g", "Water: 356 ml"]},
     {"name": "3 ml in litres is too small to be real", "do": [["fill", "[data-role=vol]", "0.003"]], "expect": ["Only 3 ml. Check the volume."], "absent": ["Plaster:"]},
-    {"name": "negative volume is named", "do": [["fill", "[data-role=vol]", "-2"]], "expect": ["Enter the volume to fill."]}
+    {"name": "negative volume is named", "do": [["fill", "[data-role=vol]", "-2"]], "expect": ["Enter the volume to fill."]},
+    {"name": "back to 2.35 litres of Potters Plaster at the default 10%", "do": [["fill", "[data-role=vol]", "2.35"]], "expect": ["Plaster: 2,458 g", "Water: 1,671 ml", "Includes 10% extra for what stays in the bucket and on the tools."]},
+    {"name": "15% extra: 2350 x 1.15 = 2702.5 / 1.051747 = 2569.5 g, water 1747.3 ml", "do": [["fill", "[data-role=extra]", "15"]], "expect": ["Plaster: 2,570 g", "Water: 1,747 ml", "Includes 15% extra for what stays in the bucket and on the tools."]},
+    {"name": "no extra: 2350 / 1.051747 = 2234.4 g, water 1519.4 ml", "do": [["fill", "[data-role=extra]", "0"]], "expect": ["Plaster: 2,234 g", "Water: 1,519 ml", "No extra included for the bucket and tools."], "absent": ["Includes"]},
+    {"name": "0.1 is read as 10%", "do": [["fill", "[data-role=extra]", "0.1"]], "expect": ["Read 0.1 as 10%.", "Plaster: 2,458 g", "Water: 1,671 ml", "Includes 10% extra"]},
+    {"name": "60% is worked out but flagged: 2350 x 1.6 = 3760 / 1.051747 = 3575.0 g, water 2431.0 ml", "do": [["fill", "[data-role=extra]", "60"]], "expect": ["Plaster: 3,575 g", "Water: 2,431 ml", "60% extra is a lot. Check that's what you meant.", "Includes 60% extra"]},
+    {"name": "blank extra is named", "do": [["fill", "[data-role=extra]", ""]], "expect": ["Enter the extra for the bucket (0 for none)."], "absent": ["Plaster:"]},
+    {"name": "negative extra is named", "do": [["fill", "[data-role=extra]", "-5"]], "expect": ["Enter the extra for the bucket (0 for none)."], "absent": ["Plaster:"]},
+    {"name": "back to 10% gives the default answer again", "do": [["fill", "[data-role=extra]", "10"]], "expect": ["Plaster: 2,458 g", "Water: 1,671 ml"]}
   ]
 }
