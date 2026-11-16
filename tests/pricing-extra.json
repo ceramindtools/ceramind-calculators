@@ -27,6 +27,135 @@
    ]
   },
   {
+   "name": "More options is shut by default, the rest is on show",
+   "in": ".cm-card",
+   "expect": [
+    "Clay (£)",
+    "Glaze (£)",
+    "Bisque (£)",
+    "Glaze firing (£)",
+    "Hours on this piece",
+    "Hourly rate (£)",
+    "Overhead %",
+    "Profit %",
+    "VAT registered",
+    "More options"
+   ],
+   "absent": [
+    "Shopify plan",
+    "Card reader fee %",
+    "Round prices up to",
+    "Retail = wholesale"
+   ],
+   "hidden": [
+    "[data-role=mult]",
+    "[data-role=round]",
+    "[data-role=shopify]",
+    "[data-role=reader]",
+    "[data-role=readerpct]"
+   ],
+   "visible": [
+    "[data-role=more]"
+   ],
+   "attrs": [
+    [
+     "[data-role=more]",
+     "aria-expanded",
+     "false"
+    ]
+   ]
+  },
+  {
+   "name": "Enter on More options opens it",
+   "do": [
+    [
+     "press",
+     "[data-role=more]",
+     "Enter"
+    ]
+   ],
+   "in": ".cm-card",
+   "expect": [
+    "Retail = wholesale ×",
+    "Round prices up to",
+    "Shopify plan",
+    "Card reader fee %"
+   ],
+   "visible": [
+    "[data-role=mult]",
+    "[data-role=round]",
+    "[data-role=shopify]",
+    "[data-role=reader]",
+    "[data-role=readerpct]"
+   ],
+   "attrs": [
+    [
+     "[data-role=more]",
+     "aria-expanded",
+     "true"
+    ]
+   ]
+  },
+  {
+   "name": "Space shuts it again",
+   "do": [
+    [
+     "press",
+     "[data-role=more]",
+     "Space"
+    ]
+   ],
+   "hidden": [
+    "[data-role=mult]",
+    "[data-role=round]",
+    "[data-role=shopify]",
+    "[data-role=reader]",
+    "[data-role=readerpct]"
+   ],
+   "attrs": [
+    [
+     "[data-role=more]",
+     "aria-expanded",
+     "false"
+    ]
+   ]
+  },
+  {
+   "name": "results are the same with the options shut",
+   "in": ".cm-results",
+   "expect": [
+    "Cost to make: £10.24",
+    "Wholesale: £18.00 (£7.76 profit)",
+    "Retail: £36.00 (2 × wholesale)",
+    "Etsy: £5.16 in fees, £20.60 profit",
+    "Shopify: 97p in fees, £24.79 profit",
+    "Card reader (SumUp): 61p in fees, £25.15 profit"
+   ]
+  },
+  {
+   "name": "a click opens it",
+   "do": [
+    [
+     "click",
+     "[data-role=more]"
+    ]
+   ],
+   "visible": [
+    "[data-role=mult]",
+    "[data-role=round]",
+    "[data-role=shopify]",
+    "[data-role=reader]",
+    "[data-role=readerpct]"
+   ],
+   "attrs": [
+    [
+     "[data-role=more]",
+     "aria-expanded",
+     "true"
+    ]
+   ]
+  },
+  {
    "name": "hints and disclaimer link their sources (£)",
    "in": ".cm-card",
    "links": [

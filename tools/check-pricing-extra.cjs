@@ -4,7 +4,7 @@
 //
 //   node tools/check-pricing-extra.cjs <url> tests/pricing-extra.json
 //
-// Each case: { "name", "do": [[select|fill|click, sel, value]], "wait": ms, "in": selector (inside the root),
+// Each case: { "name", "do": [[select|fill|click|press, sel, value]], "attrs": [[sel, attribute, value]], "wait": ms, "in": selector (inside the root),
 //              "expect": [...], "absent": [...], "hidden": [selectors], "visible": [selectors],
 //              "links": [[link text, part of its href]] }
 const path = require("path");
@@ -37,6 +37,7 @@ const { chromium } = require(PW);
       if (act === "select") await el.selectOption(String(val));
       else if (act === "fill") await el.fill(String(val));
       else if (act === "click") await el.click();
+      else if (act === "press") await el.press(String(val));
     }
     if (c.wait) await page.waitForTimeout(c.wait);
     const text = c.in ? (await root.locator(c.in).first().innerText()).replace(/\s+/g, " ") : "";
@@ -44,6 +45,10 @@ const { chromium } = require(PW);
     const wrong = (c.absent || []).filter(t => text.includes(t));
     for (const s of c.hidden || []) if (await root.locator(s).first().isVisible()) wrong.push("visible: " + s);
     for (const s of c.visible || []) if (!(await root.locator(s).first().isVisible())) missing.push("hidden: " + s);
+    for (const [sel, attr, want] of c.attrs || []) {
+      const got = await root.locator(sel).first().getAttribute(attr);
+      if (got !== want) wrong.push(sel + " " + attr + "=" + got);
+    }
     if (c.links) {
       // every [text, part of href] must be a visible link that opens in a new tab with rel="noopener"
       const anchors = await root.locator(c.in || ":scope").first().evaluate(box => [...box.querySelectorAll("a")]

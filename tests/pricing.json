@@ -48,11 +48,15 @@
    ]
   },
   {
-   "name": "VAT off, Shopify Grow 1.7% + 25p",
+   "name": "VAT off, open More options, Shopify Grow 1.7% + 25p",
    "do": [
     [
      "click",
      "[data-vat=no]"
+    ],
+    [
+     "click",
+     "[data-role=more]"
     ],
     [
      "select",

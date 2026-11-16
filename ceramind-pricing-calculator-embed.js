@@ -164,6 +164,13 @@
     + '.cm-calc.cm-pricing .cm-dim { display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; }'
     + '.cm-calc.cm-pricing .cm-group .cm-hint { margin: 0 0 0.2rem; }'
     + '.cm-calc.cm-pricing .cm-group .cm-row + .cm-hint { margin-top: -0.4rem; }'
+    + '.cm-calc.cm-pricing .cm-more { border-top: 1px solid var(--cm-border); padding-top: 0.6rem; margin: 0 0 1.1rem; }'
+    + '.cm-calc.cm-pricing .cm-more-btn { display: inline-flex; align-items: center; gap: 0.5rem; font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--cm-brand); background: none; border: 0; padding: 0.3rem 0; margin: 0; cursor: pointer; }'
+    + '.cm-calc.cm-pricing .cm-more-btn::after { content: ""; width: 0.45rem; height: 0.45rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-0.15rem) rotate(45deg); transition: transform 0.15s ease; }'
+    + '.cm-calc.cm-pricing .cm-more-btn[aria-expanded="true"]::after { transform: translateY(0.1rem) rotate(-135deg); }'
+    + '.cm-calc.cm-pricing .cm-more-btn:focus-visible { outline: 2px solid var(--cm-brand); outline-offset: 2px; }'
+    + '.cm-calc.cm-pricing .cm-more-panel { padding-top: 0.8rem; }'
+    + '.cm-calc.cm-pricing .cm-more-panel .cm-hint { margin: -0.4rem 0 0; }'
     + '.cm-calc.cm-pricing .cm-results-list + .cm-results-title { margin-top: 0.9rem; }'
     + '.cm-calc.cm-pricing .cm-results-list li { line-height: 1.35; }'
     + '.cm-calc.cm-pricing .cm-split { background: #fff; border: 1px solid var(--cm-border); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1.1rem; }'
@@ -244,19 +251,8 @@
       + '    <div class="cm-dims">'
       +        dim('overhead', 'Overhead %', '15', { step: '1' })
       +        dim('profit', 'Profit %', '75', { step: '5' })
-      +        dim('mult', 'Retail ×', '2', { step: '0.1' })
       + '    </div>'
-      + '    <p class="cm-hint">Overhead is studio rent, power, tools, insurance and stall fees, as a % of the costs above. Cost plus profit is your wholesale price. Shops usually sell at 2 × wholesale (Retail × 2), as ' + link(LINKS.keystone, 'Cornelia McCarthy\'s pricing guide') + ' explains, so charge that retail price everywhere you sell.</p>'
-      + '    <div class="cm-row">'
-      + '      <label class="cm-label" for="' + f('round') + '">Round prices up to</label>'
-      + '      <select id="' + f('round') + '" data-role="round">'
-      + '        <option value="0">No rounding</option>'
-      + '        <option value="0.1">10p</option>'
-      + '        <option value="0.5">50p</option>'
-      + '        <option value="1" selected>£1</option>'
-      + '        <option value="5">£5</option>'
-      + '      </select>'
-      + '    </div>'
+      + '    <p class="cm-hint">Overhead is studio rent, power, tools, insurance and stall fees, as a % of the costs above. Cost plus profit is your wholesale price. Retail is 2 × wholesale (you can change that under More options), because shops usually sell at double, as ' + link(LINKS.keystone, 'Cornelia McCarthy\'s pricing guide') + ' explains. Charge that retail price everywhere you sell.</p>'
       + '    <div class="cm-row" data-uk>'
       + '      <span class="cm-label">VAT registered</span>'
       + '      <div class="cm-unit-toggle" role="group" aria-label="VAT registered">'
@@ -267,8 +263,24 @@
       + '    <p class="cm-hint" data-uk>Only VAT-registered sellers add VAT, at the ' + link(LINKS.vatRates, '20% standard rate') + '. ' + link(LINKS.vatRegister, 'GOV.UK') + ' says you must register once your taxable turnover goes over £90,000 in 12 months. If you\'re registered, enter your costs without VAT.</p>'
       + '  </div>'
 
-      + '  <div class="cm-group" role="group" aria-labelledby="' + f('g5') + '">'
-      + '    <p class="cm-group-title" id="' + f('g5') + '">Selling fees</p>'
+      // Settings most potters can leave alone: shut until asked for
+      + '  <div class="cm-more">'
+      + '    <button type="button" class="cm-more-btn" data-role="more" aria-expanded="false" aria-controls="' + f('more') + '">More options</button>'
+      + '    <div class="cm-more-panel" id="' + f('more') + '" data-role="more-panel" hidden>'
+      + '    <div class="cm-row">'
+      + '      <label class="cm-label" for="' + f('mult') + '">Retail = wholesale ×</label>'
+      + '      <input type="number" id="' + f('mult') + '" data-role="mult" min="0" step="0.1" value="2" inputmode="decimal">'
+      + '    </div>'
+      + '    <div class="cm-row">'
+      + '      <label class="cm-label" for="' + f('round') + '">Round prices up to</label>'
+      + '      <select id="' + f('round') + '" data-role="round">'
+      + '        <option value="0">No rounding</option>'
+      + '        <option value="0.1">10p</option>'
+      + '        <option value="0.5">50p</option>'
+      + '        <option value="1" selected>£1</option>'
+      + '        <option value="5">£5</option>'
+      + '      </select>'
+      + '    </div>'
       + '    <div class="cm-row">'
       + '      <label class="cm-label" for="' + f('shopify') + '">Shopify plan</label>'
       + '      <select id="' + f('shopify') + '" data-role="shopify"></select>'
@@ -282,6 +294,7 @@
       + '      <input type="number" id="' + f('readerpct') + '" data-role="readerpct" min="0" max="100" step="0.01" inputmode="decimal">'
       + '    </div>'
       + '    <p class="cm-hint" data-role="fee-hint"></p>'
+      + '    </div>'
       + '  </div>'
 
       + '  <div class="cm-results">'
@@ -343,7 +356,7 @@
     var el = {};
     ['clay', 'glaze', 'other', 'bisque', 'glazefire', 'extra', 'hours', 'rate', 'overhead', 'profit', 'mult',
       'round', 'shopify', 'reader', 'readerpct', 'prices', 'channels', 'sell-title', 'note', 'split', 'split-title',
-      'bar', 'split-list', 'sr', 'fee-hint', 'example', 'example-text'].forEach(function (r) { el[r] = q('[data-role="' + r + '"]'); });
+      'bar', 'split-list', 'sr', 'fee-hint', 'example', 'example-text', 'more', 'more-panel'].forEach(function (r) { el[r] = q('[data-role="' + r + '"]'); });
 
     function fmt(n, dp) {
       return n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp });
@@ -689,6 +702,12 @@
         setPressed(qa('[data-view]'), 'data-view', view);
         render();
       });
+    });
+
+    el.more.addEventListener('click', function () {
+      var open = el.more.getAttribute('aria-expanded') !== 'true';
+      el.more.setAttribute('aria-expanded', open ? 'true' : 'false');
+      el['more-panel'].hidden = !open;
     });
 
     el.reader.addEventListener('change', function () {
