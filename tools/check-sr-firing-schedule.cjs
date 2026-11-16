@@ -13,6 +13,7 @@ const { chromium } = require(PW);
   const root = p.locator(".ceramind-firing-schedule-calculator[data-ceramind-init=true]").first();
   await root.waitFor({ timeout: 30000 });
   const sr = root.locator("[data-role=sr]");
+  await root.locator("[data-role=more]").click();   // the hold and top temperature live under More options
   const cases = [];
   async function check(name, act, want, notWant) {
     await act();

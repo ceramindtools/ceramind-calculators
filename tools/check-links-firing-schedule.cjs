@@ -24,6 +24,7 @@ const DF = "https://digitalfire.com/schedule/";
     ["mid-fire slow cool", [["select", "[data-role=cool]", "slow"]], { "C6DHSC schedule": DF + "c6dhsc", "Digitalfire": DF + "c6dhsc" }],
     ["earthenware slow cool", [["select", "[data-role=firing]", "earthenware"]], { "C04PLTP schedule": DF + "c04pltp", "04DSDH schedule": DF + "04dsdh" }]
   ];
+  await root.locator("[data-role=more]").click();   // cooling lives under More options
   const out = [];
   for (const [name, acts, want] of states) {
     for (const [act, sel, val] of acts) {

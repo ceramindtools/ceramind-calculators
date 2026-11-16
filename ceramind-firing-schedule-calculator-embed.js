@@ -22,6 +22,9 @@
  *   (cone 04: 13 h 26, 9 h 38, 6 h 54, 4 h 6; cone 6: 10 h 54, 7 h 37, 4 h 36).
  * - Damp ware: Bartlett preheat, 60°F/hr (33°C/hr) to 200°F (93°C), then held for the preheat time (V6-CF manual).
  *   Genesis manual: none for thin, bone dry ware; 4 h for thicker, slightly wet pieces; 8 h for thick, wet pieces.
+ *   The damp/bone dry choice is asked for bisque only (Gabriel's simpler layout, 16 Nov), so glaze firings never get a preheat.
+ * - Layout: firing, cone, wall thickness and (bisque) damp/bone dry show; the top temperature override, °C/°F, hold,
+ *   cooling and start time sit under a collapsed "More options" button (aria-expanded).
  * - Hold at the top, default 10 min: the V6-CF manual's own cone 04 example uses a 10 minute hold; Specialist
  *   Crafts' beginner guide dwells 10 min; Plainsman's C6DHSC holds 10 min. Potclays: end biscuit "with a short soak".
  * - Drop and hold (glaze): Plainsman Clays via Digitalfire (C04PLTP, PLC6DS, C6DHSC): fall 100°F (56°C) at
@@ -216,6 +219,13 @@
     + '.cm-calc .cm-tips li { margin: 0 0 0.25rem; padding: 0; }'
     + '.cm-calc .cm-cost { margin: 0 0 1rem; }'
     + '.cm-calc .cm-cost a { color: var(--cm-brand); font-weight: 600; }'
+    + '.cm-calc .cm-more-btn { display: inline-flex; align-items: center; gap: 0.45rem; margin: 0 0 1rem; padding: 0.35rem 0; background: none; border: 0;'
+    + '  font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--cm-brand); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }'
+    + '.cm-calc .cm-more-btn:focus-visible { outline: 2px solid var(--cm-brand); outline-offset: 2px; border-radius: 4px; }'
+    + '.cm-calc .cm-more-chev { width: 0.42rem; height: 0.42rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;'
+    + '  transform: rotate(-45deg); transition: transform 0.15s ease; }'
+    + '.cm-calc .cm-more-btn[aria-expanded="true"] .cm-more-chev { transform: rotate(45deg); }'
+    + '.cm-calc .cm-more { margin: -0.25rem 0 0.25rem; padding-top: 0.9rem; border-top: 1px solid var(--cm-border); }'
     + '@media (max-width: 480px) { .cm-calc .cm-steps li { font-size: 0.88rem; } }';
 
   var uid = 0;
@@ -240,17 +250,6 @@
       + '    <select id="' + f('cone') + '" data-role="cone"></select>'
       + '  </div>'
       + '  <div class="cm-row">'
-      + '    <label class="cm-label" for="' + f('top') + '" data-role="top-label">Top temperature (°C)</label>'
-      + '    <input type="number" id="' + f('top') + '" data-role="top" min="0" step="1" inputmode="decimal">'
-      + '  </div>'
-      + '  <div class="cm-row">'
-      + '    <span class="cm-label" id="' + f('unit-l') + '">Units</span>'
-      + '    <div class="cm-unit-toggle" role="group" aria-labelledby="' + f('unit-l') + '">'
-      + '      <button type="button" class="cm-unit-btn is-active" data-unit="c" aria-pressed="true">°C</button>'
-      + '      <button type="button" class="cm-unit-btn" data-unit="f" aria-pressed="false">°F</button>'
-      + '    </div>'
-      + '  </div>'
-      + '  <div class="cm-row">'
       + '    <span class="cm-label" id="' + f('thick-l') + '">Wall thickness</span>'
       + '    <div class="cm-unit-toggle" role="group" aria-labelledby="' + f('thick-l') + '">'
       + '      <button type="button" class="cm-unit-btn" data-thick="thin" aria-pressed="false">Thin</button>'
@@ -258,33 +257,48 @@
       + '      <button type="button" class="cm-unit-btn" data-thick="thick" aria-pressed="false">Thick</button>'
       + '    </div>'
       + '  </div>'
-      + '  <div class="cm-row">'
+      + '  <div class="cm-row" data-bisque>'
       + '    <span class="cm-label" id="' + f('dry-l') + '">Ware</span>'
       + '    <div class="cm-unit-toggle" role="group" aria-labelledby="' + f('dry-l') + '">'
       + '      <button type="button" class="cm-unit-btn is-active" data-dry="dry" aria-pressed="true">Bone dry</button>'
       + '      <button type="button" class="cm-unit-btn" data-dry="damp" aria-pressed="false">Still damp</button>'
       + '    </div>'
       + '  </div>'
-      + '  <div class="cm-row" data-glaze hidden>'
-      + '    <label class="cm-label" for="' + f('cool') + '">Cooling</label>'
-      + '    <select id="' + f('cool') + '" data-role="cool">'
-      + '      <option value="off" selected>Switch off at the top</option>'
-      + '      <option value="drop">Drop and hold</option>'
-      + '      <option value="slow">Drop, hold and slow cool</option>'
-      + '    </select>'
-      + '  </div>'
-      + '  <p class="cm-hint" data-glaze hidden>A drop and hold helps heal pinholes and blisters. A slow cool changes how some glazes finish, so test it on a few pieces first.</p>'
-      + '  <div class="cm-dims">'
-      + '    <div class="cm-dim">'
-      + '      <label class="cm-dim-label" for="' + f('hold') + '">Hold at the top (min)</label>'
-      + '      <input type="number" class="cm-dim-input" id="' + f('hold') + '" data-role="hold" min="0" step="1" value="' + DEFAULT_HOLD + '" inputmode="decimal">'
-      + '    </div>'
-      + '    <div class="cm-dim">'
-      + '      <label class="cm-dim-label" for="' + f('start') + '">Start time (optional)</label>'
-      + '      <input type="time" class="cm-dim-input" id="' + f('start') + '" data-role="start">'
-      + '    </div>'
-      + '  </div>'
       + '  <p class="cm-hint" data-role="ware-hint"></p>'
+      + '  <button type="button" class="cm-more-btn" data-role="more" aria-expanded="false" aria-controls="' + f('more') + '">'
+      + '    <span class="cm-more-chev" aria-hidden="true"></span>More options</button>'
+      + '  <div class="cm-more" id="' + f('more') + '" data-role="more-panel" hidden>'
+      + '    <div class="cm-row">'
+      + '      <label class="cm-label" for="' + f('top') + '" data-role="top-label">Top temperature (°C)</label>'
+      + '      <input type="number" id="' + f('top') + '" data-role="top" min="0" step="1" inputmode="decimal">'
+      + '    </div>'
+      + '    <div class="cm-row">'
+      + '      <span class="cm-label" id="' + f('unit-l') + '">Units</span>'
+      + '      <div class="cm-unit-toggle" role="group" aria-labelledby="' + f('unit-l') + '">'
+      + '        <button type="button" class="cm-unit-btn is-active" data-unit="c" aria-pressed="true">°C</button>'
+      + '        <button type="button" class="cm-unit-btn" data-unit="f" aria-pressed="false">°F</button>'
+      + '      </div>'
+      + '    </div>'
+      + '    <div class="cm-row" data-glaze hidden>'
+      + '      <label class="cm-label" for="' + f('cool') + '">Cooling</label>'
+      + '      <select id="' + f('cool') + '" data-role="cool">'
+      + '        <option value="off" selected>Switch off at the top</option>'
+      + '        <option value="drop">Drop and hold</option>'
+      + '        <option value="slow">Drop, hold and slow cool</option>'
+      + '      </select>'
+      + '    </div>'
+      + '    <p class="cm-hint" data-glaze hidden>A drop and hold helps heal pinholes and blisters. A slow cool changes how some glazes finish, so test it on a few pieces first.</p>'
+      + '    <div class="cm-dims">'
+      + '      <div class="cm-dim">'
+      + '        <label class="cm-dim-label" for="' + f('hold') + '">Hold at the top (min)</label>'
+      + '        <input type="number" class="cm-dim-input" id="' + f('hold') + '" data-role="hold" min="0" step="1" value="' + DEFAULT_HOLD + '" inputmode="decimal">'
+      + '      </div>'
+      + '      <div class="cm-dim">'
+      + '        <label class="cm-dim-label" for="' + f('start') + '">Start time (optional)</label>'
+      + '        <input type="time" class="cm-dim-input" id="' + f('start') + '" data-role="start">'
+      + '      </div>'
+      + '    </div>'
+      + '  </div>'
       + '  <div class="cm-visual cm-visual-graph" data-role="graph-box">'
       + '    <svg viewBox="0 0 320 132" class="cm-graph" aria-hidden="true" focusable="false">'
       + '      <line class="cm-graph-grid" data-role="g-grid1" x1="44" x2="314"></line>'
@@ -403,6 +417,14 @@
     var bung = q('[data-role="bung"]');
     var caution = q('[data-role="caution"]');
     var wareHint = q('[data-role="ware-hint"]');
+    var moreBtn = q('[data-role="more"]');
+    var morePanel = q('[data-role="more-panel"]');
+
+    // "More options": the top temperature override, units, hold, cooling and start time, collapsed by default
+    function setMore(open) {
+      morePanel.hidden = !open;
+      moreBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
 
     function speedNow() { return FIRINGS[firing.value].speed[thick]; }
     // A cone's top temperature for the schedule on screen: the Orton column nearer its last ramp
@@ -573,10 +595,11 @@
     function render() {
       var fr = FIRINGS[firing.value];
       qa('[data-glaze]').forEach(function (el) { el.hidden = !fr.glaze; });
+      qa('[data-bisque]').forEach(function (el) { el.hidden = fr.glaze; });
       topLabel.textContent = 'Top temperature (' + sym() + ')';
       bung.textContent = cText(600);
       rich(wareHint, fr.glaze
-        ? [link('Bartlett', SRC.bartlett), ' has two glaze speeds: Fast for thin ware and Medium for anything thicker. Still damp adds a drying hold first.']
+        ? [link('Bartlett', SRC.bartlett), ' has two glaze speeds: Fast for thin ware and Medium for anything thicker.']
         : ['Not sure? Pick the thicker or damper option. The slower schedule gives water and burn-off more time.']);
       top.placeholder = unit === 'c' ? 'e.g. 1000' : 'e.g. 1832';
 
@@ -619,7 +642,8 @@
       }
 
       var holdMin = readHold(notes);
-      var s = buildSchedule(firing.value, topC, thick, dry === 'damp', holdMin, cool.value);
+      var damp = !fr.glaze && dry === 'damp';   // the damp/bone dry choice is asked for bisque only
+      var s = buildSchedule(firing.value, topC, thick, damp, holdMin, cool.value);
       var last = s.steps.length - 1;
       s.steps.forEach(function (st, i) {
         var text, tag = '';
@@ -651,7 +675,7 @@
         rich(caution, ['Fast climbs at ' + perHourF(570) + ' from cold. ', link('Bartlett', SRC.bartlett), ' gives it only for thin glazed ware, and ',
           link('Potclays', SRC.potclays), ' advises 100 to 130°C an hour for glaze firings, so choose Normal unless your clay or glaze maker allows a fast firing.']);
       }
-      if (dry === 'damp') src.push('Drying: Bartlett\'s ' + PREHEAT.hours[thick] + '-hour preheat for damp ware.');
+      if (damp) src.push('Drying: Bartlett\'s ' + PREHEAT.hours[thick] + '-hour preheat for damp ware.');
       if (fr.glaze && cool.value !== 'off') {
         // Earthenware: Plainsman C04PLTP (drop and hold) and Digitalfire 04DSDH (slow cool). Mid and high fire: Plainsman PLC6DS / C6DHSC.
         var low = firing.value === 'earthenware';
@@ -701,6 +725,14 @@
     cone.addEventListener('change', function () {
       setTopFromCone();
       render();
+      if (cone.value === 'own') {   // the temperature box lives under More options
+        setMore(true);
+        top.focus();
+      }
+    });
+
+    moreBtn.addEventListener('click', function () {
+      setMore(moreBtn.getAttribute('aria-expanded') !== 'true');
     });
 
     top.addEventListener('input', function () {
