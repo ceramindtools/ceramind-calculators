@@ -139,7 +139,7 @@
       + '      </div>'
       + '    </div>'
       + '  </div>'
-      + '  <p class="cm-hint cm-vol-hint">Not sure? Fill the mould or box with water from a measuring jug. For a box, length × width × height in cm ÷ 1,000 = litres.</p>'
+      + '  <p class="cm-hint cm-vol-hint">Not sure? Fill the empty mould or box with water from a measuring jug. For a box, length × width × height in cm ÷ 1,000 = litres.</p>'
       + '  <div class="cm-row">'
       + '    <label class="cm-label" for="' + f('plaster') + '">Plaster</label>'
       + '    <select id="' + f('plaster') + '" class="cm-plaster-select" data-role="plaster">'
