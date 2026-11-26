@@ -90,6 +90,16 @@
       { k: 'uc-finecastplus', label: 'Fine Casting Plus (5/25 kg)', name: 'Fine Casting Plaster Plus', pack: '5 or 25 kg', ratio: 70, url: 'https://www.ulsterceramicspotterysupplies.co.uk/products/fine-casting-plaster-25kgs-copy' }] }
   ];
   var DEFAULT = 'pc-potters';   // Potclays Potters Plaster at 100:68 (the F13 blog figures use it)
+
+  // Attributes a page can set on the div to open on its own example (see applyPrefill in shared.js), e.g.
+  // data-units="ml" data-volume="2352". Units come first so the volume is read in the right unit.
+  var PREFILL = {
+    units: { button: 'data-unit', values: { litres: 'l' } },          // l (litres) or ml
+    plaster: '[data-role="plaster"]',                                 // a plaster key, e.g. pc-potters, or custom
+    ratio: '[data-role="ratio"]',                                     // water per 100 plaster, custom plaster only
+    volume: '[data-role="vol"]',
+    extra: '[data-role="extra"]'                                      // % extra for the bucket
+  };
   var PLASTERS = { custom: {} };
   SHOPS.forEach(function (g) {
     g.items.forEach(function (it) {
@@ -397,6 +407,7 @@
     });
 
     render();
+    applyPrefill(root, PREFILL);
     ready = true;
   }
 

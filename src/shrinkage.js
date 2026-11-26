@@ -26,6 +26,17 @@
 
   var uid = 0;
 
+  // Attributes a page can set on the div to open on its own example (see applyPrefill in shared.js), e.g.
+  // data-mode="finished" data-shrinkage="12" data-width="7". Buttons come first so the sizes land in the right mode.
+  var PREFILL = {
+    mode: { button: 'data-mode', values: { finished: 'toGreen', current: 'toFired' } },
+    units: { button: 'data-unit' },                                   // cm or in
+    shrinkage: '[data-role="pct"]',                                   // % linear shrinkage
+    height: '[data-role="dim"][data-name="Height"]',
+    width: '[data-role="dim"][data-name="Width / diameter"]',
+    depth: '[data-role="dim"][data-name="Depth"]'
+  };
+
   function template(id) {
     function f(name) { return id + '-' + name; }
     return ''
@@ -203,6 +214,7 @@
     });
 
     render();
+    applyPrefill(root, PREFILL);
   }
 
   function initAll() {

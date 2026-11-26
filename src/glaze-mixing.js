@@ -135,6 +135,17 @@
 
   var uid = 0;
 
+  // Attributes a page can set on the div to open on its own example (see applyPrefill in shared.js), e.g.
+  // data-mode="water" data-powder="1050" data-sg="1.45". The mode comes first so the right panel is showing.
+  var PREFILL = {
+    mode: { button: 'data-mode' },                                    // batch, water or pots
+    batch: '[data-role="batch"]',                                     // batch size in grams (Batch a recipe)
+    powder: '[data-role="dry"]',                                      // dry powder in grams (Water to add)
+    sg: '[data-role="sg"]',                                           // target SG
+    pots: '[data-role="pots"]',                                       // how many pots (Glaze for pots)
+    per: '[data-role="per"]'                                          // ml of glaze per pot
+  };
+
   function template(id) {
     function f(name) { return id + '-' + name; }
     var pots = ''
@@ -868,6 +879,7 @@
     DEFAULT_BASE.forEach(function (r) { addRow('base', r[0], r[1]); });
     DEFAULT_ADD.forEach(function (r) { addRow('add', r[0], r[1]); });
     render();
+    applyPrefill(root, PREFILL);
   }
 
   function initAll() {

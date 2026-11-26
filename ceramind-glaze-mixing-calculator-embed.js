@@ -93,6 +93,35 @@
       }
     });
   }
+  // Prefill: a page can open a calculator on its own worked example by putting data attributes on the
+  // calculator's div, e.g. <div class="ceramind-shrinkage-calculator" data-shrinkage="12" data-width="7"></div>.
+  // Each calculator lists the attributes it accepts in its PREFILL map: attribute -> a field selector, or
+  // { button: '<attribute of a toggle button>', values: { name: button value } }. Values go in through the same
+  // click, input and change events a person makes, so every check and unit guard still runs. Unknown, empty or
+  // invalid values are skipped, and a div with no attributes opens exactly as before (added 26 Nov 2026).
+  function applyPrefill(root, map) {
+    Object.keys(map).forEach(function (key) {
+      var raw = root.getAttribute('data-' + key);
+      if (raw === null) return;
+      raw = String(raw).trim().replace(/"/g, '');
+      if (!raw) return;
+      var spec = map[key];
+      if (typeof spec === 'object') {
+        var btn = root.querySelector('[' + spec.button + '="' + ((spec.values && spec.values[raw]) || raw) + '"]');
+        if (btn) btn.click();
+        return;
+      }
+      var el = root.querySelector(spec);
+      if (!el) return;
+      if (el.tagName === 'SELECT' && !el.querySelector('option[value="' + raw + '"]')) return;
+      el.value = raw;
+      ['input', 'change'].forEach(function (type) {
+        var ev;
+        try { ev = new Event(type, { bubbles: true }); } catch (e) { ev = document.createEvent('Event'); ev.initEvent(type, true, true); }
+        el.dispatchEvent(ev);
+      });
+    });
+  }
   // ---- end shared ----
 
 
@@ -182,6 +211,17 @@
     + '}';
 
   var uid = 0;
+
+  // Attributes a page can set on the div to open on its own example (see applyPrefill in shared.js), e.g.
+  // data-mode="water" data-powder="1050" data-sg="1.45". The mode comes first so the right panel is showing.
+  var PREFILL = {
+    mode: { button: 'data-mode' },                                    // batch, water or pots
+    batch: '[data-role="batch"]',                                     // batch size in grams (Batch a recipe)
+    powder: '[data-role="dry"]',                                      // dry powder in grams (Water to add)
+    sg: '[data-role="sg"]',                                           // target SG
+    pots: '[data-role="pots"]',                                       // how many pots (Glaze for pots)
+    per: '[data-role="per"]'                                          // ml of glaze per pot
+  };
 
   function template(id) {
     function f(name) { return id + '-' + name; }
@@ -916,6 +956,7 @@
     DEFAULT_BASE.forEach(function (r) { addRow('base', r[0], r[1]); });
     DEFAULT_ADD.forEach(function (r) { addRow('add', r[0], r[1]); });
     render();
+    applyPrefill(root, PREFILL);
   }
 
   function initAll() {

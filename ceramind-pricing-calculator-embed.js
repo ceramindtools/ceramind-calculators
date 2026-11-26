@@ -112,6 +112,35 @@
       }
     });
   }
+  // Prefill: a page can open a calculator on its own worked example by putting data attributes on the
+  // calculator's div, e.g. <div class="ceramind-shrinkage-calculator" data-shrinkage="12" data-width="7"></div>.
+  // Each calculator lists the attributes it accepts in its PREFILL map: attribute -> a field selector, or
+  // { button: '<attribute of a toggle button>', values: { name: button value } }. Values go in through the same
+  // click, input and change events a person makes, so every check and unit guard still runs. Unknown, empty or
+  // invalid values are skipped, and a div with no attributes opens exactly as before (added 26 Nov 2026).
+  function applyPrefill(root, map) {
+    Object.keys(map).forEach(function (key) {
+      var raw = root.getAttribute('data-' + key);
+      if (raw === null) return;
+      raw = String(raw).trim().replace(/"/g, '');
+      if (!raw) return;
+      var spec = map[key];
+      if (typeof spec === 'object') {
+        var btn = root.querySelector('[' + spec.button + '="' + ((spec.values && spec.values[raw]) || raw) + '"]');
+        if (btn) btn.click();
+        return;
+      }
+      var el = root.querySelector(spec);
+      if (!el) return;
+      if (el.tagName === 'SELECT' && !el.querySelector('option[value="' + raw + '"]')) return;
+      el.value = raw;
+      ['input', 'change'].forEach(function (type) {
+        var ev;
+        try { ev = new Event(type, { bubbles: true }); } catch (e) { ev = document.createEvent('Event'); ev.initEvent(type, true, true); }
+        el.dispatchEvent(ev);
+      });
+    });
+  }
   // ---- end shared ----
 
 

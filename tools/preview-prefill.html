@@ -1,0 +1,21 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prefill preview</title>
+<!-- Local check of prefilled calculators: each div opens on a blog post's worked example (26 Nov 2026). -->
+<style>
+  body { margin: 0; background: #fff; font-family: "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; padding: 24px 16px; align-items: flex-start; }
+  .grid > div { flex: 1 1 380px; max-width: 720px; }
+</style>
+<div class="grid">
+  <div class="ceramind-shrinkage-calculator" id="s1" data-mode="finished" data-shrinkage="12" data-width="7"></div>
+  <div class="ceramind-shrinkage-calculator" id="s3" data-mode="finished" data-shrinkage="12" data-height="11" data-width="7.5" data-depth="7.4"></div>
+  <div class="ceramind-shrinkage-calculator" id="plain"></div>
+  <div class="ceramind-plaster-mix-calculator" id="f13" data-units="ml" data-volume="2352"></div>
+  <div class="ceramind-glaze-mixing-calculator" id="k32" data-mode="water" data-powder="1050" data-sg="1.45"></div>
+  <div class="ceramind-shrinkage-calculator" id="bad" data-mode="nonsense" data-shrinkage="" data-width="abc"></div>
+</div>
+<script src="../ceramind-shrinkage-calculator-embed.js"></script>
+<script src="../ceramind-plaster-mix-calculator-embed.js"></script>
+<script src="../ceramind-glaze-mixing-calculator-embed.js"></script>
