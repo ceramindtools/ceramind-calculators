@@ -22,6 +22,16 @@ Free pottery calculators for [ceramindtools.com](https://www.ceramindtools.com).
   - It also takes desktop and phone screenshots.
   - `tools/preview.html` shows the calculator next to the shrinkage one locally.
 
+## Prefill (opening on a page's own example)
+- A page can open a calculator on its own worked example with data attributes on the div, e.g.
+  `<div class="ceramind-shrinkage-calculator" data-mode="finished" data-shrinkage="12" data-width="7"></div>`.
+- Each calculator lists the attributes it accepts in its `PREFILL` map; `applyPrefill()` in `src/shared.js` puts the values in through the same events a person makes. No attributes means it opens exactly as before.
+  - **Shrinkage:** mode (finished or current), units (cm or in), shrinkage, height, width, depth.
+  - **Plaster mix:** units (l or ml), plaster (a key such as pc-potters, or custom), ratio, volume, extra.
+  - **Glaze mixing:** mode (batch, water or pots), batch, powder, sg, pots, per.
+- `node tools/check-prefill.cjs file://$PWD/tools/preview-prefill.html <out dir>` checks the blog examples.
+- Learn Pottery posts use this (26 Nov 2026): the theme snippet `ceramind-calc-embeds` loads the script for any calculator div in a post.
+
 ## Draft first
 - **The `main` branch is live:** the store pages load it through jsDelivr.
 - **New work goes on the `draft` branch.** It's tested through a hidden store template that loads the draft by commit, and only reaches `main` once it's approved.
